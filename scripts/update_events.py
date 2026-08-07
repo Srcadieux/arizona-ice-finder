@@ -582,10 +582,14 @@ def collect_ice_den_scottsdale(today):
 
 ICE_DEN_CHANDLER_BASE = "https://www.icedenchandler.com"
 ICE_DEN_CHANDLER_ICAL_FEEDS = (
-    # Current official Ice Den Chandler calendar tag set published by SportsEngine.
-    "https://www.icedenchandler.com/ical_feed?tags=9213634%2C9213662%2C9213663%2C9213664%2C9213665%2C9213666%2C9213667%2C9213672%2C9213674%2C9213675%2C9213676%2C9213677%2C9213678%2C9213679",
-    # Legacy/alternate official tag set retained as a fallback.
-    "https://www.icedenchandler.com/ical_feed?tags=5248139%2C5251279%2C5251281%2C5251282%2C5251284%2C5251286%2C5251288%2C5251289%2C5252225",
+    # Actual current hockey-program page-node tags from Ice Den Chandler:
+    # 2703965 = Adult Open Hockey
+    # 2703970 = Adult Stick Time
+    # 2711738 = Youth Programs
+    "https://www.icedenchandler.com/ical_feed?tags=2703965%2C2703970%2C2711738",
+    "https://www.icedenchandler.com/ical_feed?tags=2703965",
+    "https://www.icedenchandler.com/ical_feed?tags=2703970",
+    "https://www.icedenchandler.com/ical_feed?tags=2711738",
 )
 
 ICE_DEN_CHANDLER_MINDBODY_BASE = "https://clients.mindbodyonline.com/classic/ws"
@@ -1069,7 +1073,7 @@ def collect_ice_den_chandler(today):
     feed_urls = set(ICE_DEN_CHANDLER_ICAL_FEEDS)
     feed_urls.update(discover_chandler_ical_feeds())
 
-    print(f"Ice Den Chandler iCal feeds to try: {len(feed_urls)}")
+    print(f"Ice Den Chandler hockey iCal feeds to try: {len(feed_urls)}")
 
     for feed_url in sorted(feed_urls):
         try:
