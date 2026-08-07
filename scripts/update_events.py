@@ -1467,6 +1467,136 @@ def diagnose_az_ice_arcadia(today):
             )
 
 
+
+# ---------------------------------------------------------------------------
+# AZ Ice Arcadia — DaySmart JSON API endpoint probe
+# ---------------------------------------------------------------------------
+
+DAYSMART_JSONAPI_BASE = "https://apps.daysmartrecreation.com/dash/jsonapi/api/v1/"
+
+
+def probe_az_ice_arcadia_api(today):
+    """
+    Diagnostic only. The DaySmart member JavaScript exposed the JSON API base.
+    Probe a small set of read-only endpoints and print status/content samples.
+    No Arcadia events are published by this function.
+    """
+    start_date = today.isoformat()
+    end_date = (today + timedelta(days=35)).isoformat()
+
+    probes = [
+        ("root", DAYSMART_JSONAPI_BASE),
+        ("events", DAYSMART_JSONAPI_BASE + "events"),
+        (
+            "events-location-3",
+            DAYSMART_JSONAPI_BASE
+            + f"events?filter[location_id]=3&filter[start_date]={start_date}&filter[end_date]={end_date}",
+        ),
+        (
+            "events-facility-3",
+            DAYSMART_JSONAPI_BASE
+            + f"events?filter[facility_id]=3&filter[start_date]={start_date}&filter[end_date]={end_date}",
+        ),
+        ("locations", DAYSMART_JSONAPI_BASE + "locations"),
+        ("facilities", DAYSMART_JSONAPI_BASE + "facilities"),
+        ("event-types", DAYSMART_JSONAPI_BASE + "event_types"),
+    ]
+
+    header_sets = [
+        (
+            "plain",
+            {
+                **HEADERS,
+                "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
+                "Referer": "https://member.daysmartrecreation.com/",
+            },
+        ),
+        (
+            "azice-origin",
+            {
+                **HEADERS,
+                "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
+                "Referer": "https://member.daysmartrecreation.com/",
+                "Origin": "https://member.daysmartrecreation.com",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        ),
+    ]
+
+    print(
+        "AZ Ice Arcadia DaySmart JSON API probe: "
+        f"base={DAYSMART_JSONAPI_BASE}"
+    )
+
+    for header_name, headers in header_sets:
+        for label, url in probes:
+            try:
+                response = requests.get(
+                    url,
+                    headers=headers,
+                    timeout=TIMEOUT,
+                    allow_redirects=True,
+                )
+
+                content_type = response.headers.get("content-type", "")
+                body = response.text
+                compact = re.sub(r"\s+", " ", body).strip()
+
+                print(
+                    f"  Arcadia API [{header_name}/{label}]: "
+                    f"status={response.status_code} "
+                    f"bytes={len(response.content)} "
+                    f"type={content_type} "
+                    f"final={response.url}"
+                )
+
+                if compact:
+                    print(
+                        "    Arcadia API body:",
+                        compact[:1200],
+                    )
+
+                # If JSON comes back, summarize JSON:API top-level shape.
+                if "json" in content_type.lower():
+                    try:
+                        payload = response.json()
+                        if isinstance(payload, dict):
+                            print(
+                                "    Arcadia API JSON keys:",
+                                ", ".join(sorted(payload.keys())[:30]),
+                            )
+                            data = payload.get("data")
+                            if isinstance(data, list):
+                                print(
+                                    "    Arcadia API data count:",
+                                    len(data),
+                                )
+                                if data:
+                                    sample = data[0]
+                                    print(
+                                        "    Arcadia API first item:",
+                                        json.dumps(sample, separators=(",", ":"))[:1800],
+                                    )
+                            elif isinstance(data, dict):
+                                print(
+                                    "    Arcadia API first item:",
+                                    json.dumps(data, separators=(",", ":"))[:1800],
+                                )
+                    except Exception as exc:
+                        print(
+                            "    Arcadia API JSON parse failed:",
+                            exc,
+                            file=sys.stderr,
+                        )
+
+            except Exception as exc:
+                print(
+                    f"  AZ Ice Arcadia API probe failed [{header_name}/{label}]:",
+                    exc,
+                    file=sys.stderr,
+                )
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -1475,6 +1605,7 @@ def main():
     today = datetime.now(AZ).date()
 
     diagnose_az_ice_arcadia(today)
+    probe_az_ice_arcadia_api(today)
 
     collected = []
     collected += collect_mullett(today)
