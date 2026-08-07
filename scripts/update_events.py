@@ -5,7 +5,8 @@ Arizona Ice Finder automatic updater.
 Live sources:
 - Mullett / Mountain America Community Iceplex: public Sportified schedule.
 - Ice Den Scottsdale: official SportsEngine iCal calendar feed.
-- Ice Den Chandler / Coyotes Community Ice Center: best-effort SportsEngine HTML fallback.
+- Ice Den Chandler: official SportsEngine iCal discovery + official-page fallback.
+- Coyotes Community Ice Center: best-effort SportsEngine HTML fallback.
 
 Conservative design:
 - Only publish sessions that can be parsed with high confidence.
@@ -574,16 +575,384 @@ def collect_ice_den_scottsdale(today):
     return result
 
 
+
 # ---------------------------------------------------------------------------
-# SportsEngine HTML fallback — Chandler + Mesa
+# Ice Den Chandler — official SportsEngine iCal discovery + page fallback
+# ---------------------------------------------------------------------------
+
+ICE_DEN_CHANDLER_BASE = "https://www.icedenchandler.com"
+ICE_DEN_CHANDLER_PAGES = (
+    "https://www.icedenchandler.com/",
+    "https://www.icedenchandler.com/page/show/2803608-calendar",
+    "https://www.icedenchandler.com/adult-stick-time",
+    "https://www.icedenchandler.com/adult-open-hockey",
+    "https://www.icedenchandler.com/youth-programs",
+    "https://www.icedenchandler.com/youth-skills-clinics",
+    "https://www.icedenchandler.com/adult-hockey",
+    "https://www.icedenchandler.com/hockey",
+)
+
+
+def chandler_feed_from_href(href):
+    """
+    Convert a SportsEngine iCal-instructions or direct-feed URL into the
+    direct /ical_feed?tags=... URL.
+    """
+    if not href:
+        return None
+
+    href = href.replace("&amp;", "&")
+    match = re.search(
+        r"(?:event/ical_instructions|ical_feed)\?tags=([^\"'&<>\s]*)",
+        href,
+        re.I,
+    )
+    if not match:
+        return None
+
+    tags = match.group(1)
+    if not tags:
+        return None
+
+    return f"{ICE_DEN_CHANDLER_BASE}/ical_feed?tags={tags}"
+
+
+def discover_chandler_ical_feeds():
+    feeds = set()
+
+    for page_url in ICE_DEN_CHANDLER_PAGES:
+        try:
+            html = get(page_url).text
+        except Exception as exc:
+            print(
+                "Ice Den Chandler discovery page failed:",
+                page_url,
+                exc,
+                file=sys.stderr,
+            )
+            continue
+
+        soup = BeautifulSoup(html, "html.parser")
+
+        for anchor in soup.find_all("a", href=True):
+            feed = chandler_feed_from_href(anchor.get("href"))
+            if feed:
+                feeds.add(feed)
+
+        # Catch iCal links embedded in scripts/data attributes.
+        for match in re.finditer(
+            r"(?:event/ical_instructions|ical_feed)\?tags=[^\"'&<>\s]*",
+            html,
+            re.I,
+        ):
+            feed = chandler_feed_from_href(match.group(0))
+            if feed:
+                feeds.add(feed)
+
+    print(f"Ice Den Chandler iCal feeds discovered: {len(feeds)}")
+    return sorted(feeds)
+
+
+def expand_chandler_ical_event(event, today, horizon_days=35):
+    summary_item = first_ical_value(event, "SUMMARY")
+    start_item = first_ical_value(event, "DTSTART")
+
+    if not summary_item or not start_item:
+        return []
+
+    title = unescape_ical_text(summary_item[1])
+    typ, age = classify(title)
+
+    if not typ:
+        return []
+
+    start_dt = parse_ical_datetime(*start_item)
+
+    end_item = first_ical_value(event, "DTEND")
+    if end_item:
+        end_dt = parse_ical_datetime(*end_item)
+    else:
+        end_dt = start_dt + timedelta(hours=1)
+
+    duration = end_dt - start_dt
+    if duration <= timedelta(0):
+        duration = timedelta(hours=1)
+
+    url_item = first_ical_value(event, "URL")
+    description_item = first_ical_value(event, "DESCRIPTION")
+    location_item = first_ical_value(event, "LOCATION")
+
+    link = (
+        unescape_ical_text(url_item[1])
+        if url_item
+        else "https://www.icedenchandler.com/page/show/2803608-calendar"
+    )
+
+    if description_item:
+        description = unescape_ical_text(description_item[1])
+        match = re.search(
+            r"https?://(?:www\.)?icedenchandler\.com/event/show/\d+(?:\?[^\s]+)?",
+            description,
+            re.I,
+        )
+        if match:
+            link = match.group(0)
+
+    location = (
+        unescape_ical_text(location_item[1])
+        if location_item
+        else "Ice Den Chandler"
+    )
+
+    location_low = location.lower()
+    if "scottsdale" in location_low and "chandler" not in location_low:
+        return []
+
+    window_start = datetime.combine(
+        today - timedelta(days=1), datetime.min.time(), tzinfo=AZ
+    )
+    window_end = datetime.combine(
+        today + timedelta(days=horizon_days),
+        datetime.max.time(),
+        tzinfo=AZ,
+    )
+
+    occurrences = []
+    rrule_item = first_ical_value(event, "RRULE")
+
+    if rrule_item:
+        rule_text = rrule_item[1].strip()
+        try:
+            rule = rrulestr(rule_text, dtstart=start_dt)
+            occurrences = list(rule.between(window_start, window_end, inc=True))
+        except Exception as exc:
+            print(
+                "Ice Den Chandler RRULE parse failed:",
+                title,
+                rule_text,
+                exc,
+                file=sys.stderr,
+            )
+            occurrences = [start_dt] if window_start <= start_dt <= window_end else []
+    else:
+        if window_start <= start_dt <= window_end:
+            occurrences = [start_dt]
+
+    excluded = set()
+
+    for ex_key, ex_value in all_ical_values(event, "EXDATE"):
+        for raw in ex_value.split(","):
+            try:
+                excluded.add(parse_ical_datetime(ex_key, raw).isoformat())
+            except Exception:
+                continue
+
+    output = []
+    rink = "Ice Den Chandler"
+
+    for occurrence in occurrences:
+        if occurrence.tzinfo is None:
+            occurrence = occurrence.replace(tzinfo=AZ)
+        else:
+            occurrence = occurrence.astimezone(AZ)
+
+        if occurrence.isoformat() in excluded:
+            continue
+
+        occurrence_end = occurrence + duration
+
+        output.append(
+            {
+                "id": stable_id(
+                    "icedenchandler",
+                    rink,
+                    occurrence,
+                    title,
+                ),
+                "title": title,
+                "type": typ,
+                "rink": rink,
+                "start": occurrence.isoformat(),
+                "end": occurrence_end.isoformat(),
+                "age": age,
+                "url": link,
+                "source": "icedenchandler",
+            }
+        )
+
+    return output
+
+
+def collect_chandler_event_pages(today):
+    """
+    Fallback: crawl only official Chandler program/calendar pages, collect their
+    current SportsEngine event links, then parse the event pages directly.
+    """
+    candidates = set()
+    cutoff = datetime.combine(
+        today - timedelta(days=1), datetime.min.time(), tzinfo=AZ
+    )
+    horizon = datetime.combine(
+        today + timedelta(days=35), datetime.max.time(), tzinfo=AZ
+    )
+
+    for page_url in ICE_DEN_CHANDLER_PAGES:
+        try:
+            html = get(page_url).text
+        except Exception as exc:
+            print(
+                "Ice Den Chandler event-index failed:",
+                page_url,
+                exc,
+                file=sys.stderr,
+            )
+            continue
+
+        soup = BeautifulSoup(html, "html.parser")
+
+        for anchor in soup.find_all("a", href=True):
+            href = anchor["href"]
+            if re.search(r"/event/show/\d+", href):
+                candidates.add(urljoin(ICE_DEN_CHANDLER_BASE, href))
+
+        for match in re.finditer(
+            r'["\']([^"\']*/event/show/\d+[^"\']*)["\']',
+            html,
+        ):
+            href = match.group(1).replace("\\/", "/")
+            candidates.add(urljoin(ICE_DEN_CHANDLER_BASE, href))
+
+    out = []
+
+    for event_url in sorted(candidates)[:140]:
+        try:
+            soup = BeautifulSoup(get(event_url).text, "html.parser")
+            title_node = soup.find("h1") or soup.find("h2")
+            if not title_node:
+                continue
+
+            title = " ".join(title_node.stripped_strings)
+            typ, age = classify(title)
+            if not typ:
+                continue
+
+            page_text = " ".join(soup.stripped_strings)
+
+            match = re.search(
+                r"(\d{1,2}:\d{2}\s*[ap]m)\s*(?:MST)?\s*-\s*"
+                r"(\d{1,2}:\d{2}\s*[ap]m)\s*(?:MST)?\s+"
+                r"([A-Za-z]+\s+\d{1,2}(?:st|nd|rd|th)?,\s+\d{4})",
+                page_text,
+                re.I,
+            )
+
+            if not match:
+                continue
+
+            date_clean = re.sub(
+                r"(\d{1,2})(st|nd|rd|th)",
+                r"\1",
+                match.group(3),
+                flags=re.I,
+            )
+
+            start_dt = dtparser.parse(
+                f"{date_clean} {match.group(1)}"
+            ).replace(tzinfo=AZ)
+            end_dt = dtparser.parse(
+                f"{date_clean} {match.group(2)}"
+            ).replace(tzinfo=AZ)
+
+            if end_dt <= start_dt:
+                end_dt += timedelta(days=1)
+
+            if start_dt < cutoff or start_dt > horizon:
+                continue
+
+            out.append(
+                {
+                    "id": stable_id(
+                        "icedenchandler",
+                        "Ice Den Chandler",
+                        start_dt,
+                        title,
+                    ),
+                    "title": title,
+                    "type": typ,
+                    "rink": "Ice Den Chandler",
+                    "start": start_dt.isoformat(),
+                    "end": end_dt.isoformat(),
+                    "age": age,
+                    "url": event_url,
+                    "source": "icedenchandler",
+                }
+            )
+
+        except Exception as exc:
+            print(
+                "Ice Den Chandler event page failed:",
+                event_url,
+                exc,
+                file=sys.stderr,
+            )
+
+    dedup = {}
+    for event in out:
+        dedup[(event["rink"], event["start"], event["title"])] = event
+
+    result = sorted(dedup.values(), key=lambda e: e["start"])
+    print(f"Ice Den Chandler official-page fallback: {len(result)} hockey sessions")
+    return result
+
+
+def collect_ice_den_chandler(today):
+    out = []
+    feed_success = False
+
+    for feed_url in discover_chandler_ical_feeds():
+        try:
+            response = get(feed_url)
+            payload = response.text
+
+            if "BEGIN:VCALENDAR" not in payload:
+                raise ValueError("response was not an iCalendar feed")
+
+            feed_success = True
+
+            for raw_event in parse_ical_events(payload):
+                out.extend(expand_chandler_ical_event(raw_event, today))
+
+        except Exception as exc:
+            print(
+                "Ice Den Chandler iCal feed failed:",
+                feed_url,
+                exc,
+                file=sys.stderr,
+            )
+
+    # Always merge the official-page fallback. This covers youth/adult program
+    # pages whose tags may not be included in a single calendar feed.
+    out.extend(collect_chandler_event_pages(today))
+
+    dedup = {}
+    for event in out:
+        dedup[(event["rink"], event["start"], event["title"])] = event
+
+    result = sorted(dedup.values(), key=lambda e: e["start"])
+
+    if feed_success:
+        print(f"Ice Den Chandler iCal: {len(result)} hockey sessions")
+    else:
+        print(f"Ice Den Chandler collected: {len(result)} hockey sessions")
+
+    return result
+
+
+# ---------------------------------------------------------------------------
+# SportsEngine HTML fallback — Mesa
 # ---------------------------------------------------------------------------
 
 SPORTSENGINE = [
-    (
-        "Ice Den Chandler",
-        "https://www.icedenchandler.com",
-        "https://www.icedenchandler.com/page/show/2803608-calendar",
-    ),
     (
         "Coyotes Community Ice Center",
         "https://www.coyotescommunityicecenter.com",
@@ -732,6 +1101,7 @@ def main():
     collected = []
     collected += collect_mullett(today)
     collected += collect_ice_den_scottsdale(today)
+    collected += collect_ice_den_chandler(today)
     collected += collect_sportsengine(today)
     collected.sort(key=lambda e: e["start"])
 
@@ -747,7 +1117,7 @@ def main():
         set(
             e["rink"]
             for e in collected
-            if e["source"] in ("mullett", "icedenscottsdale")
+            if e["source"] in ("mullett", "icedenscottsdale", "icedenchandler")
         )
     )
     auto_attempt = sorted(
