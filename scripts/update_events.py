@@ -1867,6 +1867,199 @@ def probe_az_ice_arcadia_api(today):
                 )
 
 
+
+# ---------------------------------------------------------------------------
+# AZ Ice Arcadia — event taxonomy diagnostic
+# ---------------------------------------------------------------------------
+
+def diagnose_az_ice_arcadia_event_taxonomy(today):
+    """
+    Diagnostic only.
+
+    We have confirmed the anonymous DaySmart API works when `company=azice`.
+    This pass inventories Arcadia's returned event records and attempts to
+    include related event-type/resource/team/league records so we can identify
+    which of the returned events are actual hockey sessions before publishing
+    anything to the live Arizona Ice Finder.
+    """
+    base = "https://apps.daysmartrecreation.com/dash/jsonapi/api/v1/events"
+    end_date = today + timedelta(days=35)
+
+    params = {
+        "company": "azice",
+        "filter[facility_id]": "3",
+        "filter[start_date]": today.isoformat(),
+        "filter[end_date]": end_date.isoformat(),
+    }
+
+    headers = {
+        **HEADERS,
+        "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
+        "Referer": (
+            "https://member.daysmartrecreation.com/"
+            "#/online/azice/calendar?location=3&event_type=7"
+        ),
+        "Origin": "https://member.daysmartrecreation.com",
+    }
+
+    try:
+        response = requests.get(
+            base,
+            params=params,
+            headers=headers,
+            timeout=TIMEOUT,
+            allow_redirects=True,
+        )
+        print(
+            "AZ Ice Arcadia taxonomy base:"
+            f" status={response.status_code}"
+            f" bytes={len(response.content)}"
+            f" final={response.url}"
+        )
+        response.raise_for_status()
+        payload = response.json()
+    except Exception as exc:
+        print("AZ Ice Arcadia taxonomy base failed:", exc, file=sys.stderr)
+        return
+
+    data = payload.get("data", []) if isinstance(payload, dict) else []
+    print(f"AZ Ice Arcadia taxonomy event count: {len(data)}")
+
+    # Compact counts from the raw event attributes.
+    counters = {
+        "event_type_id": {},
+        "sub_type": {},
+        "resource_id": {},
+        "resource_area_id": {},
+        "league_id": {},
+        "team_id": {},
+    }
+
+    def bump(bucket, value):
+        key = str(value)
+        bucket[key] = bucket.get(key, 0) + 1
+
+    for item in data:
+        attrs = item.get("attributes") or {}
+        for key in counters:
+            bump(counters[key], attrs.get(key))
+
+    for key, bucket in counters.items():
+        ordered = sorted(bucket.items(), key=lambda kv: (-kv[1], kv[0]))
+        print(f"Arcadia taxonomy counts {key}: {ordered}")
+
+    print("Arcadia taxonomy EVENT SUMMARIES BEGIN")
+    for item in data:
+        attrs = item.get("attributes") or {}
+        desc = re.sub(r"\s+", " ", str(attrs.get("desc") or "")).strip()
+        description = re.sub(
+            r"\s+",
+            " ",
+            str(attrs.get("description") or ""),
+        ).strip()
+
+        print(
+            "  ARC_EVENT"
+            f" id={item.get('id')}"
+            f" start={attrs.get('start')}"
+            f" end={attrs.get('end')}"
+            f" event_type_id={attrs.get('event_type_id')}"
+            f" sub_type={attrs.get('sub_type')}"
+            f" resource_id={attrs.get('resource_id')}"
+            f" resource_area_id={attrs.get('resource_area_id')}"
+            f" team_id={attrs.get('team_id')}"
+            f" league_id={attrs.get('league_id')}"
+            f" capacity={attrs.get('register_capacity')}"
+            f" desc={desc[:180]!r}"
+            f" description={description[:260]!r}"
+        )
+    print("Arcadia taxonomy EVENT SUMMARIES END")
+
+    # Ask JSON:API for human-readable relationship objects. If a particular
+    # relationship is not includable, this failure is harmless and the raw
+    # summaries above are still preserved.
+    include_params = dict(params)
+    include_params["include"] = (
+        "eventType,resource,resourceArea,league,homeTeam,visitingTeam"
+    )
+
+    try:
+        included_response = requests.get(
+            base,
+            params=include_params,
+            headers=headers,
+            timeout=TIMEOUT,
+            allow_redirects=True,
+        )
+        print(
+            "AZ Ice Arcadia taxonomy include:"
+            f" status={included_response.status_code}"
+            f" bytes={len(included_response.content)}"
+            f" final={included_response.url}"
+        )
+
+        if included_response.status_code != 200:
+            compact = re.sub(r"\s+", " ", included_response.text).strip()
+            if compact:
+                print("  Arcadia include body:", compact[:1600])
+            return
+
+        included_payload = included_response.json()
+        included = included_payload.get("included", [])
+
+        print(f"Arcadia taxonomy included count: {len(included)}")
+        print("Arcadia taxonomy INCLUDED RECORDS BEGIN")
+
+        # Print each unique included object compactly. This should reveal names
+        # such as event types, resources/rinks, teams, or leagues.
+        seen = set()
+        for obj in included:
+            key = (obj.get("type"), str(obj.get("id")))
+            if key in seen:
+                continue
+            seen.add(key)
+
+            attrs = obj.get("attributes") or {}
+
+            useful = {}
+            for attr_key in (
+                "name",
+                "title",
+                "description",
+                "desc",
+                "code",
+                "short_desc",
+                "long_desc",
+                "type",
+                "sub_type",
+                "is_online_visible",
+                "active",
+            ):
+                if attr_key in attrs and attrs.get(attr_key) not in (None, ""):
+                    useful[attr_key] = attrs.get(attr_key)
+
+            # If expected labels use different names, include a bounded sample
+            # of scalar attributes so we can discover the schema.
+            if not useful:
+                for attr_key, value in attrs.items():
+                    if isinstance(value, (str, int, float, bool)) or value is None:
+                        useful[attr_key] = value
+                    if len(useful) >= 12:
+                        break
+
+            print(
+                "  ARC_INCLUDED"
+                f" type={obj.get('type')}"
+                f" id={obj.get('id')}"
+                f" attrs={json.dumps(useful, separators=(',', ':'))[:1200]}"
+            )
+
+        print("Arcadia taxonomy INCLUDED RECORDS END")
+
+    except Exception as exc:
+        print("AZ Ice Arcadia taxonomy include failed:", exc, file=sys.stderr)
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -1874,10 +2067,7 @@ def probe_az_ice_arcadia_api(today):
 def main():
     today = datetime.now(AZ).date()
 
-    diagnose_az_ice_arcadia(today)
-    diagnose_az_ice_arcadia_tenant()
-    probe_az_ice_arcadia_tenant_variants(today)
-    probe_az_ice_arcadia_api(today)
+    diagnose_az_ice_arcadia_event_taxonomy(today)
 
     collected = []
     collected += collect_mullett(today)
