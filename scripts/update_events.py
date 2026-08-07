@@ -1257,12 +1257,152 @@ def collect_sportsengine(today):
     return list(dedup.values())
 
 
+
+# ---------------------------------------------------------------------------
+# AZ Ice Arcadia — DaySmart/DASH diagnostic
+# ---------------------------------------------------------------------------
+
+AZ_ICE_ARCADIA_HOCKEY_EVENTS = "https://azicearcadia.com/all-events/hockey-events/"
+
+
+def diagnose_az_ice_arcadia(today):
+    """
+    Diagnostic only. AZ Ice Arcadia's official site embeds its event search in
+    DaySmart Recreation/DASH. This does not publish Arcadia sessions yet; it
+    prints the exact iframe/source shape that GitHub Actions receives so we can
+    build the reliable collector next without disturbing the working feeds.
+    """
+    try:
+        response = requests.get(
+            AZ_ICE_ARCADIA_HOCKEY_EVENTS,
+            headers={
+                **HEADERS,
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+            },
+            timeout=TIMEOUT,
+            allow_redirects=True,
+        )
+        response.raise_for_status()
+    except Exception as exc:
+        print("AZ Ice Arcadia page diagnostic failed:", exc, file=sys.stderr)
+        return
+
+    html = response.text
+    print(
+        "AZ Ice Arcadia official hockey-events page: "
+        f"status={response.status_code} bytes={len(response.content)} "
+        f"url={response.url}"
+    )
+
+    soup = BeautifulSoup(html, "html.parser")
+    iframe_urls = []
+
+    for iframe in soup.find_all("iframe"):
+        src = iframe.get("src")
+        if not src:
+            continue
+        absolute = urljoin(response.url, src)
+        if "daysmart" in absolute.lower() or "dash" in absolute.lower():
+            iframe_urls.append(absolute)
+
+    # Also catch iframe URLs stored inside lazy-load/data attributes or scripts.
+    for match in re.finditer(
+        r'https?://[^"\'<>\s]*member\.daysmartrecreation\.com[^"\'<>\s]*',
+        html,
+        re.I,
+    ):
+        iframe_urls.append(match.group(0).replace("&amp;", "&"))
+
+    iframe_urls = sorted(set(iframe_urls))
+    print(f"AZ Ice Arcadia DaySmart iframe URLs discovered: {len(iframe_urls)}")
+
+    if not iframe_urls:
+        page_text = re.sub(r"\s+", " ", " ".join(soup.stripped_strings))
+        print("  Arcadia page text sample:", page_text[:1000])
+        return
+
+    for iframe_url in iframe_urls[:6]:
+        print("  Arcadia DaySmart iframe:", iframe_url)
+
+        try:
+            iframe_response = requests.get(
+                iframe_url,
+                headers={
+                    **HEADERS,
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Referer": response.url,
+                    "Accept-Language": "en-US,en;q=0.9",
+                },
+                timeout=TIMEOUT,
+                allow_redirects=True,
+            )
+            print(
+                "  Arcadia DaySmart fetch: "
+                f"status={iframe_response.status_code} "
+                f"bytes={len(iframe_response.content)} "
+                f"final={iframe_response.url}"
+            )
+
+            iframe_soup = BeautifulSoup(iframe_response.text, "html.parser")
+            iframe_text = re.sub(
+                r"\s+",
+                " ",
+                " ".join(iframe_soup.stripped_strings),
+            )
+            print("  Arcadia DaySmart text sample:", iframe_text[:1200])
+
+            script_urls = []
+            for script in iframe_soup.find_all("script", src=True):
+                script_urls.append(urljoin(iframe_response.url, script["src"]))
+
+            if script_urls:
+                print(
+                    "  Arcadia DaySmart scripts:",
+                    " | ".join(script_urls[:10]),
+                )
+
+            # Surface likely API/config strings embedded in the shell.
+            interesting = []
+            for pattern in (
+                r'https?://[^"\'<>\s]+',
+                r'/api/[^"\'<>\s]+',
+                r'api[^"\'<>\s]{0,120}',
+                r'calendar[^"\'<>\s]{0,120}',
+                r'event[^"\'<>\s]{0,120}',
+            ):
+                for match in re.finditer(pattern, iframe_response.text, re.I):
+                    value = match.group(0).replace("\\/", "/")
+                    if value not in interesting:
+                        interesting.append(value)
+                    if len(interesting) >= 20:
+                        break
+                if len(interesting) >= 20:
+                    break
+
+            if interesting:
+                print(
+                    "  Arcadia DaySmart candidate config/API strings:",
+                    " | ".join(interesting[:20]),
+                )
+
+        except Exception as exc:
+            print(
+                "  AZ Ice Arcadia DaySmart fetch failed:",
+                iframe_url,
+                exc,
+                file=sys.stderr,
+            )
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
 def main():
     today = datetime.now(AZ).date()
+
+    diagnose_az_ice_arcadia(today)
 
     collected = []
     collected += collect_mullett(today)
