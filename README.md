@@ -1,52 +1,54 @@
-# Arizona Ice Finder — Statewide Build
+# Arizona Ice Finder — FINAL live-source build
 
-This build is ready to upload to the `arizona-ice-finder` GitHub repository.
+Public site target:
+`https://srcadieux.github.io/arizona-ice-finder/`
 
-## Statewide rink coverage
+## What this final build does
 
-The project tracks verified current hockey-ice facilities listed by Arizona hockey sources plus announced future facilities:
+- Tracks the statewide Arizona hockey-rink directory.
+- Keeps active, seasonal, future, and discovery-watch facilities separate.
+- Shows only sessions that are collected with high confidence.
+- Includes filters for event type, region, rink, AM/PM, outside-work-hours, and Youth / All Ages.
+- Links every listed session to an official rink/registration source.
+- Provides a Rink Coverage directory so facilities without a stable public machine-readable feed are still one click away.
+- Includes a GitHub Actions updater that runs every four hours.
 
-- AZ Ice Arcadia — Phoenix
-- AZ Ice Gilbert — Gilbert
-- AZ Ice Peoria — Peoria
-- Coyotes Community Ice Center — Mesa
-- Ice Den Chandler — Chandler
-- Ice Den Scottsdale — Scottsdale
-- Mullett Arena / Mountain America Community Iceplex — Tempe
-- Jay Lively Activity Center — Flagstaff
-- Findlay Toyota Center — Prescott Valley
-- Tucson Convention Center / Tucson Arena — Tucson
-- Fire 'n' Ice Sports Arena — North Phoenix — opening September 2026
-- MQ Iceplex at Mosaic Quarter — Tucson — opening Spring 2027
+## Automatic source policy
 
-The project also keeps a discovery watchlist for Payson/Rim Country, the future Phoenix USHL venue, Yuma, Lake Havasu/Kingman, Show Low/White Mountains and Sierra Vista.
+The site does **not** fabricate or infer rink times.
 
-## USHL note
+### Direct automatic source
+- Mullett Arena / Mountain America Community Iceplex — public Sportified schedule.
 
-USHL announced Prescott Valley and Phoenix as targeted Arizona markets for the 2027-28 West Coast expansion. Findlay Toyota Center has publicly said it was selected as the Prescott Valley home. The Phoenix arena was not identified in the USHL announcement, so the project intentionally keeps that venue as `TBD` until it is officially confirmed.
+### Best-effort automatic SportsEngine adapters
+- Ice Den Scottsdale
+- Ice Den Chandler
+- Coyotes Community Ice Center
 
-## Payson note
+If SportsEngine changes markup or blocks requests, those facilities remain available by official-source link rather than publishing unverified events.
 
-No permanent hockey ice facility was verified for Payson in the current Arizona hockey-rink directory. Payson is therefore a discovery watch area rather than a fake rink entry.
+### Official-link sources
+The AZ Ice locations use DaySmart calendars that are JavaScript/account-system driven. Flagstaff publishes monthly municipal PDF calendars. These are intentionally treated as direct official-source links until a stable, public, machine-readable feed is verified:
+- AZ Ice Arcadia
+- AZ Ice Gilbert
+- AZ Ice Peoria
+- Jay Lively Activity Center / Flagstaff
+- Findlay Toyota Center
+- Tucson Convention Center
 
-## What works now
+### Future
+- Fire 'n' Ice Sports Arena
+- MQ Iceplex at Mosaic Quarter
 
-- Statewide rink directory
-- Region filter (Phoenix Metro / Northern Arizona / Southern Arizona)
-- Rink filter showing all configured facilities, even before they have events
-- Weekly calendar and list views
-- Event type and AM/PM filters
-- Rink coverage dialog
-- Future-rink statuses
-- GitHub Actions refresh scaffold
+## GitHub Actions
 
-## Important
+The workflow file is:
+`.github/workflows/refresh.yml`
 
-The included calendar events are demo records so the interface can be tested. Do not rely on those demo times for skating. The next phase is connecting and verifying live schedule collectors for each rink.
+It runs every four hours and can also be triggered manually from the Actions tab.
 
-## GitHub upload
+If Finder hides the `.github` folder on a Mac, press `Command + Shift + .` to show hidden files before dragging it to GitHub.
 
-Upload the CONTENTS of this folder to the root of your GitHub repository. Do not upload the ZIP itself as the website content.
+## Safety / accuracy behavior
 
-After the files are committed:
-Settings → Pages → Deploy from a branch → `main` → `/ (root)` → Save.
+If the updater collects zero events because a source is down or changes layout, it leaves the existing event file untouched rather than blanking the website.

@@ -4,32 +4,32 @@
     {
       "name": "Payson / Rim Country",
       "status": "watch",
-      "notes": "No permanent hockey ice rink verified in the current statewide hockey-rink directory. Keep this area on the discovery watchlist for new or seasonal ice."
+      "notes": "No permanent hockey rink verified; monitor for seasonal or new hockey ice."
     },
     {
       "name": "Phoenix USHL venue",
       "status": "watch",
-      "notes": "USHL announced Phoenix as a 2027-28 expansion market, but the league announcement did not identify the arena. Do not assume a venue until officially announced."
+      "notes": "USHL announced Phoenix as a 2027\u201328 expansion market; venue not yet officially identified."
     },
     {
       "name": "Yuma",
       "status": "watch",
-      "notes": "Statewide discovery watch for any permanent or seasonal hockey ice."
+      "notes": "Monitor for permanent or seasonal hockey ice."
     },
     {
       "name": "Lake Havasu / Kingman",
       "status": "watch",
-      "notes": "Statewide discovery watch for any permanent or seasonal hockey ice."
+      "notes": "Monitor for permanent or seasonal hockey ice."
     },
     {
       "name": "Show Low / White Mountains",
       "status": "watch",
-      "notes": "Statewide discovery watch for any permanent or seasonal hockey ice."
+      "notes": "Monitor for permanent or seasonal hockey ice."
     },
     {
       "name": "Sierra Vista",
       "status": "watch",
-      "notes": "Seasonal recreational ice may appear, but only hockey-eligible sessions should enter the main hockey calendar."
+      "notes": "Monitor seasonal ice; only hockey-eligible sessions belong in the main calendar."
     }
   ]
 }

@@ -1,56 +1,94 @@
 {
-  "updated": "2026-08-07T10:30:00-07:00",
-  "mode": "demo",
+  "updated": "2026-08-07T10:45:00-07:00",
+  "mode": "live-partial",
+  "source_summary": {
+    "live_auto": [
+      "Mullett Arena / Mountain America Community Iceplex"
+    ],
+    "auto_attempt": [
+      "Ice Den Scottsdale",
+      "Ice Den Chandler",
+      "Coyotes Community Ice Center"
+    ],
+    "official_link": [
+      "AZ Ice Arcadia",
+      "AZ Ice Gilbert",
+      "AZ Ice Peoria",
+      "Jay Lively Activity Center",
+      "Findlay Toyota Center",
+      "Tucson Convention Center / Tucson Arena"
+    ],
+    "future": [
+      "Fire 'n' Ice Sports Arena",
+      "MQ Iceplex at Mosaic Quarter"
+    ]
+  },
   "events": [
     {
-      "id": "d1",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Peoria",
-      "start": "2026-08-09T05:45:00-07:00",
-      "end": "2026-08-09T06:45:00-07:00",
-      "age": "All",
-      "url": "https://azicepeoria.com/"
-    },
-    {
-      "id": "d2",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Arcadia",
-      "start": "2026-08-09T16:30:00-07:00",
-      "end": "2026-08-09T17:45:00-07:00",
-      "age": "All",
-      "url": "https://azicearcadia.com/"
-    },
-    {
-      "id": "d3",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Gilbert",
-      "start": "2026-08-11T06:30:00-07:00",
-      "end": "2026-08-11T07:30:00-07:00",
-      "age": "All",
-      "url": "https://azicegilbert.com/"
-    },
-    {
-      "id": "d4",
-      "title": "Open Hockey",
+      "id": "mullett-20260810-open",
+      "title": "Adult Open Hockey",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
-      "start": "2026-08-12T11:15:00-07:00",
-      "end": "2026-08-12T12:45:00-07:00",
+      "start": "2026-08-10T12:30:00-07:00",
+      "end": "2026-08-10T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/"
+      "url": "https://mullett.sportified.net/schedule?date=2026-08-06",
+      "source": "mullett"
     },
     {
-      "id": "d5",
-      "title": "Stick Time",
+      "id": "mullett-20260810-stick",
+      "title": "All Ages Stick Time",
       "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-08-15T15:15:00-07:00",
-      "end": "2026-08-15T16:15:00-07:00",
-      "age": "Youth",
-      "url": "https://www.icedenscottsdale.com/"
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-08-10T17:10:00-07:00",
+      "end": "2026-08-10T18:10:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/schedule?date=2026-08-06",
+      "source": "mullett"
+    },
+    {
+      "id": "mullett-20260812-open",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-08-12T12:30:00-07:00",
+      "end": "2026-08-12T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-08-06",
+      "source": "mullett"
+    },
+    {
+      "id": "mullett-20260812-power",
+      "title": "XSkateFit Hockey Power Skate - All Ages",
+      "type": "Clinic",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-08-12T17:10:00-07:00",
+      "end": "2026-08-12T18:10:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/schedule?date=2026-08-06",
+      "source": "mullett"
+    },
+    {
+      "id": "mullett-20260814-open",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-08-14T12:15:00-07:00",
+      "end": "2026-08-14T13:45:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/products/22545",
+      "source": "mullett"
+    },
+    {
+      "id": "mullett-20260814-flow",
+      "title": "Flow Hockey Game (CDG)",
+      "type": "Flow Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-08-14T21:10:00-07:00",
+      "end": "2026-08-14T22:25:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/products/22576",
+      "source": "mullett"
     }
   ]
 }

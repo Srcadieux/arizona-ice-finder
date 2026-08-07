@@ -8,24 +8,20 @@
       "region": "Phoenix Metro",
       "address": "3853 E Thomas Rd, Phoenix, AZ 85018",
       "status": "active",
-      "ice": "year-round",
-      "hockey": true,
-      "source_url": "https://azicearcadia.com/",
-      "schedule_url": "https://azicearcadia.com/",
-      "notes": "Stick time, open/pick-up hockey, youth/adult hockey and clinics."
+      "source_status": "official-calendar",
+      "source_url": "https://azicearcadia.com/all-events/",
+      "notes": "Official calendar is served through DaySmart; retained as an official source link until a stable public feed is available."
     },
     {
       "id": "az-ice-gilbert",
       "name": "AZ Ice Gilbert",
       "city": "Gilbert",
       "region": "Phoenix Metro",
-      "address": "2305 W Knox Rd, Gilbert, AZ 85296",
+      "address": "2305 E Knox Rd, Gilbert, AZ 85296",
       "status": "active",
-      "ice": "year-round",
-      "hockey": true,
-      "source_url": "https://azicegilbert.com/",
-      "schedule_url": "https://azicegilbert.com/",
-      "notes": "All-age stick time, pick-up hockey, youth/adult hockey and clinics."
+      "source_status": "official-calendar",
+      "source_url": "https://azicegilbert.com/all-events/",
+      "notes": "Official calendar is served through DaySmart; retained as an official source link until a stable public feed is available."
     },
     {
       "id": "az-ice-peoria",
@@ -34,11 +30,9 @@
       "region": "Phoenix Metro",
       "address": "15829 N 83rd Ave, Peoria, AZ 85382",
       "status": "active",
-      "ice": "year-round",
-      "hockey": true,
-      "source_url": "https://azicepeoria.com/",
-      "schedule_url": "https://azicepeoria.com/",
-      "notes": "Stick time, open hockey, youth/adult hockey and clinics."
+      "source_status": "official-calendar",
+      "source_url": "https://azicepeoria.com/all-events/",
+      "notes": "Official calendar is served through DaySmart; retained as an official source link until a stable public feed is available."
     },
     {
       "id": "coyotes-community-ice-center",
@@ -47,11 +41,9 @@
       "region": "Phoenix Metro",
       "address": "140 N Country Club Dr, Mesa, AZ 85201",
       "status": "active",
-      "ice": "year-round",
-      "hockey": true,
-      "source_url": "https://www.coyotescommunityicecenter.com/",
-      "schedule_url": "https://www.coyotescommunityicecenter.com/page/show/5540662-calendar",
-      "notes": "Community hockey rink with SportsEngine calendar."
+      "source_status": "sportsengine-auto-attempt",
+      "source_url": "https://www.coyotescommunityicecenter.com/page/show/5540662-calendar",
+      "notes": "SportsEngine calendar. Automatic adapter included; official calendar remains the fallback if the feed structure changes."
     },
     {
       "id": "ice-den-chandler",
@@ -60,11 +52,9 @@
       "region": "Phoenix Metro",
       "address": "7225 W Harrison St, Chandler, AZ 85226",
       "status": "active",
-      "ice": "year-round",
-      "hockey": true,
-      "source_url": "https://www.icedenchandler.com/",
-      "schedule_url": "https://www.icedenchandler.com/",
-      "notes": "Youth stick time plus weekly adult open hockey/stick time."
+      "source_status": "sportsengine-auto-attempt",
+      "source_url": "https://www.icedenchandler.com/page/show/2803608-calendar",
+      "notes": "SportsEngine calendar. Automatic adapter included; official calendar remains the fallback if the feed structure changes."
     },
     {
       "id": "ice-den-scottsdale",
@@ -73,11 +63,9 @@
       "region": "Phoenix Metro",
       "address": "9375 E Bell Rd, Scottsdale, AZ 85260",
       "status": "active",
-      "ice": "year-round",
-      "hockey": true,
-      "source_url": "https://www.icedenscottsdale.com/",
-      "schedule_url": "https://www.icedenscottsdale.com/",
-      "notes": "Youth stick time/pond hockey plus adult hockey programming."
+      "source_status": "sportsengine-auto-attempt",
+      "source_url": "https://www.icedenscottsdale.com/node_list/node_list?model=event",
+      "notes": "SportsEngine events. Automatic adapter included; official program pages remain the fallback."
     },
     {
       "id": "mullett-community-iceplex",
@@ -86,11 +74,9 @@
       "region": "Phoenix Metro",
       "address": "411 S Packard Dr, Tempe, AZ 85281",
       "status": "active",
-      "ice": "year-round",
-      "hockey": true,
-      "source_url": "https://mullett.sportified.net/",
-      "schedule_url": "https://mullett.sportified.net/schedule",
-      "notes": "All-ages stick time, adult open hockey, power skate and other hockey sessions."
+      "source_status": "live-auto",
+      "source_url": "https://mullett.sportified.net/schedule",
+      "notes": "Direct public schedule. Live automatic collector included and seeded with verified Aug. 10\u201314, 2026 hockey sessions."
     },
     {
       "id": "jay-lively",
@@ -99,11 +85,9 @@
       "region": "Northern Arizona",
       "address": "1650 N Turquoise Dr, Flagstaff, AZ 86001",
       "status": "active",
-      "ice": "year-round",
-      "hockey": true,
+      "source_status": "official-pdf",
       "source_url": "https://www.flagstaff.az.gov/63/Jay-Lively-Activity-Center-Ice-Arena",
-      "schedule_url": "https://www.flagstaff.az.gov/63/Jay-Lively-Activity-Center-Ice-Arena",
-      "notes": "Open hockey, sticks & pucks, public skate and NAU Ice Jacks home rink."
+      "notes": "City publishes monthly ice calendars as PDFs. Official source link retained; PDF parsing is intentionally not guessed."
     },
     {
       "id": "findlay-toyota-center",
@@ -112,11 +96,9 @@
       "region": "Northern Arizona",
       "address": "3201 N Main St, Prescott Valley, AZ 86314",
       "status": "active-seasonal",
-      "ice": "seasonal/event-based",
-      "hockey": true,
+      "source_status": "official-calendar",
       "source_url": "https://findlaytoyotacenter.com/",
-      "schedule_url": "https://findlaytoyotacenter.com/",
-      "notes": "Seasonal/community ice and hockey-capable arena. Prescott Valley is a USHL expansion market targeted for 2027-28; the arena has publicly announced it as the future home venue."
+      "notes": "Seasonal/event hockey ice. Future Prescott Valley USHL home market."
     },
     {
       "id": "tucson-convention-center",
@@ -125,11 +107,9 @@
       "region": "Southern Arizona",
       "address": "260 S Church Ave, Tucson, AZ 85701",
       "status": "active-seasonal",
-      "ice": "event/seasonal",
-      "hockey": true,
+      "source_status": "official-calendar",
       "source_url": "https://www.tucsonconventioncenter.com/",
-      "schedule_url": "https://www.tucsonconventioncenter.com/",
-      "notes": "Hockey-capable arena and current Arizona hockey rink directory listing."
+      "notes": "Hockey-capable arena with event/seasonal ice."
     },
     {
       "id": "fire-n-ice",
@@ -138,11 +118,9 @@
       "region": "Phoenix Metro",
       "address": "2727 W Bronco Butte Trail, Phoenix, AZ 85085",
       "status": "opening-soon",
-      "ice": "2 NHL sheets + synthetic training ice",
-      "hockey": true,
+      "source_status": "future-watch",
       "source_url": "https://firenicearena.com/",
-      "schedule_url": "https://firenicearena.com/",
-      "notes": "Official site lists opening September 2026; two NHL-regulation rinks. Add live sessions as soon as schedules are published."
+      "notes": "Official site lists September 2026 opening; add sessions automatically once a public schedule is posted."
     },
     {
       "id": "mq-iceplex",
@@ -151,11 +129,9 @@
       "region": "Southern Arizona",
       "address": "Tucson, AZ",
       "status": "future",
-      "ice": "3 NHL-sized sheets",
-      "hockey": true,
+      "source_status": "future-watch",
       "source_url": "https://mosaicquarter.com/mq-iceplex/",
-      "schedule_url": "https://mosaicquarter.com/mq-iceplex/",
-      "notes": "Opening Spring 2027. Planned year-round youth/adult leagues, drop-in/open ice, skills and clinics."
+      "notes": "Three NHL-sized sheets planned; opening Spring 2027."
     }
   ]
 }

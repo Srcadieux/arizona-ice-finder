@@ -1,91 +1,54 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0e1316">
-<title>Arizona Ice Finder</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0d1215"><title>Arizona Ice Finder</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="topbar">
-  <div>
-    <div class="eyebrow">STATEWIDE HOCKEY ICE DIRECTORY</div>
-    <h1>Arizona Ice Finder</h1>
-    <p>Stick time, open hockey, clinics and hockey ice across Arizona.</p>
-  </div>
+  <div><div class="eyebrow">STATEWIDE HOCKEY ICE FINDER</div><h1>Arizona Ice Finder</h1>
+  <p>Stick time, open hockey, hockey clinics and skills ice across Arizona.</p></div>
   <div class="status"><span class="dot"></span><span id="updatedLabel">Loading…</span></div>
 </header>
-
 <main>
-  <section class="notice">
-    <strong>Statewide Version:</strong> the rink directory now includes verified current Arizona hockey facilities plus announced future facilities. Calendar sessions remain demo data until each live collector is tested.
-  </section>
+<section class="notice" id="statusNotice">
+  <strong>Live-source build:</strong> verified events are shown when a stable public schedule can be collected automatically. Every rink remains available in Rink Coverage with a direct official source link.
+</section>
+<section class="filters card">
+  <div class="filter-block"><span class="filter-label">Event</span>
+    <label><input type="checkbox" name="type" value="Stick Time" checked> Stick Time</label>
+    <label><input type="checkbox" name="type" value="Open Hockey" checked> Open Hockey</label>
+    <label><input type="checkbox" name="type" value="Flow Hockey" checked> Flow Hockey</label>
+    <label><input type="checkbox" name="type" value="Clinic" checked> Skills / Clinics</label>
+  </div>
+  <div class="filter-block"><span class="filter-label">Player</span>
+    <label><input type="checkbox" id="youthCompatible"> Youth / All Ages only</label>
+  </div>
+  <div class="filter-block"><span class="filter-label">Region</span><select id="regionFilter"><option value="all">All Arizona</option></select></div>
+  <div class="filter-block"><span class="filter-label">Rink</span><select id="rinkFilter"><option value="all">All rinks</option></select></div>
+  <div class="filter-block"><span class="filter-label">Time</span>
+    <label><input type="checkbox" id="amFilter" checked> AM</label><label><input type="checkbox" id="pmFilter" checked> PM</label>
+    <label><input type="checkbox" id="noWorkHours"> No work hours</label>
+  </div>
+  <button id="coverageBtn">Rink coverage</button>
+</section>
 
-  <section class="filters card">
-    <div class="filter-block">
-      <span class="filter-label">Event</span>
-      <label><input type="checkbox" name="type" value="Stick Time" checked> Stick Time</label>
-      <label><input type="checkbox" name="type" value="Open Hockey" checked> Open Hockey</label>
-      <label><input type="checkbox" name="type" value="Flow Hockey" checked> Flow Hockey</label>
-      <label><input type="checkbox" name="type" value="Clinic" checked> Clinic</label>
-    </div>
-    <div class="filter-block">
-      <span class="filter-label">Region</span>
-      <select id="regionFilter"><option value="all">All Arizona</option></select>
-    </div>
-    <div class="filter-block">
-      <span class="filter-label">Rink</span>
-      <select id="rinkFilter"><option value="all">All rinks</option></select>
-    </div>
-    <div class="filter-block">
-      <span class="filter-label">Time</span>
-      <label><input type="checkbox" id="amFilter" checked> AM</label>
-      <label><input type="checkbox" id="pmFilter" checked> PM</label>
-      <label><input type="checkbox" id="noWorkHours"> No work hours</label>
-    </div>
-    <button id="coverageBtn">Rink coverage</button>
-  </section>
-
-  <section class="calendar-card card">
-    <div class="calendar-toolbar">
-      <div class="week-nav"><button id="prevWeek">‹</button><button id="todayBtn">today</button><button id="nextWeek">›</button></div>
-      <h2 id="weekLabel"></h2>
-      <div class="view-switch"><button id="calendarViewBtn" class="active">Week</button><button id="listViewBtn">List</button></div>
-    </div>
-    <div id="calendarView" class="scroll"><div id="calendar" class="calendar"></div></div>
-    <div id="listView" class="list-view hidden"></div>
-    <div class="legend">
-      <span><i class="swatch stick"></i>Stick Time</span>
-      <span><i class="swatch open"></i>Open Hockey</span>
-      <span><i class="swatch flow"></i>Flow Hockey</span>
-      <span><i class="swatch clinic"></i>Clinic</span>
-    </div>
-  </section>
+<section class="calendar-card card">
+  <div class="calendar-toolbar">
+    <div class="week-nav"><button id="prevWeek">‹</button><button id="todayBtn">today</button><button id="nextWeek">›</button></div>
+    <h2 id="weekLabel"></h2>
+    <div class="view-switch"><button id="calendarViewBtn" class="active">Week</button><button id="listViewBtn">List</button></div>
+  </div>
+  <div id="calendarView" class="scroll"><div id="calendar" class="calendar"></div></div>
+  <div id="listView" class="list-view hidden"></div>
+  <div class="legend"><span><i class="swatch stick"></i>Stick Time</span><span><i class="swatch open"></i>Open Hockey</span><span><i class="swatch flow"></i>Flow Hockey</span><span><i class="swatch clinic"></i>Skills / Clinic</span></div>
+</section>
 </main>
 
-<dialog id="coverageDialog">
-<form method="dialog">
-  <button class="close">×</button>
-  <div class="dialog-type">STATEWIDE COVERAGE</div>
-  <h3>Arizona hockey ice sources</h3>
-  <div id="rinkDirectory"></div>
-  <h4>Discovery watchlist</h4>
-  <div id="watchDirectory"></div>
-</form>
-</dialog>
-
-<dialog id="eventDialog">
-<form method="dialog">
-  <button class="close">×</button>
-  <div class="dialog-type" id="dialogType"></div>
-  <h3 id="dialogTitle"></h3>
-  <p id="dialogWhen"></p>
-  <p id="dialogAge"></p>
-  <a id="dialogLink" class="primary-link" target="_blank" rel="noopener">Open source / registration page ↗</a>
-  <p class="small">Live collectors will replace demo entries after each rink source is verified.</p>
-</form>
-</dialog>
+<dialog id="coverageDialog"><form method="dialog"><button class="close">×</button><div class="dialog-type">STATEWIDE COVERAGE</div><h3>Arizona rink sources</h3>
+<p class="small">“Live auto” means this build has a stable direct collector. “Auto attempt” is a best-effort SportsEngine adapter with the official calendar as fallback. DaySmart/PDF sources stay linked rather than displaying guessed times.</p>
+<div id="rinkDirectory"></div><h4>Discovery watchlist</h4><div id="watchDirectory"></div></form></dialog>
+<dialog id="eventDialog"><form method="dialog"><button class="close">×</button><div class="dialog-type" id="dialogType"></div><h3 id="dialogTitle"></h3><p id="dialogWhen"></p><p id="dialogAge"></p><a id="dialogLink" class="primary-link" target="_blank" rel="noopener">Open official source / registration ↗</a><p class="small">Always confirm availability with the rink before leaving for the session.</p></form></dialog>
 <script src="app.js"></script>
-</body>
-</html>
+</body></html>
