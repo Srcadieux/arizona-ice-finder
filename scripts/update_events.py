@@ -2,38 +2,39 @@
 """
 Arizona Ice Finder automatic updater.
 
+Live sources:
+- Mullett / Mountain America Community Iceplex: public Sportified schedule.
+- Ice Den Scottsdale: official SportsEngine iCal calendar feed.
+- Ice Den Chandler / Coyotes Community Ice Center: best-effort SportsEngine HTML fallback.
+
 Conservative design:
 - Only publish sessions that can be parsed with high confidence.
 - Never invent times.
-- Mullett/Sportified is the primary verified automatic source.
-- SportsEngine adapters are best-effort and fail closed.
-- DaySmart and PDF calendars remain official-source links until a stable public
-  machine-readable feed is available.
-
-The script is suitable for GitHub Actions and updates data/events.json.
+- If a source fails, the script preserves the last known event file rather than
+  blanking the live website.
 """
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from urllib.parse import urljoin
 import hashlib
 import json
 import re
 import sys
-from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
 from dateutil import parser as dtparser
+from dateutil.rrule import rrulestr
 
 AZ = ZoneInfo("America/Phoenix")
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 ArizonaIceFinder/1.1 (+GitHub Pages personal rink calendar)"
+    "User-Agent": "Mozilla/5.0 ArizonaIceFinder/1.2 (+GitHub Pages personal rink calendar)"
 }
 TIMEOUT = 25
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = __import__("pathlib").Path(__file__).resolve().parents[1]
 EVENTS_FILE = ROOT / "data" / "events.json"
 
 KEYWORDS = (
@@ -48,6 +49,15 @@ KEYWORDS = (
     "hockey skills",
     "hockey clinic",
     "hockey camp",
+)
+
+ICE_DEN_SCOTTSDALE_ICAL_FEEDS = (
+    # Current Ice Den Scottsdale calendar tag set surfaced by its official iCal page.
+    "https://www.icedenscottsdale.com/ical_feed?tags=2670384%2C2670407%2C2678497%2C2662957",
+    # Alternate current/legacy tag set also surfaced by the official calendar.
+    "https://www.icedenscottsdale.com/ical_feed?tags=2670384%2C2670407%2C2665577%2C2678497%2C2662957",
+    # Full/default calendar feed fallback.
+    "https://www.icedenscottsdale.com/ical_feed?tags=",
 )
 
 
@@ -77,7 +87,10 @@ def classify(title):
     ):
         if "adult" in low:
             age = "Adult"
-        elif any(x in low for x in ["youth", "mite", "squirt", "peewee", "bantam"]):
+        elif any(
+            x in low
+            for x in ("youth", "mite", "squirt", "peewee", "bantam")
+        ):
             age = "Youth"
         else:
             age = "All"
@@ -85,7 +98,7 @@ def classify(title):
 
     if any(
         x in low
-        for x in ["power skate", "hockey skills", "hockey clinic", "hockey camp"]
+        for x in ("power skate", "hockey skills", "hockey clinic", "hockey camp")
     ):
         return "Clinic", ("Youth" if "youth" in low else "All")
 
@@ -97,21 +110,19 @@ def iso_local(date_str, time_str):
     return dt.replace(tzinfo=AZ)
 
 
-def midnight_az(day):
-    """Convert a date to an Arizona-aware midnight datetime."""
-    return datetime.combine(day, time.min, tzinfo=AZ)
-
-
 def stable_id(source, rink, start, title):
     raw = f"{source}|{rink}|{start.isoformat()}|{title}".encode()
     return source + "-" + hashlib.sha1(raw).hexdigest()[:12]
 
 
+# ---------------------------------------------------------------------------
+# Mullett / Sportified
+# ---------------------------------------------------------------------------
+
 def collect_mullett(today):
     base = "https://mullett.sportified.net"
     rink = "Mullett Arena / Mountain America Community Iceplex"
     events = []
-    cutoff = midnight_az(today - timedelta(days=1))
 
     starts = [
         today - timedelta(days=1),
@@ -122,7 +133,6 @@ def collect_mullett(today):
     ]
 
     seen = set()
-
     date_re = re.compile(
         r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s+"
         r"([A-Za-z]+)\s+(\d{1,2})\s+(\d{4})$"
@@ -130,6 +140,9 @@ def collect_mullett(today):
     time_re = re.compile(
         r"^(\d{1,2}:\d{2}\s*[ap]m)\s*-\s*(\d{1,2}:\d{2}\s*[ap]m)$",
         re.I,
+    )
+    cutoff = datetime.combine(
+        today - timedelta(days=1), datetime.min.time(), tzinfo=AZ
     )
 
     for start_date in starts:
@@ -144,11 +157,11 @@ def collect_mullett(today):
         current_date = None
 
         for node in soup.find_all(["h1", "h2", "h3", "h4", "h5", "tr"]):
-            text_value = " ".join(node.stripped_strings)
-            md = date_re.match(text_value)
+            text = " ".join(node.stripped_strings)
+            match_date = date_re.match(text)
 
-            if md:
-                current_date = text_value
+            if match_date:
+                current_date = text
                 continue
 
             if node.name != "tr" or not current_date:
@@ -162,8 +175,8 @@ def collect_mullett(today):
             if len(cells) < 2:
                 continue
 
-            mt = time_re.match(cells[0])
-            if not mt:
+            match_time = time_re.match(cells[0])
+            if not match_time:
                 continue
 
             title = cells[1].strip()
@@ -172,8 +185,8 @@ def collect_mullett(today):
             if not typ:
                 continue
 
-            start_dt = iso_local(current_date, mt.group(1))
-            end_dt = iso_local(current_date, mt.group(2))
+            start_dt = iso_local(current_date, match_time.group(1))
+            end_dt = iso_local(current_date, match_time.group(2))
 
             if end_dt <= start_dt:
                 end_dt += timedelta(days=1)
@@ -210,7 +223,7 @@ def collect_mullett(today):
                 }
             )
 
-        # Fallback text parser if the table layout changes.
+        # Fallback text parser if Sportified changes table markup.
         if not any(e["url"].startswith(url) for e in events):
             lines = [
                 x.strip()
@@ -226,15 +239,15 @@ def collect_mullett(today):
                     i += 1
                     continue
 
-                mt = time_re.match(lines[i])
+                match_time = time_re.match(lines[i])
 
-                if current_date and mt and i + 1 < len(lines):
+                if current_date and match_time and i + 1 < len(lines):
                     title = lines[i + 1]
                     typ, age = classify(title)
 
                     if typ:
-                        start_dt = iso_local(current_date, mt.group(1))
-                        end_dt = iso_local(current_date, mt.group(2))
+                        start_dt = iso_local(current_date, match_time.group(1))
+                        end_dt = iso_local(current_date, match_time.group(2))
 
                         if end_dt <= start_dt:
                             end_dt += timedelta(days=1)
@@ -247,7 +260,10 @@ def collect_mullett(today):
                                 events.append(
                                     {
                                         "id": stable_id(
-                                            "mullett", rink, start_dt, title
+                                            "mullett",
+                                            rink,
+                                            start_dt,
+                                            title,
                                         ),
                                         "title": title,
                                         "type": typ,
@@ -268,12 +284,301 @@ def collect_mullett(today):
     return events
 
 
+# ---------------------------------------------------------------------------
+# Ice Den Scottsdale — official SportsEngine iCal feed
+# ---------------------------------------------------------------------------
+
+def unfold_ical(text):
+    """Unfold RFC 5545 continuation lines."""
+    physical = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    logical = []
+
+    for line in physical:
+        if line.startswith((" ", "\t")) and logical:
+            logical[-1] += line[1:]
+        else:
+            logical.append(line)
+
+    return logical
+
+
+def unescape_ical_text(value):
+    return (
+        value.replace("\\n", " ")
+        .replace("\\N", " ")
+        .replace("\\,", ",")
+        .replace("\\;", ";")
+        .replace("\\\\", "\\")
+        .strip()
+    )
+
+
+def parse_ical_datetime(key, value):
+    """
+    Parse DTSTART/DTEND values commonly emitted by SportsEngine.
+    Supports UTC, TZID parameters, local date-time, and date-only values.
+    """
+    params = key.split(";")[1:]
+    tzid = None
+    value_is_date = False
+
+    for param in params:
+        if param.startswith("TZID="):
+            tzid = param.split("=", 1)[1]
+        if param == "VALUE=DATE":
+            value_is_date = True
+
+    value = value.strip()
+
+    if value_is_date or re.fullmatch(r"\d{8}", value):
+        day = datetime.strptime(value[:8], "%Y%m%d").date()
+        return datetime.combine(day, datetime.min.time(), tzinfo=AZ)
+
+    if value.endswith("Z"):
+        parsed = datetime.strptime(value, "%Y%m%dT%H%M%SZ")
+        return parsed.replace(tzinfo=ZoneInfo("UTC")).astimezone(AZ)
+
+    parsed = datetime.strptime(value, "%Y%m%dT%H%M%S")
+
+    if tzid:
+        try:
+            return parsed.replace(tzinfo=ZoneInfo(tzid)).astimezone(AZ)
+        except Exception:
+            pass
+
+    return parsed.replace(tzinfo=AZ)
+
+
+def parse_ical_events(text):
+    """Return raw VEVENT dictionaries from an iCalendar payload."""
+    events = []
+    current = None
+
+    for line in unfold_ical(text):
+        if line == "BEGIN:VEVENT":
+            current = {}
+            continue
+
+        if line == "END:VEVENT":
+            if current is not None:
+                events.append(current)
+            current = None
+            continue
+
+        if current is None or ":" not in line:
+            continue
+
+        key, value = line.split(":", 1)
+        base_key = key.split(";", 1)[0]
+
+        if base_key in current:
+            if not isinstance(current[base_key], list):
+                current[base_key] = [current[base_key]]
+            current[base_key].append((key, value))
+        else:
+            current[base_key] = (key, value)
+
+    return events
+
+
+def first_ical_value(event, field):
+    item = event.get(field)
+    if item is None:
+        return None
+
+    if isinstance(item, list):
+        item = item[0]
+
+    return item
+
+
+def all_ical_values(event, field):
+    item = event.get(field)
+    if item is None:
+        return []
+
+    if isinstance(item, list):
+        return item
+
+    return [item]
+
+
+def expand_ical_event(event, today, horizon_days=35):
+    summary_item = first_ical_value(event, "SUMMARY")
+    start_item = first_ical_value(event, "DTSTART")
+
+    if not summary_item or not start_item:
+        return []
+
+    title = unescape_ical_text(summary_item[1])
+    typ, age = classify(title)
+
+    if not typ:
+        return []
+
+    start_dt = parse_ical_datetime(*start_item)
+
+    end_item = first_ical_value(event, "DTEND")
+    if end_item:
+        end_dt = parse_ical_datetime(*end_item)
+    else:
+        end_dt = start_dt + timedelta(hours=1)
+
+    duration = end_dt - start_dt
+    if duration <= timedelta(0):
+        duration = timedelta(hours=1)
+
+    url_item = first_ical_value(event, "URL")
+    description_item = first_ical_value(event, "DESCRIPTION")
+    location_item = first_ical_value(event, "LOCATION")
+
+    link = (
+        unescape_ical_text(url_item[1])
+        if url_item
+        else "https://www.icedenscottsdale.com/page/show/2662960-calendar"
+    )
+
+    # SportsEngine sometimes includes the event URL only in DESCRIPTION.
+    if description_item:
+        description = unescape_ical_text(description_item[1])
+        match = re.search(
+            r"https?://(?:www\.)?icedenscottsdale\.com/event/show/\d+(?:\?[^\s]+)?",
+            description,
+            re.I,
+        )
+        if match:
+            link = match.group(0)
+
+    location = (
+        unescape_ical_text(location_item[1])
+        if location_item
+        else "Ice Den Scottsdale"
+    )
+
+    # Reject events that are clearly not Scottsdale if the feed ever mixes facilities.
+    location_low = location.lower()
+    if "chandler" in location_low and "scottsdale" not in location_low:
+        return []
+
+    window_start = datetime.combine(
+        today - timedelta(days=1), datetime.min.time(), tzinfo=AZ
+    )
+    window_end = datetime.combine(
+        today + timedelta(days=horizon_days),
+        datetime.max.time(),
+        tzinfo=AZ,
+    )
+
+    occurrences = []
+
+    rrule_item = first_ical_value(event, "RRULE")
+
+    if rrule_item:
+        rule_text = rrule_item[1].strip()
+
+        try:
+            rule = rrulestr(rule_text, dtstart=start_dt)
+            occurrences = list(rule.between(window_start, window_end, inc=True))
+        except Exception as exc:
+            print(
+                "Ice Den Scottsdale RRULE parse failed:",
+                title,
+                rule_text,
+                exc,
+                file=sys.stderr,
+            )
+            occurrences = [start_dt] if window_start <= start_dt <= window_end else []
+    else:
+        if window_start <= start_dt <= window_end:
+            occurrences = [start_dt]
+
+    excluded = set()
+
+    for ex_key, ex_value in all_ical_values(event, "EXDATE"):
+        for raw in ex_value.split(","):
+            try:
+                excluded.add(parse_ical_datetime(ex_key, raw).isoformat())
+            except Exception:
+                continue
+
+    output = []
+    rink = "Ice Den Scottsdale"
+
+    for occurrence in occurrences:
+        if occurrence.tzinfo is None:
+            occurrence = occurrence.replace(tzinfo=AZ)
+        else:
+            occurrence = occurrence.astimezone(AZ)
+
+        if occurrence.isoformat() in excluded:
+            continue
+
+        occurrence_end = occurrence + duration
+
+        output.append(
+            {
+                "id": stable_id(
+                    "icedenscottsdale",
+                    rink,
+                    occurrence,
+                    title,
+                ),
+                "title": title,
+                "type": typ,
+                "rink": rink,
+                "start": occurrence.isoformat(),
+                "end": occurrence_end.isoformat(),
+                "age": age,
+                "url": link,
+                "source": "icedenscottsdale",
+            }
+        )
+
+    return output
+
+
+def collect_ice_den_scottsdale(today):
+    out = []
+    feed_success = False
+
+    for feed_url in ICE_DEN_SCOTTSDALE_ICAL_FEEDS:
+        try:
+            response = get(feed_url)
+            text = response.text
+
+            if "BEGIN:VCALENDAR" not in text:
+                raise ValueError("response was not an iCalendar feed")
+
+            feed_success = True
+
+            for raw_event in parse_ical_events(text):
+                out.extend(expand_ical_event(raw_event, today))
+
+        except Exception as exc:
+            print(
+                "Ice Den Scottsdale iCal feed failed:",
+                feed_url,
+                exc,
+                file=sys.stderr,
+            )
+
+    dedup = {}
+    for event in out:
+        dedup[(event["rink"], event["start"], event["title"])] = event
+
+    result = sorted(dedup.values(), key=lambda e: e["start"])
+
+    if feed_success:
+        print(f"Ice Den Scottsdale iCal: {len(result)} hockey sessions")
+
+    return result
+
+
+# ---------------------------------------------------------------------------
+# SportsEngine HTML fallback — Chandler + Mesa
+# ---------------------------------------------------------------------------
+
 SPORTSENGINE = [
-    (
-        "Ice Den Scottsdale",
-        "https://www.icedenscottsdale.com",
-        "https://www.icedenscottsdale.com/node_list/node_list?model=event",
-    ),
     (
         "Ice Den Chandler",
         "https://www.icedenchandler.com",
@@ -289,23 +594,31 @@ SPORTSENGINE = [
 
 def collect_sportsengine(today):
     out = []
-    cutoff = midnight_az(today - timedelta(days=1))
     event_link_re = re.compile(r"/event/show/\d+")
+    cutoff = datetime.combine(
+        today - timedelta(days=1), datetime.min.time(), tzinfo=AZ
+    )
 
     for rink, base, calendar in SPORTSENGINE:
         candidates = {}
         urls = [calendar]
 
         for offset in (0, 31):
-            d = today + timedelta(days=offset)
+            day = today + timedelta(days=offset)
             sep = "&" if "?" in calendar else "?"
-            urls.append(f"{calendar}{sep}mth={d.month}&yr={d.year}")
+            urls.append(f"{calendar}{sep}mth={day.month}&yr={day.year}")
 
         for url in urls:
             try:
                 html = get(url).text
             except Exception as exc:
-                print("SportsEngine index failed:", rink, url, exc, file=sys.stderr)
+                print(
+                    "SportsEngine index failed:",
+                    rink,
+                    url,
+                    exc,
+                    file=sys.stderr,
+                )
                 continue
 
             soup = BeautifulSoup(html, "html.parser")
@@ -341,13 +654,13 @@ def collect_sportsengine(today):
                 if not typ:
                     continue
 
-                text_value = " ".join(soup.stripped_strings)
+                text = " ".join(soup.stripped_strings)
 
                 match = re.search(
                     r"(\d{1,2}:\d{2}\s*[ap]m)\s*(?:MST)?\s*-\s*"
                     r"(\d{1,2}:\d{2}\s*[ap]m)\s*(?:MST)?\s+"
                     r"([A-Za-z]+\s+\d{1,2}(?:st|nd|rd|th)?,\s+\d{4})",
-                    text_value,
+                    text,
                     re.I,
                 )
 
@@ -364,7 +677,6 @@ def collect_sportsengine(today):
                 start_dt = dtparser.parse(
                     f"{date_clean} {match.group(1)}"
                 ).replace(tzinfo=AZ)
-
                 end_dt = dtparser.parse(
                     f"{date_clean} {match.group(2)}"
                 ).replace(tzinfo=AZ)
@@ -378,7 +690,10 @@ def collect_sportsengine(today):
                 out.append(
                     {
                         "id": stable_id(
-                            "sportsengine", rink, start_dt, title
+                            "sportsengine",
+                            rink,
+                            start_dt,
+                            title,
                         ),
                         "title": title,
                         "type": typ,
@@ -407,15 +722,20 @@ def collect_sportsengine(today):
     return list(dedup.values())
 
 
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
 def main():
     today = datetime.now(AZ).date()
 
     collected = []
     collected += collect_mullett(today)
+    collected += collect_ice_den_scottsdale(today)
     collected += collect_sportsengine(today)
     collected.sort(key=lambda e: e["start"])
 
-    # Fail-safe: never blank the website if a source is unavailable or changes layout.
+    # Fail-safe: if every network/layout source fails, preserve the prior file.
     if not collected:
         print(
             "No events collected. Preserving existing data/events.json.",
@@ -423,19 +743,27 @@ def main():
         )
         return 0
 
-    live_names = sorted(
-        set(e["rink"] for e in collected if e["source"] == "mullett")
+    live_sources = sorted(
+        set(
+            e["rink"]
+            for e in collected
+            if e["source"] in ("mullett", "icedenscottsdale")
+        )
     )
-    auto_names = sorted(
-        set(e["rink"] for e in collected if e["source"] == "sportsengine")
+    auto_attempt = sorted(
+        set(
+            e["rink"]
+            for e in collected
+            if e["source"] == "sportsengine"
+        )
     )
 
     payload = {
         "updated": datetime.now(AZ).isoformat(),
         "mode": "live-partial",
         "source_summary": {
-            "live_auto": live_names,
-            "auto_attempt": auto_names,
+            "live_auto": live_sources,
+            "auto_attempt": auto_attempt,
             "official_link": [
                 "AZ Ice Arcadia",
                 "AZ Ice Gilbert",
