@@ -116,7 +116,7 @@ def collect_mullett(today):
                     if typ:
                         s=iso_local(current_date,mt.group(1)); e=iso_local(current_date,mt.group(2))
                         if e<=s:e+=timedelta(days=1)
-                 if s >= datetime.combine(today - timedelta(days=1), datetime.min.time(), tzinfo=AZ):
+                        if s >= datetime.combine(today - timedelta(days=1), datetime.min.time(), tzinfo=AZ):
                             key=(s.isoformat(),title)
                             if key not in seen:
                                 seen.add(key)
@@ -171,7 +171,7 @@ def collect_sportsengine(today):
                 s=dtparser.parse(f"{date_clean} {m.group(1)}").replace(tzinfo=AZ)
                 e=dtparser.parse(f"{date_clean} {m.group(2)}").replace(tzinfo=AZ)
                 if e<=s:e+=timedelta(days=1)
-               if s < datetime.combine(today - timedelta(days=1), datetime.min.time(), tzinfo=AZ): continue
+                if s < datetime.combine(today - timedelta(days=1), datetime.min.time(), tzinfo=AZ): continue
                 out.append({"id":stable_id("sportsengine",rink,s,title),"title":title,"type":typ,"rink":rink,"start":s.isoformat(),"end":e.isoformat(),"age":age,"url":event_url,"source":"sportsengine"})
             except Exception as e:
                 print("SportsEngine event failed:",rink,event_url,e,file=sys.stderr)
