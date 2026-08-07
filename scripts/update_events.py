@@ -1267,10 +1267,9 @@ AZ_ICE_ARCADIA_HOCKEY_EVENTS = "https://azicearcadia.com/all-events/hockey-event
 
 def diagnose_az_ice_arcadia(today):
     """
-    Diagnostic only. AZ Ice Arcadia's official site embeds its event search in
-    DaySmart Recreation/DASH. This does not publish Arcadia sessions yet; it
-    prints the exact iframe/source shape that GitHub Actions receives so we can
-    build the reliable collector next without disturbing the working feeds.
+    Diagnostic only. Discover the AZ Ice Arcadia DaySmart iframe, fetch the
+    DaySmart shell AND its JavaScript configuration/bundles, and print likely
+    API/calendar endpoint strings. This does not publish Arcadia sessions yet.
     """
     try:
         response = requests.get(
@@ -1306,7 +1305,6 @@ def diagnose_az_ice_arcadia(today):
         if "daysmart" in absolute.lower() or "dash" in absolute.lower():
             iframe_urls.append(absolute)
 
-    # Also catch iframe URLs stored inside lazy-load/data attributes or scripts.
     for match in re.finditer(
         r'https?://[^"\'<>\s]*member\.daysmartrecreation\.com[^"\'<>\s]*',
         html,
@@ -1317,12 +1315,18 @@ def diagnose_az_ice_arcadia(today):
     iframe_urls = sorted(set(iframe_urls))
     print(f"AZ Ice Arcadia DaySmart iframe URLs discovered: {len(iframe_urls)}")
 
-    if not iframe_urls:
-        page_text = re.sub(r"\s+", " ", " ".join(soup.stripped_strings))
-        print("  Arcadia page text sample:", page_text[:1000])
-        return
+    # We know from the official page that Arcadia is location/facility 3.
+    canonical_iframes = [
+        "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3&event_type=7",
+        "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
+        "https://member.daysmartrecreation.com/#/online/azice/programs?facility_ids=3",
+    ]
+    iframe_urls.extend(canonical_iframes)
+    iframe_urls = sorted(set(iframe_urls))
 
-    for iframe_url in iframe_urls[:6]:
+    seen_scripts = set()
+
+    for iframe_url in iframe_urls[:8]:
         print("  Arcadia DaySmart iframe:", iframe_url)
 
         try:
@@ -1345,46 +1349,114 @@ def diagnose_az_ice_arcadia(today):
             )
 
             iframe_soup = BeautifulSoup(iframe_response.text, "html.parser")
-            iframe_text = re.sub(
-                r"\s+",
-                " ",
-                " ".join(iframe_soup.stripped_strings),
-            )
-            print("  Arcadia DaySmart text sample:", iframe_text[:1200])
-
             script_urls = []
+
             for script in iframe_soup.find_all("script", src=True):
                 script_urls.append(urljoin(iframe_response.url, script["src"]))
 
-            if script_urls:
-                print(
-                    "  Arcadia DaySmart scripts:",
-                    " | ".join(script_urls[:10]),
-                )
+            # Explicitly include the environment file if the shell references it.
+            env_url = urljoin(iframe_response.url, "/assets/env.js")
+            script_urls.append(env_url)
 
-            # Surface likely API/config strings embedded in the shell.
-            interesting = []
-            for pattern in (
-                r'https?://[^"\'<>\s]+',
-                r'/api/[^"\'<>\s]+',
-                r'api[^"\'<>\s]{0,120}',
-                r'calendar[^"\'<>\s]{0,120}',
-                r'event[^"\'<>\s]{0,120}',
-            ):
-                for match in re.finditer(pattern, iframe_response.text, re.I):
-                    value = match.group(0).replace("\\/", "/")
-                    if value not in interesting:
-                        interesting.append(value)
-                    if len(interesting) >= 20:
-                        break
-                if len(interesting) >= 20:
-                    break
+            for script_url in script_urls:
+                if script_url in seen_scripts:
+                    continue
+                seen_scripts.add(script_url)
 
-            if interesting:
-                print(
-                    "  Arcadia DaySmart candidate config/API strings:",
-                    " | ".join(interesting[:20]),
-                )
+                # Focus on DaySmart's own app/config bundles.
+                low_url = script_url.lower()
+                if (
+                    "member.daysmartrecreation.com" not in low_url
+                    or not any(
+                        token in low_url
+                        for token in ("env.js", "main.", "runtime.", "scripts.")
+                    )
+                ):
+                    continue
+
+                try:
+                    js_response = requests.get(
+                        script_url,
+                        headers={
+                            **HEADERS,
+                            "Accept": "*/*",
+                            "Referer": iframe_response.url,
+                        },
+                        timeout=TIMEOUT,
+                    )
+                    print(
+                        "    Arcadia JS fetch: "
+                        f"status={js_response.status_code} "
+                        f"bytes={len(js_response.content)} "
+                        f"url={script_url}"
+                    )
+
+                    if js_response.status_code != 200:
+                        continue
+
+                    js_text = js_response.text
+
+                    # Print tiny env.js in full; it often contains the API base.
+                    if script_url.endswith("/assets/env.js"):
+                        compact = re.sub(r"\s+", " ", js_text).strip()
+                        print("    Arcadia env.js:", compact[:2000])
+
+                    candidates = []
+
+                    patterns = (
+                        r'https?://[A-Za-z0-9._~:/?#\[\]@!$&()*+,;=%-]+',
+                        r'["\']([^"\']*(?:api|calendar|event|schedule|facility|program)[^"\']*)["\']',
+                    )
+
+                    for pattern in patterns:
+                        for match in re.finditer(pattern, js_text, re.I):
+                            value = match.group(0)
+                            if match.lastindex:
+                                value = match.group(1)
+                            value = value.replace("\\/", "/").strip()
+
+                            # Avoid huge/noisy source-map strings.
+                            if not value or len(value) > 300:
+                                continue
+
+                            low = value.lower()
+                            if not any(
+                                word in low
+                                for word in (
+                                    "api",
+                                    "calendar",
+                                    "event",
+                                    "schedule",
+                                    "facility",
+                                    "program",
+                                    "registration",
+                                    "session",
+                                )
+                            ):
+                                continue
+
+                            if value not in candidates:
+                                candidates.append(value)
+
+                            if len(candidates) >= 60:
+                                break
+
+                        if len(candidates) >= 60:
+                            break
+
+                    if candidates:
+                        print(
+                            "    Arcadia JS API candidates:",
+                            " | ".join(candidates[:60]),
+                        )
+
+                except Exception as exc:
+                    print(
+                        "    AZ Ice Arcadia JS diagnostic failed:",
+                        script_url,
+                        exc,
+                        file=sys.stderr,
+                    )
 
         except Exception as exc:
             print(
