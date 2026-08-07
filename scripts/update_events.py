@@ -582,7 +582,9 @@ def collect_ice_den_scottsdale(today):
 
 ICE_DEN_CHANDLER_BASE = "https://www.icedenchandler.com"
 ICE_DEN_CHANDLER_ICAL_FEEDS = (
-    # Official SportsEngine tag set currently published by Ice Den Chandler.
+    # Current official Ice Den Chandler calendar tag set published by SportsEngine.
+    "https://www.icedenchandler.com/ical_feed?tags=9213634%2C9213662%2C9213663%2C9213664%2C9213665%2C9213666%2C9213667%2C9213672%2C9213674%2C9213675%2C9213676%2C9213677%2C9213678%2C9213679",
+    # Legacy/alternate official tag set retained as a fallback.
     "https://www.icedenchandler.com/ical_feed?tags=5248139%2C5251279%2C5251281%2C5251282%2C5251284%2C5251286%2C5251288%2C5251289%2C5252225",
 )
 
