@@ -1,0 +1,56 @@
+{
+  "updated": "2026-08-07T10:30:00-07:00",
+  "mode": "demo",
+  "events": [
+    {
+      "id": "d1",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Peoria",
+      "start": "2026-08-09T05:45:00-07:00",
+      "end": "2026-08-09T06:45:00-07:00",
+      "age": "All",
+      "url": "https://azicepeoria.com/"
+    },
+    {
+      "id": "d2",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Arcadia",
+      "start": "2026-08-09T16:30:00-07:00",
+      "end": "2026-08-09T17:45:00-07:00",
+      "age": "All",
+      "url": "https://azicearcadia.com/"
+    },
+    {
+      "id": "d3",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Gilbert",
+      "start": "2026-08-11T06:30:00-07:00",
+      "end": "2026-08-11T07:30:00-07:00",
+      "age": "All",
+      "url": "https://azicegilbert.com/"
+    },
+    {
+      "id": "d4",
+      "title": "Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-08-12T11:15:00-07:00",
+      "end": "2026-08-12T12:45:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/"
+    },
+    {
+      "id": "d5",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "Ice Den Scottsdale",
+      "start": "2026-08-15T15:15:00-07:00",
+      "end": "2026-08-15T16:15:00-07:00",
+      "age": "Youth",
+      "url": "https://www.icedenscottsdale.com/"
+    }
+  ]
+}

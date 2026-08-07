@@ -1,0 +1,70 @@
+const START_HOUR=5, END_HOUR=24, HOUR_HEIGHT=64;
+let events=[], rinks=[], watchAreas=[];
+let currentWeekStart=startOfWeek(new Date("2026-08-09T12:00:00-07:00"));
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function startOfWeek(date){const d=new Date(date);d.setHours(0,0,0,0);d.setDate(d.getDate()-d.getDay());return d}
+function addDays(date,n){const d=new Date(date);d.setDate(d.getDate()+n);return d}
+function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
+function fmtTime(d){return d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}).replace(" ","")}
+function fmtDate(d){return d.toLocaleDateString([],{month:"short",day:"numeric"})}
+function typeClass(t){return t==="Stick Time"?"type-stick":t==="Open Hockey"?"type-open":t==="Flow Hockey"?"type-flow":"type-clinic"}
+function selectedTypes(){return $$('input[name="type"]:checked').map(x=>x.value)}
+function selectedRinkIdsByRegion(){
+  const region=$("#regionFilter").value;
+  if(region==="all") return null;
+  return new Set(rinks.filter(r=>r.region===region).map(r=>r.name));
+}
+function filteredEvents(){
+  const types=selectedTypes(), rink=$("#rinkFilter").value, regionNames=selectedRinkIdsByRegion();
+  const am=$("#amFilter").checked, pm=$("#pmFilter").checked, noWork=$("#noWorkHours").checked;
+  return events.filter(e=>{
+    const s=new Date(e.start),h=s.getHours();
+    if(!types.includes(e.type))return false;
+    if(rink!=="all"&&e.rink!==rink)return false;
+    if(regionNames&&!regionNames.has(e.rink))return false;
+    if(h<12&&!am)return false;if(h>=12&&!pm)return false;if(noWork&&h>=8&&h<17)return false;
+    return true;
+  })
+}
+function populateFilters(){
+  [...new Set(rinks.map(r=>r.region))].sort().forEach(region=>{const o=document.createElement("option");o.value=region;o.textContent=region;$("#regionFilter").append(o)});
+  rinks.sort((a,b)=>a.name.localeCompare(b.name)).forEach(r=>{const o=document.createElement("option");o.value=r.name;o.textContent=`${r.name} — ${r.city}`;$("#rinkFilter").append(o)});
+}
+function render(){renderWeekLabel();renderCalendar();renderList()}
+function renderWeekLabel(){const e=addDays(currentWeekStart,6);$("#weekLabel").textContent=`${fmtDate(currentWeekStart)} – ${fmtDate(e)}, ${e.getFullYear()}`}
+function renderCalendar(){
+  const cal=$("#calendar");cal.innerHTML="";
+  const c=document.createElement("div");c.className="corner";cal.append(c);
+  for(let i=0;i<7;i++){const d=addDays(currentWeekStart,i),h=document.createElement("div");h.className="day-head";h.innerHTML=`<span>${d.toLocaleDateString([],{weekday:"short"})}</span><strong>${d.getMonth()+1}/${d.getDate()}</strong>`;cal.append(h)}
+  for(let h=START_HOUR;h<END_HOUR;h++){const t=document.createElement("div");t.className="time-cell";t.textContent=h===12?"12pm":h>12?`${h-12}pm`:`${h}am`;cal.append(t);for(let d=0;d<7;d++){const cell=document.createElement("div");cell.className="hour-cell";cal.append(cell)}}
+  const filtered=filteredEvents();
+  for(let di=0;di<7;di++){
+    const col=document.createElement("div");col.className="day-column";col.style.top="54px";col.style.bottom="0";col.style.left=`calc(58px + (100% - 58px) * ${di}/7)`;col.style.width=`calc((100% - 58px)/7)`;cal.append(col);
+    const date=addDays(currentWeekStart,di);
+    filtered.filter(e=>sameDay(new Date(e.start),date)).forEach(e=>{
+      const s=new Date(e.start),en=new Date(e.end),mins=(s.getHours()-START_HOUR)*60+s.getMinutes(),dur=Math.max(30,(en-s)/60000);
+      const card=document.createElement("div");card.className=`event-card ${typeClass(e.type)}`;card.style.top=`${mins/60*HOUR_HEIGHT}px`;card.style.height=`${Math.max(30,dur/60*HOUR_HEIGHT)}px`;
+      card.innerHTML=`<div class="event-time">${fmtTime(s)} – ${fmtTime(en)}</div><div class="event-title">${e.title} · ${e.rink}</div>`;card.onclick=()=>openEvent(e);col.append(card)
+    })
+  }
+}
+function renderList(){
+  const list=$("#listView");list.innerHTML="";const filtered=filteredEvents();
+  for(let i=0;i<7;i++){const d=addDays(currentWeekStart,i),day=filtered.filter(e=>sameDay(new Date(e.start),d)).sort((a,b)=>new Date(a.start)-new Date(b.start));if(!day.length)continue;
+    const sec=document.createElement("section");sec.className="list-day";sec.innerHTML=`<h3>${d.toLocaleDateString([],{weekday:"long",month:"long",day:"numeric"})}</h3>`;
+    day.forEach(e=>{const s=new Date(e.start),en=new Date(e.end),item=document.createElement("div");item.className="list-item";item.innerHTML=`<div>${fmtTime(s)}<br><small>${fmtTime(en)}</small></div><div><strong>${e.title}</strong><small>${e.rink}</small></div><span class="pill">${e.age}</span>`;item.onclick=()=>openEvent(e);sec.append(item)});list.append(sec)
+  }
+  if(!list.children.length)list.innerHTML='<p style="color:#9aa6ac;padding:20px 4px">No matching sessions this week.</p>'
+}
+function renderCoverage(){
+  $("#rinkDirectory").innerHTML=rinks.map(r=>`<div class="rink-row"><strong>${r.name}<span class="status-tag">${r.status}</span></strong><small>${r.city} · ${r.region} · ${r.ice}</small><br><small>${r.notes}</small><br><a href="${r.source_url}" target="_blank" rel="noopener">source ↗</a></div>`).join("");
+  $("#watchDirectory").innerHTML=watchAreas.map(w=>`<div class="rink-row"><strong class="watch">${w.name}<span class="status-tag">${w.status}</span></strong><small>${w.notes}</small></div>`).join("")
+}
+function openEvent(e){const s=new Date(e.start),en=new Date(e.end);$("#dialogType").textContent=e.type;$("#dialogTitle").textContent=e.rink;$("#dialogWhen").textContent=`${s.toLocaleDateString([],{weekday:"long",month:"long",day:"numeric"})} · ${fmtTime(s)} – ${fmtTime(en)}`;$("#dialogAge").textContent=`Age: ${e.age}`;$("#dialogLink").href=e.url||"#";$("#eventDialog").showModal()}
+function toggleView(which){$("#calendarView").classList.toggle("hidden",which!=="calendar");$("#listView").classList.toggle("hidden",which!=="list");$("#calendarViewBtn").classList.toggle("active",which==="calendar");$("#listViewBtn").classList.toggle("active",which==="list")}
+Promise.all([fetch("data/events.json").then(r=>r.json()),fetch("data/rinks.json").then(r=>r.json()),fetch("data/watch_areas.json").then(r=>r.json())]).then(([eventData,rinkData,watchData])=>{
+  events=eventData.events||[];rinks=rinkData.rinks||[];watchAreas=watchData.watch_areas||[];populateFilters();renderCoverage();$("#updatedLabel").textContent=`${rinks.length} rink facilities tracked · demo calendar`;render()
+}).catch(err=>{$("#updatedLabel").textContent="Data load error";console.error(err)});
+$$('input[type="checkbox"],select').forEach(el=>el.addEventListener("change",render));
+$("#prevWeek").onclick=()=>{currentWeekStart=addDays(currentWeekStart,-7);render()};$("#nextWeek").onclick=()=>{currentWeekStart=addDays(currentWeekStart,7);render()};$("#todayBtn").onclick=()=>{currentWeekStart=startOfWeek(new Date());render()};
+$("#calendarViewBtn").onclick=()=>toggleView("calendar");$("#listViewBtn").onclick=()=>toggleView("list");$("#coverageBtn").onclick=()=>$("#coverageDialog").showModal();
