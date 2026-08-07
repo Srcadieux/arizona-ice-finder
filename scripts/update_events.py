@@ -696,6 +696,7 @@ def diagnose_chandler_mindbody(today):
 
 ICE_DEN_CHANDLER_PAGES = (
     "https://www.icedenchandler.com/",
+    "https://www.icedenchandler.com/node_list/node_list?model=event",
     "https://www.icedenchandler.com/page/show/2803608-calendar",
     "https://www.icedenchandler.com/adult-stick-time",
     "https://www.icedenchandler.com/adult-open-hockey",
@@ -898,8 +899,8 @@ def expand_chandler_ical_event(event, today, horizon_days=35):
 
 def collect_chandler_event_pages(today):
     """
-    Fallback: crawl only official Chandler program/calendar pages, collect their
-    current SportsEngine event links, then parse the event pages directly.
+    Crawl Ice Den Chandler's official SportsEngine event index plus hockey
+    program pages, then parse current event detail pages directly.
     """
     candidates = set()
     cutoff = datetime.combine(
@@ -909,9 +910,35 @@ def collect_chandler_event_pages(today):
         today + timedelta(days=35), datetime.max.time(), tzinfo=AZ
     )
 
-    for page_url in ICE_DEN_CHANDLER_PAGES:
+    source_urls = list(ICE_DEN_CHANDLER_PAGES)
+
+    for offset in (0, 31):
+        day = today + timedelta(days=offset)
+        source_urls.append(
+            "https://www.icedenchandler.com/node_list/node_list"
+            f"?model=event&mth={day.month}&yr={day.year}"
+        )
+
+    for page_url in source_urls:
         try:
-            html = get(page_url).text
+            response = requests.get(
+                page_url,
+                headers={
+                    **HEADERS,
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Referer": "https://www.icedenchandler.com/",
+                    "Accept-Language": "en-US,en;q=0.9",
+                },
+                timeout=TIMEOUT,
+                allow_redirects=True,
+            )
+            response.raise_for_status()
+            html = response.text
+            print(
+                f"Ice Den Chandler index source: "
+                f"status={response.status_code} bytes={len(response.content)} "
+                f"url={response.url}"
+            )
         except Exception as exc:
             print(
                 "Ice Den Chandler event-index failed:",
@@ -935,11 +962,26 @@ def collect_chandler_event_pages(today):
             href = match.group(1).replace("\\/", "/")
             candidates.add(urljoin(ICE_DEN_CHANDLER_BASE, href))
 
+    print(f"Ice Den Chandler event candidates: {len(candidates)}")
+
     out = []
 
-    for event_url in sorted(candidates)[:140]:
+    for event_url in sorted(candidates)[:220]:
         try:
-            soup = BeautifulSoup(get(event_url).text, "html.parser")
+            response = requests.get(
+                event_url,
+                headers={
+                    **HEADERS,
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Referer": "https://www.icedenchandler.com/",
+                    "Accept-Language": "en-US,en;q=0.9",
+                },
+                timeout=TIMEOUT,
+                allow_redirects=True,
+            )
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+
             title_node = soup.find("h1") or soup.find("h2")
             if not title_node:
                 continue
@@ -1014,13 +1056,11 @@ def collect_chandler_event_pages(today):
         dedup[(event["rink"], event["start"], event["title"])] = event
 
     result = sorted(dedup.values(), key=lambda e: e["start"])
-    print(f"Ice Den Chandler official-page fallback: {len(result)} hockey sessions")
+    print(f"Ice Den Chandler official event index: {len(result)} hockey sessions")
     return result
 
 
 def collect_ice_den_chandler(today):
-    diagnose_chandler_mindbody(today)
-
     out = []
     feed_success = False
 
