@@ -586,6 +586,114 @@ ICE_DEN_CHANDLER_ICAL_FEEDS = (
     "https://www.icedenchandler.com/ical_feed?tags=5248139%2C5251279%2C5251281%2C5251282%2C5251284%2C5251286%2C5251288%2C5251289%2C5252225",
 )
 
+ICE_DEN_CHANDLER_MINDBODY_BASE = "https://clients.mindbodyonline.com/classic/ws"
+ICE_DEN_CHANDLER_STUDIO_ID = "884177"
+
+
+def diagnose_chandler_mindbody(today):
+    """
+    Diagnostic pass against Ice Den Chandler's current Mindbody booking pages.
+    This intentionally DOES NOT publish Chandler events yet. It prints enough
+    information in GitHub Actions to determine the stable server-rendered shape
+    before we normalize it into the live calendar.
+    """
+    date_value = today.strftime("%m/%d/%Y")
+
+    urls = [
+        (
+            "adult-hockey-week",
+            f"{ICE_DEN_CHANDLER_MINDBODY_BASE}"
+            f"?sLoc=1&sTG=28&sTrn=100000014&sView=week"
+            f"&studioid={ICE_DEN_CHANDLER_STUDIO_ID}&stype=-103"
+            f"&date={date_value}",
+        ),
+        (
+            "all-classes-day-date",
+            f"{ICE_DEN_CHANDLER_MINDBODY_BASE}"
+            f"?sLoc=0&sView=day&studioid={ICE_DEN_CHANDLER_STUDIO_ID}"
+            f"&stype=-102&date={date_value}",
+        ),
+        (
+            "all-classes-day-sDate",
+            f"{ICE_DEN_CHANDLER_MINDBODY_BASE}"
+            f"?sLoc=0&sView=day&studioid={ICE_DEN_CHANDLER_STUDIO_ID}"
+            f"&stype=-102&sDate={date_value}",
+        ),
+    ]
+
+    hockey_terms = (
+        "stick time",
+        "open hockey",
+        "adult skills",
+        "hockey skills",
+        "youth stick",
+        "pond hockey",
+    )
+
+    for label, url in urls:
+        try:
+            response = requests.get(
+                url,
+                headers={
+                    **HEADERS,
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Referer": "https://www.icedenchandler.com/",
+                    "Accept-Language": "en-US,en;q=0.9",
+                },
+                timeout=TIMEOUT,
+                allow_redirects=True,
+            )
+            print(
+                f"Chandler Mindbody diagnostic [{label}]: "
+                f"status={response.status_code} bytes={len(response.content)} "
+                f"final={response.url}"
+            )
+
+            if response.status_code != 200:
+                continue
+
+            soup = BeautifulSoup(response.text, "html.parser")
+            snippets = []
+
+            for node in soup.find_all(["tr", "li", "div", "article", "section"]):
+                block = " ".join(node.stripped_strings)
+                low = block.lower()
+
+                if any(term in low for term in hockey_terms):
+                    cleaned = re.sub(r"\s+", " ", block).strip()
+                    if cleaned and cleaned not in snippets:
+                        snippets.append(cleaned)
+
+                if len(snippets) >= 12:
+                    break
+
+            if snippets:
+                print(
+                    f"Chandler Mindbody hockey candidate blocks "
+                    f"[{label}]: {len(snippets)}"
+                )
+                for snippet in snippets[:12]:
+                    print("  MINDbody candidate:", snippet[:700])
+            else:
+                page_text = re.sub(
+                    r"\s+",
+                    " ",
+                    " ".join(soup.stripped_strings),
+                )
+                print(
+                    f"Chandler Mindbody hockey candidate blocks "
+                    f"[{label}]: 0"
+                )
+                print("  Mindbody text sample:", page_text[:900])
+
+        except Exception as exc:
+            print(
+                f"Chandler Mindbody diagnostic [{label}] failed:",
+                exc,
+                file=sys.stderr,
+            )
+
+
 ICE_DEN_CHANDLER_PAGES = (
     "https://www.icedenchandler.com/",
     "https://www.icedenchandler.com/page/show/2803608-calendar",
@@ -911,6 +1019,8 @@ def collect_chandler_event_pages(today):
 
 
 def collect_ice_den_chandler(today):
+    diagnose_chandler_mindbody(today)
+
     out = []
     feed_success = False
 
