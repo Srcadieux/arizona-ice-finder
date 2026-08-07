@@ -1868,6 +1868,308 @@ def probe_az_ice_arcadia_api(today):
 
 
 
+
+# ---------------------------------------------------------------------------
+# AZ Ice Arcadia — live DaySmart collector
+# ---------------------------------------------------------------------------
+
+ARCADIA_CALENDAR_URL = (
+    "https://member.daysmartrecreation.com/"
+    "#/online/azice/calendar?location=3"
+)
+
+
+def _arcadia_local_datetime(value):
+    """Parse a DaySmart timestamp as Arizona local time."""
+    dt = dtparser.isoparse(str(value))
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=AZ)
+    return dt.astimezone(AZ)
+
+
+def _arcadia_age_from_title(title):
+    low = title.lower()
+
+    if "adult" in low or "18+" in low or "old timers" in low:
+        return "Adult"
+
+    if re.search(r"\b(?:8u|10u|12u|14u|16u|18u)\b", low):
+        return "Youth"
+
+    if any(
+        token in low
+        for token in (
+            "youth",
+            "mite",
+            "squirt",
+            "peewee",
+            "bantam",
+            "homeschool",
+        )
+    ):
+        return "Youth"
+
+    return "All"
+
+
+def _arcadia_session_type(title):
+    """
+    Conservative public-hockey filter.
+
+    Only sessions whose DaySmart relationship/name data clearly identifies
+    them as public hockey ice are published. Team games, private rentals,
+    figure skating, public skate, camps without a hockey-use label, and
+    league-only events remain excluded.
+    """
+    low = re.sub(r"\s+", " ", title.lower()).strip()
+
+    if any(
+        phrase in low
+        for phrase in (
+            "pickup hockey",
+            "pick up hockey",
+            "pick-up hockey",
+            "open hockey",
+            "drop in hockey",
+            "drop-in hockey",
+        )
+    ):
+        return "Open Hockey"
+
+    if any(
+        phrase in low
+        for phrase in (
+            "sticktime",
+            "stick time",
+            "stick & puck",
+            "stick and puck",
+            "stick n puck",
+            "stick-n-puck",
+        )
+    ):
+        return "Stick Time"
+
+    if any(
+        phrase in low
+        for phrase in (
+            "hockey skills",
+            "hockey clinic",
+            "hockey camp",
+            "power skate",
+        )
+    ):
+        return "Clinic"
+
+    return None
+
+
+def _arcadia_display_title(raw_title, session_type, age):
+    low = raw_title.lower()
+
+    if session_type == "Open Hockey":
+        if age == "Adult":
+            return "Adult Pick Up Hockey"
+        if age == "Youth":
+            return "Youth Open Hockey"
+        return "Open Hockey"
+
+    if session_type == "Stick Time":
+        if age == "Adult":
+            return "Adult Stick Time"
+        if age == "Youth":
+            return "Youth Stick Time"
+        return "Stick Time"
+
+    # Clinics/skills should retain their source wording when useful.
+    cleaned = re.sub(
+        r"^(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)"
+        r"(?:uary|ruary|ch|il|e|y|ust|tember|ober|ember)?\s+20\d{2}\s+",
+        "",
+        raw_title,
+        flags=re.I,
+    ).strip(" -–—")
+    return cleaned or raw_title
+
+
+def collect_az_ice_arcadia(today):
+    """
+    Collect public hockey-use sessions from AZ Ice Arcadia's DaySmart API.
+
+    The anonymous tenant is confirmed as `company=azice`; facility 3 is
+    Arcadia. We request related JSON:API records so league/program names can
+    be used to distinguish public hockey sessions from games, rentals,
+    figure skating, and public skate.
+    """
+    base = "https://apps.daysmartrecreation.com/dash/jsonapi/api/v1/events"
+    end_date = today + timedelta(days=35)
+
+    params = {
+        "company": "azice",
+        "filter[facility_id]": "3",
+        "filter[start_date]": today.isoformat(),
+        "filter[end_date]": end_date.isoformat(),
+        "include": "eventType,resource,resourceArea,league,homeTeam,visitingTeam",
+    }
+
+    headers = {
+        **HEADERS,
+        "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
+        "Referer": ARCADIA_CALENDAR_URL,
+        "Origin": "https://member.daysmartrecreation.com",
+    }
+
+    try:
+        response = requests.get(
+            base,
+            params=params,
+            headers=headers,
+            timeout=TIMEOUT,
+            allow_redirects=True,
+        )
+        response.raise_for_status()
+        payload = response.json()
+    except Exception as exc:
+        print("AZ Ice Arcadia DaySmart failed:", exc, file=sys.stderr)
+        return []
+
+    data = payload.get("data", []) if isinstance(payload, dict) else []
+    included = payload.get("included", []) if isinstance(payload, dict) else []
+
+    # Human-readable names keyed by JSON:API type + id.
+    lookup = {}
+    for obj in included:
+        obj_type = str(obj.get("type") or "")
+        obj_id = str(obj.get("id") or "")
+        attrs = obj.get("attributes") or {}
+        name = (
+            attrs.get("name")
+            or attrs.get("title")
+            or attrs.get("desc")
+            or attrs.get("description")
+        )
+        if name:
+            clean = BeautifulSoup(str(name), "html.parser").get_text(" ", strip=True)
+            clean = re.sub(r"\s+", " ", clean).strip()
+            lookup[(obj_type, obj_id)] = clean
+
+    # Convenience maps for the direct *_id attributes returned by DaySmart.
+    league_names = {
+        obj_id: name
+        for (obj_type, obj_id), name in lookup.items()
+        if obj_type == "leagues"
+    }
+    team_names = {
+        obj_id: name
+        for (obj_type, obj_id), name in lookup.items()
+        if obj_type == "teams"
+    }
+    event_type_names = {
+        obj_id: name
+        for (obj_type, obj_id), name in lookup.items()
+        if obj_type == "event-types"
+    }
+
+    out = []
+    now_floor = datetime.combine(today, datetime.min.time(), tzinfo=AZ)
+
+    for item in data:
+        attrs = item.get("attributes") or {}
+
+        try:
+            start = _arcadia_local_datetime(attrs.get("start"))
+            end = _arcadia_local_datetime(attrs.get("end"))
+        except Exception:
+            continue
+
+        if end < now_floor - timedelta(days=1):
+            continue
+
+        # Build the classification text from the most useful public-facing
+        # relationship labels. The raw event desc is included only as backup.
+        labels = []
+
+        league_id = attrs.get("league_id")
+        if league_id is not None:
+            league_name = league_names.get(str(league_id))
+            if league_name:
+                labels.append(league_name)
+
+        team_id = attrs.get("team_id")
+        if team_id is not None:
+            team_name = team_names.get(str(team_id))
+            if team_name:
+                labels.append(team_name)
+
+        for key in ("desc", "description"):
+            value = attrs.get(key)
+            if value:
+                clean = BeautifulSoup(str(value), "html.parser").get_text(" ", strip=True)
+                clean = re.sub(r"\s+", " ", clean).strip()
+                if clean:
+                    labels.append(clean)
+
+        event_type_id = attrs.get("event_type_id")
+        if event_type_id is not None:
+            type_name = event_type_names.get(str(event_type_id))
+            if type_name:
+                labels.append(type_name)
+
+        # De-duplicate labels while preserving order.
+        labels = list(dict.fromkeys(labels))
+        classification_text = " | ".join(labels)
+
+        session_type = _arcadia_session_type(classification_text)
+        if not session_type:
+            continue
+
+        age = _arcadia_age_from_title(classification_text)
+
+        # Prefer the label that actually carries the hockey-use wording.
+        raw_title = next(
+            (
+                label
+                for label in labels
+                if _arcadia_session_type(label) is not None
+            ),
+            classification_text,
+        )
+        title = _arcadia_display_title(raw_title, session_type, age)
+
+        out.append(
+            {
+                "id": stable_id("azicearcadia", "AZ Ice Arcadia", start, title),
+                "title": title,
+                "type": session_type,
+                "rink": "AZ Ice Arcadia",
+                "start": start.isoformat(),
+                "end": end.isoformat(),
+                "age": age,
+                "url": ARCADIA_CALENDAR_URL,
+                "source": "azicearcadia",
+            }
+        )
+
+    # Remove duplicates that can occur when DaySmart repeats an event/resource.
+    dedup = {}
+    for event in out:
+        key = (event["rink"], event["start"], event["end"], event["title"])
+        dedup[key] = event
+
+    events = sorted(dedup.values(), key=lambda e: e["start"])
+
+    print(
+        f"AZ Ice Arcadia DaySmart: {len(events)} public hockey sessions "
+        f"from {len(data)} returned events"
+    )
+    for event in events:
+        print(
+            " - Arcadia:"
+            f" {event['start']} | {event['title']} | {event['age']}"
+        )
+
+    return events
+
+
 # ---------------------------------------------------------------------------
 # AZ Ice Arcadia — event taxonomy diagnostic
 # ---------------------------------------------------------------------------
@@ -2067,9 +2369,8 @@ def diagnose_az_ice_arcadia_event_taxonomy(today):
 def main():
     today = datetime.now(AZ).date()
 
-    diagnose_az_ice_arcadia_event_taxonomy(today)
-
     collected = []
+    collected += collect_az_ice_arcadia(today)
     collected += collect_mullett(today)
     collected += collect_ice_den_scottsdale(today)
     collected += collect_ice_den_chandler(today)
@@ -2088,7 +2389,7 @@ def main():
         set(
             e["rink"]
             for e in collected
-            if e["source"] in ("mullett", "icedenscottsdale", "icedenchandler")
+            if e["source"] in ("mullett", "icedenscottsdale", "icedenchandler", "azicearcadia")
         )
     )
     auto_attempt = sorted(
@@ -2106,7 +2407,6 @@ def main():
             "live_auto": live_sources,
             "auto_attempt": auto_attempt,
             "official_link": [
-                "AZ Ice Arcadia",
                 "AZ Ice Gilbert",
                 "AZ Ice Peoria",
                 "Jay Lively Activity Center",
