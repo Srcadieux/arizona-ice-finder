@@ -656,7 +656,7 @@ def collect_arcadia(today):
 
     return result
 
-def diagnose_gilbert(today):
+def main():
     print("AZ Ice Gilbert facility discovery BEGIN")
 
     for facility_id in range(1, 13):
