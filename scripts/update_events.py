@@ -1575,6 +1575,169 @@ def diagnose_az_ice_arcadia_tenant():
             )
 
 
+
+# ---------------------------------------------------------------------------
+# AZ Ice Arcadia — focused tenant/bootstrap probe
+# ---------------------------------------------------------------------------
+
+def probe_az_ice_arcadia_tenant_variants(today):
+    """
+    Diagnostic only. The DaySmart public app route is /online/azice/... and the
+    minified app code maps route params.company into auth.tenant()/companyCode.
+    Probe the likely anonymous tenant forms, and print focused JS context around
+    the auth.tenant implementation. Does not publish Arcadia sessions.
+    """
+    base = "https://apps.daysmartrecreation.com/dash/jsonapi/api/v1"
+    start_date = today.isoformat()
+    end_date = (today + timedelta(days=35)).isoformat()
+
+    probes = [
+        (
+            "tenant=azice",
+            f"{base}/events?tenant=azice"
+            f"&filter[facility_id]=3"
+            f"&filter[start_date]={start_date}"
+            f"&filter[end_date]={end_date}",
+        ),
+        (
+            "company=azice",
+            f"{base}/events?company=azice"
+            f"&filter[facility_id]=3"
+            f"&filter[start_date]={start_date}"
+            f"&filter[end_date]={end_date}",
+        ),
+        (
+            "tenant_id=azice",
+            f"{base}/events?tenant_id=azice"
+            f"&filter[facility_id]=3"
+            f"&filter[start_date]={start_date}"
+            f"&filter[end_date]={end_date}",
+        ),
+        (
+            "company_code=azice",
+            f"{base}/events?company_code=azice"
+            f"&filter[facility_id]=3"
+            f"&filter[start_date]={start_date}"
+            f"&filter[end_date]={end_date}",
+        ),
+        (
+            "tenant+location",
+            f"{base}/events?tenant=azice"
+            f"&filter[location_id]=3"
+            f"&filter[start_date]={start_date}"
+            f"&filter[end_date]={end_date}",
+        ),
+    ]
+
+    headers = {
+        **HEADERS,
+        "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
+        "Referer": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3&event_type=7",
+        "Origin": "https://member.daysmartrecreation.com",
+    }
+
+    print("AZ Ice Arcadia focused tenant query probe:")
+
+    for label, url in probes:
+        try:
+            response = requests.get(
+                url,
+                headers=headers,
+                timeout=TIMEOUT,
+                allow_redirects=True,
+            )
+            compact = re.sub(r"\s+", " ", response.text).strip()
+
+            print(
+                f"  Arcadia tenant variant [{label}]: "
+                f"status={response.status_code} "
+                f"bytes={len(response.content)} "
+                f"type={response.headers.get('content-type', '')} "
+                f"final={response.url}"
+            )
+
+            if compact:
+                print("    tenant variant body:", compact[:1600])
+
+            if "json" in response.headers.get("content-type", "").lower():
+                try:
+                    payload = response.json()
+                    if isinstance(payload, dict):
+                        print(
+                            "    tenant variant JSON keys:",
+                            ", ".join(sorted(payload.keys())[:30]),
+                        )
+                        data = payload.get("data")
+                        if isinstance(data, list):
+                            print("    tenant variant data count:", len(data))
+                            if data:
+                                print(
+                                    "    tenant variant first item:",
+                                    json.dumps(data[0], separators=(",", ":"))[:2200],
+                                )
+                except Exception as exc:
+                    print(
+                        "    tenant variant JSON parse failed:",
+                        exc,
+                        file=sys.stderr,
+                    )
+
+        except Exception as exc:
+            print(
+                f"  Arcadia tenant variant failed [{label}]:",
+                exc,
+                file=sys.stderr,
+            )
+
+    # Also inspect the current member-app main bundle around the tenant/bootstrap
+    # implementation so the next step is grounded even if every direct probe fails.
+    try:
+        shell = requests.get(
+            "https://member.daysmartrecreation.com/",
+            headers=HEADERS,
+            timeout=TIMEOUT,
+        )
+        shell.raise_for_status()
+        soup = BeautifulSoup(shell.text, "html.parser")
+
+        main_urls = []
+        for script in soup.find_all("script", src=True):
+            url = urljoin(shell.url, script["src"])
+            if "member.daysmartrecreation.com" in url and "/main." in url:
+                main_urls.append(url)
+
+        for main_url in sorted(set(main_urls))[:2]:
+            js = requests.get(
+                main_url,
+                headers={**HEADERS, "Referer": shell.url, "Accept": "*/*"},
+                timeout=TIMEOUT,
+            ).text
+
+            search_patterns = (
+                "auth.tenant",
+                ".tenant=function",
+                "tenant:function",
+                "setCompanyCode",
+                "getCompanyCode",
+                "params.company",
+            )
+
+            for token in search_patterns:
+                positions = [m.start() for m in re.finditer(re.escape(token), js, re.I)]
+                print(
+                    f"  Arcadia focused JS token '{token}' occurrences: "
+                    f"{len(positions)}"
+                )
+                for pos in positions[:8]:
+                    lo = max(0, pos - 900)
+                    hi = min(len(js), pos + 1600)
+                    ctx = re.sub(r"\s+", " ", js[lo:hi])
+                    print(f"    FOCUSED CONTEXT {token}:", ctx[:2500])
+
+    except Exception as exc:
+        print("Arcadia focused JS inspection failed:", exc, file=sys.stderr)
+
+
 # ---------------------------------------------------------------------------
 # AZ Ice Arcadia — DaySmart JSON API endpoint probe
 # ---------------------------------------------------------------------------
@@ -1713,6 +1876,7 @@ def main():
 
     diagnose_az_ice_arcadia(today)
     diagnose_az_ice_arcadia_tenant()
+    probe_az_ice_arcadia_tenant_variants(today)
     probe_az_ice_arcadia_api(today)
 
     collected = []
