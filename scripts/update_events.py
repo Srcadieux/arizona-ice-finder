@@ -2,40 +2,38 @@
 """
 Arizona Ice Finder automatic updater.
 
-Live sources:
-- Mullett / Mountain America Community Iceplex: public Sportified schedule.
-- Ice Den Scottsdale: official SportsEngine iCal calendar feed.
-- Ice Den Chandler: official SportsEngine iCal discovery + official-page fallback.
-- Coyotes Community Ice Center: best-effort SportsEngine HTML fallback.
-
 Conservative design:
 - Only publish sessions that can be parsed with high confidence.
 - Never invent times.
-- If a source fails, the script preserves the last known event file rather than
-  blanking the live website.
+- Mullett/Sportified is the primary verified automatic source.
+- SportsEngine adapters are best-effort and fail closed.
+- DaySmart and PDF calendars remain official-source links until a stable public
+  machine-readable feed is available.
+
+The script is suitable for GitHub Actions and updates data/events.json.
 """
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from zoneinfo import ZoneInfo
 from urllib.parse import urljoin
 import hashlib
 import json
 import re
 import sys
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
 from dateutil import parser as dtparser
-from dateutil.rrule import rrulestr
 
 AZ = ZoneInfo("America/Phoenix")
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 ArizonaIceFinder/1.2 (+GitHub Pages personal rink calendar)"
+    "User-Agent": "Mozilla/5.0 ArizonaIceFinder/1.1 (+GitHub Pages personal rink calendar)"
 }
 TIMEOUT = 25
-ROOT = __import__("pathlib").Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[1]
 EVENTS_FILE = ROOT / "data" / "events.json"
 
 KEYWORDS = (
@@ -50,15 +48,6 @@ KEYWORDS = (
     "hockey skills",
     "hockey clinic",
     "hockey camp",
-)
-
-ICE_DEN_SCOTTSDALE_ICAL_FEEDS = (
-    # Current Ice Den Scottsdale calendar tag set surfaced by its official iCal page.
-    "https://www.icedenscottsdale.com/ical_feed?tags=2670384%2C2670407%2C2678497%2C2662957",
-    # Alternate current/legacy tag set also surfaced by the official calendar.
-    "https://www.icedenscottsdale.com/ical_feed?tags=2670384%2C2670407%2C2665577%2C2678497%2C2662957",
-    # Full/default calendar feed fallback.
-    "https://www.icedenscottsdale.com/ical_feed?tags=",
 )
 
 
@@ -88,10 +77,7 @@ def classify(title):
     ):
         if "adult" in low:
             age = "Adult"
-        elif any(
-            x in low
-            for x in ("youth", "mite", "squirt", "peewee", "bantam")
-        ):
+        elif any(x in low for x in ["youth", "mite", "squirt", "peewee", "bantam"]):
             age = "Youth"
         else:
             age = "All"
@@ -99,7 +85,7 @@ def classify(title):
 
     if any(
         x in low
-        for x in ("power skate", "hockey skills", "hockey clinic", "hockey camp")
+        for x in ["power skate", "hockey skills", "hockey clinic", "hockey camp"]
     ):
         return "Clinic", ("Youth" if "youth" in low else "All")
 
@@ -111,19 +97,21 @@ def iso_local(date_str, time_str):
     return dt.replace(tzinfo=AZ)
 
 
+def midnight_az(day):
+    """Convert a date to an Arizona-aware midnight datetime."""
+    return datetime.combine(day, time.min, tzinfo=AZ)
+
+
 def stable_id(source, rink, start, title):
     raw = f"{source}|{rink}|{start.isoformat()}|{title}".encode()
     return source + "-" + hashlib.sha1(raw).hexdigest()[:12]
 
 
-# ---------------------------------------------------------------------------
-# Mullett / Sportified
-# ---------------------------------------------------------------------------
-
 def collect_mullett(today):
     base = "https://mullett.sportified.net"
     rink = "Mullett Arena / Mountain America Community Iceplex"
     events = []
+    cutoff = midnight_az(today - timedelta(days=1))
 
     starts = [
         today - timedelta(days=1),
@@ -134,6 +122,7 @@ def collect_mullett(today):
     ]
 
     seen = set()
+
     date_re = re.compile(
         r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s+"
         r"([A-Za-z]+)\s+(\d{1,2})\s+(\d{4})$"
@@ -141,9 +130,6 @@ def collect_mullett(today):
     time_re = re.compile(
         r"^(\d{1,2}:\d{2}\s*[ap]m)\s*-\s*(\d{1,2}:\d{2}\s*[ap]m)$",
         re.I,
-    )
-    cutoff = datetime.combine(
-        today - timedelta(days=1), datetime.min.time(), tzinfo=AZ
     )
 
     for start_date in starts:
@@ -158,11 +144,11 @@ def collect_mullett(today):
         current_date = None
 
         for node in soup.find_all(["h1", "h2", "h3", "h4", "h5", "tr"]):
-            text = " ".join(node.stripped_strings)
-            match_date = date_re.match(text)
+            text_value = " ".join(node.stripped_strings)
+            md = date_re.match(text_value)
 
-            if match_date:
-                current_date = text
+            if md:
+                current_date = text_value
                 continue
 
             if node.name != "tr" or not current_date:
@@ -176,8 +162,8 @@ def collect_mullett(today):
             if len(cells) < 2:
                 continue
 
-            match_time = time_re.match(cells[0])
-            if not match_time:
+            mt = time_re.match(cells[0])
+            if not mt:
                 continue
 
             title = cells[1].strip()
@@ -186,8 +172,8 @@ def collect_mullett(today):
             if not typ:
                 continue
 
-            start_dt = iso_local(current_date, match_time.group(1))
-            end_dt = iso_local(current_date, match_time.group(2))
+            start_dt = iso_local(current_date, mt.group(1))
+            end_dt = iso_local(current_date, mt.group(2))
 
             if end_dt <= start_dt:
                 end_dt += timedelta(days=1)
@@ -224,7 +210,7 @@ def collect_mullett(today):
                 }
             )
 
-        # Fallback text parser if Sportified changes table markup.
+        # Fallback text parser if the table layout changes.
         if not any(e["url"].startswith(url) for e in events):
             lines = [
                 x.strip()
@@ -240,15 +226,15 @@ def collect_mullett(today):
                     i += 1
                     continue
 
-                match_time = time_re.match(lines[i])
+                mt = time_re.match(lines[i])
 
-                if current_date and match_time and i + 1 < len(lines):
+                if current_date and mt and i + 1 < len(lines):
                     title = lines[i + 1]
                     typ, age = classify(title)
 
                     if typ:
-                        start_dt = iso_local(current_date, match_time.group(1))
-                        end_dt = iso_local(current_date, match_time.group(2))
+                        start_dt = iso_local(current_date, mt.group(1))
+                        end_dt = iso_local(current_date, mt.group(2))
 
                         if end_dt <= start_dt:
                             end_dt += timedelta(days=1)
@@ -261,10 +247,7 @@ def collect_mullett(today):
                                 events.append(
                                     {
                                         "id": stable_id(
-                                            "mullett",
-                                            rink,
-                                            start_dt,
-                                            title,
+                                            "mullett", rink, start_dt, title
                                         ),
                                         "title": title,
                                         "type": typ,
@@ -285,840 +268,17 @@ def collect_mullett(today):
     return events
 
 
-# ---------------------------------------------------------------------------
-# Ice Den Scottsdale — official SportsEngine iCal feed
-# ---------------------------------------------------------------------------
-
-def unfold_ical(text):
-    """Unfold RFC 5545 continuation lines."""
-    physical = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
-    logical = []
-
-    for line in physical:
-        if line.startswith((" ", "\t")) and logical:
-            logical[-1] += line[1:]
-        else:
-            logical.append(line)
-
-    return logical
-
-
-def unescape_ical_text(value):
-    return (
-        value.replace("\\n", " ")
-        .replace("\\N", " ")
-        .replace("\\,", ",")
-        .replace("\\;", ";")
-        .replace("\\\\", "\\")
-        .strip()
-    )
-
-
-def parse_ical_datetime(key, value):
-    """
-    Parse DTSTART/DTEND values commonly emitted by SportsEngine.
-    Supports UTC, TZID parameters, local date-time, and date-only values.
-    """
-    params = key.split(";")[1:]
-    tzid = None
-    value_is_date = False
-
-    for param in params:
-        if param.startswith("TZID="):
-            tzid = param.split("=", 1)[1]
-        if param == "VALUE=DATE":
-            value_is_date = True
-
-    value = value.strip()
-
-    if value_is_date or re.fullmatch(r"\d{8}", value):
-        day = datetime.strptime(value[:8], "%Y%m%d").date()
-        return datetime.combine(day, datetime.min.time(), tzinfo=AZ)
-
-    if value.endswith("Z"):
-        parsed = datetime.strptime(value, "%Y%m%dT%H%M%SZ")
-        return parsed.replace(tzinfo=ZoneInfo("UTC")).astimezone(AZ)
-
-    parsed = datetime.strptime(value, "%Y%m%dT%H%M%S")
-
-    if tzid:
-        try:
-            return parsed.replace(tzinfo=ZoneInfo(tzid)).astimezone(AZ)
-        except Exception:
-            pass
-
-    return parsed.replace(tzinfo=AZ)
-
-
-def parse_ical_events(text):
-    """Return raw VEVENT dictionaries from an iCalendar payload."""
-    events = []
-    current = None
-
-    for line in unfold_ical(text):
-        if line == "BEGIN:VEVENT":
-            current = {}
-            continue
-
-        if line == "END:VEVENT":
-            if current is not None:
-                events.append(current)
-            current = None
-            continue
-
-        if current is None or ":" not in line:
-            continue
-
-        key, value = line.split(":", 1)
-        base_key = key.split(";", 1)[0]
-
-        if base_key in current:
-            if not isinstance(current[base_key], list):
-                current[base_key] = [current[base_key]]
-            current[base_key].append((key, value))
-        else:
-            current[base_key] = (key, value)
-
-    return events
-
-
-def first_ical_value(event, field):
-    item = event.get(field)
-    if item is None:
-        return None
-
-    if isinstance(item, list):
-        item = item[0]
-
-    return item
-
-
-def all_ical_values(event, field):
-    item = event.get(field)
-    if item is None:
-        return []
-
-    if isinstance(item, list):
-        return item
-
-    return [item]
-
-
-def expand_ical_event(event, today, horizon_days=35):
-    summary_item = first_ical_value(event, "SUMMARY")
-    start_item = first_ical_value(event, "DTSTART")
-
-    if not summary_item or not start_item:
-        return []
-
-    title = unescape_ical_text(summary_item[1])
-    typ, age = classify(title)
-
-    if not typ:
-        return []
-
-    start_dt = parse_ical_datetime(*start_item)
-
-    end_item = first_ical_value(event, "DTEND")
-    if end_item:
-        end_dt = parse_ical_datetime(*end_item)
-    else:
-        end_dt = start_dt + timedelta(hours=1)
-
-    duration = end_dt - start_dt
-    if duration <= timedelta(0):
-        duration = timedelta(hours=1)
-
-    url_item = first_ical_value(event, "URL")
-    description_item = first_ical_value(event, "DESCRIPTION")
-    location_item = first_ical_value(event, "LOCATION")
-
-    link = (
-        unescape_ical_text(url_item[1])
-        if url_item
-        else "https://www.icedenscottsdale.com/page/show/2662960-calendar"
-    )
-
-    # SportsEngine sometimes includes the event URL only in DESCRIPTION.
-    if description_item:
-        description = unescape_ical_text(description_item[1])
-        match = re.search(
-            r"https?://(?:www\.)?icedenscottsdale\.com/event/show/\d+(?:\?[^\s]+)?",
-            description,
-            re.I,
-        )
-        if match:
-            link = match.group(0)
-
-    location = (
-        unescape_ical_text(location_item[1])
-        if location_item
-        else "Ice Den Scottsdale"
-    )
-
-    # Reject events that are clearly not Scottsdale if the feed ever mixes facilities.
-    location_low = location.lower()
-    if "chandler" in location_low and "scottsdale" not in location_low:
-        return []
-
-    window_start = datetime.combine(
-        today - timedelta(days=1), datetime.min.time(), tzinfo=AZ
-    )
-    window_end = datetime.combine(
-        today + timedelta(days=horizon_days),
-        datetime.max.time(),
-        tzinfo=AZ,
-    )
-
-    occurrences = []
-
-    rrule_item = first_ical_value(event, "RRULE")
-
-    if rrule_item:
-        rule_text = rrule_item[1].strip()
-
-        try:
-            rule = rrulestr(rule_text, dtstart=start_dt)
-            occurrences = list(rule.between(window_start, window_end, inc=True))
-        except Exception as exc:
-            print(
-                "Ice Den Scottsdale RRULE parse failed:",
-                title,
-                rule_text,
-                exc,
-                file=sys.stderr,
-            )
-            occurrences = [start_dt] if window_start <= start_dt <= window_end else []
-    else:
-        if window_start <= start_dt <= window_end:
-            occurrences = [start_dt]
-
-    excluded = set()
-
-    for ex_key, ex_value in all_ical_values(event, "EXDATE"):
-        for raw in ex_value.split(","):
-            try:
-                excluded.add(parse_ical_datetime(ex_key, raw).isoformat())
-            except Exception:
-                continue
-
-    output = []
-    rink = "Ice Den Scottsdale"
-
-    for occurrence in occurrences:
-        if occurrence.tzinfo is None:
-            occurrence = occurrence.replace(tzinfo=AZ)
-        else:
-            occurrence = occurrence.astimezone(AZ)
-
-        if occurrence.isoformat() in excluded:
-            continue
-
-        occurrence_end = occurrence + duration
-
-        output.append(
-            {
-                "id": stable_id(
-                    "icedenscottsdale",
-                    rink,
-                    occurrence,
-                    title,
-                ),
-                "title": title,
-                "type": typ,
-                "rink": rink,
-                "start": occurrence.isoformat(),
-                "end": occurrence_end.isoformat(),
-                "age": age,
-                "url": link,
-                "source": "icedenscottsdale",
-            }
-        )
-
-    return output
-
-
-def collect_ice_den_scottsdale(today):
-    out = []
-    feed_success = False
-
-    for feed_url in ICE_DEN_SCOTTSDALE_ICAL_FEEDS:
-        try:
-            response = get(feed_url)
-            text = response.text
-
-            if "BEGIN:VCALENDAR" not in text:
-                raise ValueError("response was not an iCalendar feed")
-
-            feed_success = True
-
-            for raw_event in parse_ical_events(text):
-                out.extend(expand_ical_event(raw_event, today))
-
-        except Exception as exc:
-            print(
-                "Ice Den Scottsdale iCal feed failed:",
-                feed_url,
-                exc,
-                file=sys.stderr,
-            )
-
-    dedup = {}
-    for event in out:
-        dedup[(event["rink"], event["start"], event["title"])] = event
-
-    result = sorted(dedup.values(), key=lambda e: e["start"])
-
-    if feed_success:
-        print(f"Ice Den Scottsdale iCal: {len(result)} hockey sessions")
-
-    return result
-
-
-
-# ---------------------------------------------------------------------------
-# Ice Den Chandler — official SportsEngine iCal discovery + page fallback
-# ---------------------------------------------------------------------------
-
-ICE_DEN_CHANDLER_BASE = "https://www.icedenchandler.com"
-ICE_DEN_CHANDLER_ICAL_FEEDS = (
-    # Actual current hockey-program page-node tags from Ice Den Chandler:
-    # 2703965 = Adult Open Hockey
-    # 2703970 = Adult Stick Time
-    # 2711738 = Youth Programs
-    "https://www.icedenchandler.com/ical_feed?tags=2703965%2C2703970%2C2711738",
-    "https://www.icedenchandler.com/ical_feed?tags=2703965",
-    "https://www.icedenchandler.com/ical_feed?tags=2703970",
-    "https://www.icedenchandler.com/ical_feed?tags=2711738",
-)
-
-ICE_DEN_CHANDLER_MINDBODY_BASE = "https://clients.mindbodyonline.com/classic/ws"
-ICE_DEN_CHANDLER_STUDIO_ID = "884177"
-
-
-def diagnose_chandler_mindbody(today):
-    """
-    Diagnostic pass against Ice Den Chandler's current Mindbody booking pages.
-    This intentionally DOES NOT publish Chandler events yet. It prints enough
-    information in GitHub Actions to determine the stable server-rendered shape
-    before we normalize it into the live calendar.
-    """
-    date_value = today.strftime("%m/%d/%Y")
-
-    urls = [
-        (
-            "adult-hockey-week",
-            f"{ICE_DEN_CHANDLER_MINDBODY_BASE}"
-            f"?sLoc=1&sTG=28&sTrn=100000014&sView=week"
-            f"&studioid={ICE_DEN_CHANDLER_STUDIO_ID}&stype=-103"
-            f"&date={date_value}",
-        ),
-        (
-            "all-classes-day-date",
-            f"{ICE_DEN_CHANDLER_MINDBODY_BASE}"
-            f"?sLoc=0&sView=day&studioid={ICE_DEN_CHANDLER_STUDIO_ID}"
-            f"&stype=-102&date={date_value}",
-        ),
-        (
-            "all-classes-day-sDate",
-            f"{ICE_DEN_CHANDLER_MINDBODY_BASE}"
-            f"?sLoc=0&sView=day&studioid={ICE_DEN_CHANDLER_STUDIO_ID}"
-            f"&stype=-102&sDate={date_value}",
-        ),
-    ]
-
-    hockey_terms = (
-        "stick time",
-        "open hockey",
-        "adult skills",
-        "hockey skills",
-        "youth stick",
-        "pond hockey",
-    )
-
-    for label, url in urls:
-        try:
-            response = requests.get(
-                url,
-                headers={
-                    **HEADERS,
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                    "Referer": "https://www.icedenchandler.com/",
-                    "Accept-Language": "en-US,en;q=0.9",
-                },
-                timeout=TIMEOUT,
-                allow_redirects=True,
-            )
-            print(
-                f"Chandler Mindbody diagnostic [{label}]: "
-                f"status={response.status_code} bytes={len(response.content)} "
-                f"final={response.url}"
-            )
-
-            if response.status_code != 200:
-                continue
-
-            soup = BeautifulSoup(response.text, "html.parser")
-            snippets = []
-
-            for node in soup.find_all(["tr", "li", "div", "article", "section"]):
-                block = " ".join(node.stripped_strings)
-                low = block.lower()
-
-                if any(term in low for term in hockey_terms):
-                    cleaned = re.sub(r"\s+", " ", block).strip()
-                    if cleaned and cleaned not in snippets:
-                        snippets.append(cleaned)
-
-                if len(snippets) >= 12:
-                    break
-
-            if snippets:
-                print(
-                    f"Chandler Mindbody hockey candidate blocks "
-                    f"[{label}]: {len(snippets)}"
-                )
-                for snippet in snippets[:12]:
-                    print("  MINDbody candidate:", snippet[:700])
-            else:
-                page_text = re.sub(
-                    r"\s+",
-                    " ",
-                    " ".join(soup.stripped_strings),
-                )
-                print(
-                    f"Chandler Mindbody hockey candidate blocks "
-                    f"[{label}]: 0"
-                )
-                print("  Mindbody text sample:", page_text[:900])
-
-        except Exception as exc:
-            print(
-                f"Chandler Mindbody diagnostic [{label}] failed:",
-                exc,
-                file=sys.stderr,
-            )
-
-
-ICE_DEN_CHANDLER_PAGES = (
-    "https://www.icedenchandler.com/",
-    "https://www.icedenchandler.com/node_list/node_list?model=event",
-    "https://www.icedenchandler.com/page/show/2803608-calendar",
-    "https://www.icedenchandler.com/adult-stick-time",
-    "https://www.icedenchandler.com/adult-open-hockey",
-    "https://www.icedenchandler.com/youth-programs",
-    "https://www.icedenchandler.com/youth-skills-clinics",
-    "https://www.icedenchandler.com/adult-hockey",
-    "https://www.icedenchandler.com/hockey",
-)
-
-
-def chandler_feed_from_href(href):
-    """
-    Convert a SportsEngine iCal-instructions or direct-feed URL into the
-    direct /ical_feed?tags=... URL.
-    """
-    if not href:
-        return None
-
-    href = href.replace("&amp;", "&")
-    match = re.search(
-        r"(?:event/ical_instructions|ical_feed)\?tags=([^\"'&<>\s]*)",
-        href,
-        re.I,
-    )
-    if not match:
-        return None
-
-    tags = match.group(1)
-    if not tags:
-        return None
-
-    return f"{ICE_DEN_CHANDLER_BASE}/ical_feed?tags={tags}"
-
-
-def discover_chandler_ical_feeds():
-    feeds = set()
-
-    for page_url in ICE_DEN_CHANDLER_PAGES:
-        try:
-            html = get(page_url).text
-        except Exception as exc:
-            print(
-                "Ice Den Chandler discovery page failed:",
-                page_url,
-                exc,
-                file=sys.stderr,
-            )
-            continue
-
-        soup = BeautifulSoup(html, "html.parser")
-
-        for anchor in soup.find_all("a", href=True):
-            feed = chandler_feed_from_href(anchor.get("href"))
-            if feed:
-                feeds.add(feed)
-
-        # Catch iCal links embedded in scripts/data attributes.
-        for match in re.finditer(
-            r"(?:event/ical_instructions|ical_feed)\?tags=[^\"'&<>\s]*",
-            html,
-            re.I,
-        ):
-            feed = chandler_feed_from_href(match.group(0))
-            if feed:
-                feeds.add(feed)
-
-    print(f"Ice Den Chandler iCal feeds discovered: {len(feeds)}")
-    return sorted(feeds)
-
-
-def expand_chandler_ical_event(event, today, horizon_days=35):
-    summary_item = first_ical_value(event, "SUMMARY")
-    start_item = first_ical_value(event, "DTSTART")
-
-    if not summary_item or not start_item:
-        return []
-
-    title = unescape_ical_text(summary_item[1])
-    typ, age = classify(title)
-
-    if not typ:
-        return []
-
-    start_dt = parse_ical_datetime(*start_item)
-
-    end_item = first_ical_value(event, "DTEND")
-    if end_item:
-        end_dt = parse_ical_datetime(*end_item)
-    else:
-        end_dt = start_dt + timedelta(hours=1)
-
-    duration = end_dt - start_dt
-    if duration <= timedelta(0):
-        duration = timedelta(hours=1)
-
-    url_item = first_ical_value(event, "URL")
-    description_item = first_ical_value(event, "DESCRIPTION")
-    location_item = first_ical_value(event, "LOCATION")
-
-    link = (
-        unescape_ical_text(url_item[1])
-        if url_item
-        else "https://www.icedenchandler.com/page/show/2803608-calendar"
-    )
-
-    if description_item:
-        description = unescape_ical_text(description_item[1])
-        match = re.search(
-            r"https?://(?:www\.)?icedenchandler\.com/event/show/\d+(?:\?[^\s]+)?",
-            description,
-            re.I,
-        )
-        if match:
-            link = match.group(0)
-
-    location = (
-        unescape_ical_text(location_item[1])
-        if location_item
-        else "Ice Den Chandler"
-    )
-
-    location_low = location.lower()
-    if "scottsdale" in location_low and "chandler" not in location_low:
-        return []
-
-    window_start = datetime.combine(
-        today - timedelta(days=1), datetime.min.time(), tzinfo=AZ
-    )
-    window_end = datetime.combine(
-        today + timedelta(days=horizon_days),
-        datetime.max.time(),
-        tzinfo=AZ,
-    )
-
-    occurrences = []
-    rrule_item = first_ical_value(event, "RRULE")
-
-    if rrule_item:
-        rule_text = rrule_item[1].strip()
-        try:
-            rule = rrulestr(rule_text, dtstart=start_dt)
-            occurrences = list(rule.between(window_start, window_end, inc=True))
-        except Exception as exc:
-            print(
-                "Ice Den Chandler RRULE parse failed:",
-                title,
-                rule_text,
-                exc,
-                file=sys.stderr,
-            )
-            occurrences = [start_dt] if window_start <= start_dt <= window_end else []
-    else:
-        if window_start <= start_dt <= window_end:
-            occurrences = [start_dt]
-
-    excluded = set()
-
-    for ex_key, ex_value in all_ical_values(event, "EXDATE"):
-        for raw in ex_value.split(","):
-            try:
-                excluded.add(parse_ical_datetime(ex_key, raw).isoformat())
-            except Exception:
-                continue
-
-    output = []
-    rink = "Ice Den Chandler"
-
-    for occurrence in occurrences:
-        if occurrence.tzinfo is None:
-            occurrence = occurrence.replace(tzinfo=AZ)
-        else:
-            occurrence = occurrence.astimezone(AZ)
-
-        if occurrence.isoformat() in excluded:
-            continue
-
-        occurrence_end = occurrence + duration
-
-        output.append(
-            {
-                "id": stable_id(
-                    "icedenchandler",
-                    rink,
-                    occurrence,
-                    title,
-                ),
-                "title": title,
-                "type": typ,
-                "rink": rink,
-                "start": occurrence.isoformat(),
-                "end": occurrence_end.isoformat(),
-                "age": age,
-                "url": link,
-                "source": "icedenchandler",
-            }
-        )
-
-    return output
-
-
-def collect_chandler_event_pages(today):
-    """
-    Crawl Ice Den Chandler's official SportsEngine event index plus hockey
-    program pages, then parse current event detail pages directly.
-    """
-    candidates = set()
-    cutoff = datetime.combine(
-        today - timedelta(days=1), datetime.min.time(), tzinfo=AZ
-    )
-    horizon = datetime.combine(
-        today + timedelta(days=35), datetime.max.time(), tzinfo=AZ
-    )
-
-    source_urls = list(ICE_DEN_CHANDLER_PAGES)
-
-    for offset in (0, 31):
-        day = today + timedelta(days=offset)
-        source_urls.append(
-            "https://www.icedenchandler.com/node_list/node_list"
-            f"?model=event&mth={day.month}&yr={day.year}"
-        )
-
-    for page_url in source_urls:
-        try:
-            response = requests.get(
-                page_url,
-                headers={
-                    **HEADERS,
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                    "Referer": "https://www.icedenchandler.com/",
-                    "Accept-Language": "en-US,en;q=0.9",
-                },
-                timeout=TIMEOUT,
-                allow_redirects=True,
-            )
-            response.raise_for_status()
-            html = response.text
-            print(
-                f"Ice Den Chandler index source: "
-                f"status={response.status_code} bytes={len(response.content)} "
-                f"url={response.url}"
-            )
-        except Exception as exc:
-            print(
-                "Ice Den Chandler event-index failed:",
-                page_url,
-                exc,
-                file=sys.stderr,
-            )
-            continue
-
-        soup = BeautifulSoup(html, "html.parser")
-
-        for anchor in soup.find_all("a", href=True):
-            href = anchor["href"]
-            if re.search(r"/event/show/\d+", href):
-                candidates.add(urljoin(ICE_DEN_CHANDLER_BASE, href))
-
-        for match in re.finditer(
-            r'["\']([^"\']*/event/show/\d+[^"\']*)["\']',
-            html,
-        ):
-            href = match.group(1).replace("\\/", "/")
-            candidates.add(urljoin(ICE_DEN_CHANDLER_BASE, href))
-
-    print(f"Ice Den Chandler event candidates: {len(candidates)}")
-
-    out = []
-
-    for event_url in sorted(candidates)[:220]:
-        try:
-            response = requests.get(
-                event_url,
-                headers={
-                    **HEADERS,
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                    "Referer": "https://www.icedenchandler.com/",
-                    "Accept-Language": "en-US,en;q=0.9",
-                },
-                timeout=TIMEOUT,
-                allow_redirects=True,
-            )
-            response.raise_for_status()
-            soup = BeautifulSoup(response.text, "html.parser")
-
-            title_node = soup.find("h1") or soup.find("h2")
-            if not title_node:
-                continue
-
-            title = " ".join(title_node.stripped_strings)
-            typ, age = classify(title)
-            if not typ:
-                continue
-
-            page_text = " ".join(soup.stripped_strings)
-
-            match = re.search(
-                r"(\d{1,2}:\d{2}\s*[ap]m)\s*(?:MST)?\s*-\s*"
-                r"(\d{1,2}:\d{2}\s*[ap]m)\s*(?:MST)?\s+"
-                r"([A-Za-z]+\s+\d{1,2}(?:st|nd|rd|th)?,\s+\d{4})",
-                page_text,
-                re.I,
-            )
-
-            if not match:
-                continue
-
-            date_clean = re.sub(
-                r"(\d{1,2})(st|nd|rd|th)",
-                r"\1",
-                match.group(3),
-                flags=re.I,
-            )
-
-            start_dt = dtparser.parse(
-                f"{date_clean} {match.group(1)}"
-            ).replace(tzinfo=AZ)
-            end_dt = dtparser.parse(
-                f"{date_clean} {match.group(2)}"
-            ).replace(tzinfo=AZ)
-
-            if end_dt <= start_dt:
-                end_dt += timedelta(days=1)
-
-            if start_dt < cutoff or start_dt > horizon:
-                continue
-
-            out.append(
-                {
-                    "id": stable_id(
-                        "icedenchandler",
-                        "Ice Den Chandler",
-                        start_dt,
-                        title,
-                    ),
-                    "title": title,
-                    "type": typ,
-                    "rink": "Ice Den Chandler",
-                    "start": start_dt.isoformat(),
-                    "end": end_dt.isoformat(),
-                    "age": age,
-                    "url": event_url,
-                    "source": "icedenchandler",
-                }
-            )
-
-        except Exception as exc:
-            print(
-                "Ice Den Chandler event page failed:",
-                event_url,
-                exc,
-                file=sys.stderr,
-            )
-
-    dedup = {}
-    for event in out:
-        dedup[(event["rink"], event["start"], event["title"])] = event
-
-    result = sorted(dedup.values(), key=lambda e: e["start"])
-    print(f"Ice Den Chandler official event index: {len(result)} hockey sessions")
-    return result
-
-
-def collect_ice_den_chandler(today):
-    out = []
-    feed_success = False
-
-    feed_urls = set(ICE_DEN_CHANDLER_ICAL_FEEDS)
-    feed_urls.update(discover_chandler_ical_feeds())
-
-    print(f"Ice Den Chandler hockey iCal feeds to try: {len(feed_urls)}")
-
-    for feed_url in sorted(feed_urls):
-        try:
-            response = get(feed_url)
-            payload = response.text
-
-            if "BEGIN:VCALENDAR" not in payload:
-                raise ValueError("response was not an iCalendar feed")
-
-            feed_success = True
-
-            for raw_event in parse_ical_events(payload):
-                out.extend(expand_chandler_ical_event(raw_event, today))
-
-        except Exception as exc:
-            print(
-                "Ice Den Chandler iCal feed failed:",
-                feed_url,
-                exc,
-                file=sys.stderr,
-            )
-
-    # Always merge the official-page fallback. This covers sessions whose
-    # current SportsEngine tags are not included in the main calendar feed.
-    out.extend(collect_chandler_event_pages(today))
-
-    dedup = {}
-    for event in out:
-        dedup[(event["rink"], event["start"], event["title"])] = event
-
-    result = sorted(dedup.values(), key=lambda e: e["start"])
-
-    if feed_success:
-        print(f"Ice Den Chandler iCal: {len(result)} hockey sessions")
-    else:
-        print(f"Ice Den Chandler collected: {len(result)} hockey sessions")
-
-    return result
-
-
-# ---------------------------------------------------------------------------
-# SportsEngine HTML fallback — Mesa
-# ---------------------------------------------------------------------------
-
 SPORTSENGINE = [
+    (
+        "Ice Den Scottsdale",
+        "https://www.icedenscottsdale.com",
+        "https://www.icedenscottsdale.com/node_list/node_list?model=event",
+    ),
+    (
+        "Ice Den Chandler",
+        "https://www.icedenchandler.com",
+        "https://www.icedenchandler.com/page/show/2803608-calendar",
+    ),
     (
         "Coyotes Community Ice Center",
         "https://www.coyotescommunityicecenter.com",
@@ -1129,31 +289,23 @@ SPORTSENGINE = [
 
 def collect_sportsengine(today):
     out = []
+    cutoff = midnight_az(today - timedelta(days=1))
     event_link_re = re.compile(r"/event/show/\d+")
-    cutoff = datetime.combine(
-        today - timedelta(days=1), datetime.min.time(), tzinfo=AZ
-    )
 
     for rink, base, calendar in SPORTSENGINE:
         candidates = {}
         urls = [calendar]
 
         for offset in (0, 31):
-            day = today + timedelta(days=offset)
+            d = today + timedelta(days=offset)
             sep = "&" if "?" in calendar else "?"
-            urls.append(f"{calendar}{sep}mth={day.month}&yr={day.year}")
+            urls.append(f"{calendar}{sep}mth={d.month}&yr={d.year}")
 
         for url in urls:
             try:
                 html = get(url).text
             except Exception as exc:
-                print(
-                    "SportsEngine index failed:",
-                    rink,
-                    url,
-                    exc,
-                    file=sys.stderr,
-                )
+                print("SportsEngine index failed:", rink, url, exc, file=sys.stderr)
                 continue
 
             soup = BeautifulSoup(html, "html.parser")
@@ -1189,13 +341,13 @@ def collect_sportsengine(today):
                 if not typ:
                     continue
 
-                text = " ".join(soup.stripped_strings)
+                text_value = " ".join(soup.stripped_strings)
 
                 match = re.search(
                     r"(\d{1,2}:\d{2}\s*[ap]m)\s*(?:MST)?\s*-\s*"
                     r"(\d{1,2}:\d{2}\s*[ap]m)\s*(?:MST)?\s+"
                     r"([A-Za-z]+\s+\d{1,2}(?:st|nd|rd|th)?,\s+\d{4})",
-                    text,
+                    text_value,
                     re.I,
                 )
 
@@ -1212,6 +364,7 @@ def collect_sportsengine(today):
                 start_dt = dtparser.parse(
                     f"{date_clean} {match.group(1)}"
                 ).replace(tzinfo=AZ)
+
                 end_dt = dtparser.parse(
                     f"{date_clean} {match.group(2)}"
                 ).replace(tzinfo=AZ)
@@ -1225,10 +378,7 @@ def collect_sportsengine(today):
                 out.append(
                     {
                         "id": stable_id(
-                            "sportsengine",
-                            rink,
-                            start_dt,
-                            title,
+                            "sportsengine", rink, start_dt, title
                         ),
                         "title": title,
                         "type": typ,
@@ -1257,1127 +407,15 @@ def collect_sportsengine(today):
     return list(dedup.values())
 
 
-
-# ---------------------------------------------------------------------------
-# AZ Ice Arcadia — DaySmart/DASH diagnostic
-# ---------------------------------------------------------------------------
-
-AZ_ICE_ARCADIA_HOCKEY_EVENTS = "https://azicearcadia.com/all-events/hockey-events/"
-
-
-def diagnose_az_ice_arcadia(today):
-    """
-    Diagnostic only. Discover the AZ Ice Arcadia DaySmart iframe, fetch the
-    DaySmart shell AND its JavaScript configuration/bundles, and print likely
-    API/calendar endpoint strings. This does not publish Arcadia sessions yet.
-    """
-    try:
-        response = requests.get(
-            AZ_ICE_ARCADIA_HOCKEY_EVENTS,
-            headers={
-                **HEADERS,
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language": "en-US,en;q=0.9",
-            },
-            timeout=TIMEOUT,
-            allow_redirects=True,
-        )
-        response.raise_for_status()
-    except Exception as exc:
-        print("AZ Ice Arcadia page diagnostic failed:", exc, file=sys.stderr)
-        return
-
-    html = response.text
-    print(
-        "AZ Ice Arcadia official hockey-events page: "
-        f"status={response.status_code} bytes={len(response.content)} "
-        f"url={response.url}"
-    )
-
-    soup = BeautifulSoup(html, "html.parser")
-    iframe_urls = []
-
-    for iframe in soup.find_all("iframe"):
-        src = iframe.get("src")
-        if not src:
-            continue
-        absolute = urljoin(response.url, src)
-        if "daysmart" in absolute.lower() or "dash" in absolute.lower():
-            iframe_urls.append(absolute)
-
-    for match in re.finditer(
-        r'https?://[^"\'<>\s]*member\.daysmartrecreation\.com[^"\'<>\s]*',
-        html,
-        re.I,
-    ):
-        iframe_urls.append(match.group(0).replace("&amp;", "&"))
-
-    iframe_urls = sorted(set(iframe_urls))
-    print(f"AZ Ice Arcadia DaySmart iframe URLs discovered: {len(iframe_urls)}")
-
-    # We know from the official page that Arcadia is location/facility 3.
-    canonical_iframes = [
-        "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3&event_type=7",
-        "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
-        "https://member.daysmartrecreation.com/#/online/azice/programs?facility_ids=3",
-    ]
-    iframe_urls.extend(canonical_iframes)
-    iframe_urls = sorted(set(iframe_urls))
-
-    seen_scripts = set()
-
-    for iframe_url in iframe_urls[:8]:
-        print("  Arcadia DaySmart iframe:", iframe_url)
-
-        try:
-            iframe_response = requests.get(
-                iframe_url,
-                headers={
-                    **HEADERS,
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                    "Referer": response.url,
-                    "Accept-Language": "en-US,en;q=0.9",
-                },
-                timeout=TIMEOUT,
-                allow_redirects=True,
-            )
-            print(
-                "  Arcadia DaySmart fetch: "
-                f"status={iframe_response.status_code} "
-                f"bytes={len(iframe_response.content)} "
-                f"final={iframe_response.url}"
-            )
-
-            iframe_soup = BeautifulSoup(iframe_response.text, "html.parser")
-            script_urls = []
-
-            for script in iframe_soup.find_all("script", src=True):
-                script_urls.append(urljoin(iframe_response.url, script["src"]))
-
-            # Explicitly include the environment file if the shell references it.
-            env_url = urljoin(iframe_response.url, "/assets/env.js")
-            script_urls.append(env_url)
-
-            for script_url in script_urls:
-                if script_url in seen_scripts:
-                    continue
-                seen_scripts.add(script_url)
-
-                # Focus on DaySmart's own app/config bundles.
-                low_url = script_url.lower()
-                if (
-                    "member.daysmartrecreation.com" not in low_url
-                    or not any(
-                        token in low_url
-                        for token in ("env.js", "main.", "runtime.", "scripts.")
-                    )
-                ):
-                    continue
-
-                try:
-                    js_response = requests.get(
-                        script_url,
-                        headers={
-                            **HEADERS,
-                            "Accept": "*/*",
-                            "Referer": iframe_response.url,
-                        },
-                        timeout=TIMEOUT,
-                    )
-                    print(
-                        "    Arcadia JS fetch: "
-                        f"status={js_response.status_code} "
-                        f"bytes={len(js_response.content)} "
-                        f"url={script_url}"
-                    )
-
-                    if js_response.status_code != 200:
-                        continue
-
-                    js_text = js_response.text
-
-                    # Print tiny env.js in full; it often contains the API base.
-                    if script_url.endswith("/assets/env.js"):
-                        compact = re.sub(r"\s+", " ", js_text).strip()
-                        print("    Arcadia env.js:", compact[:2000])
-
-                    candidates = []
-
-                    patterns = (
-                        r'https?://[A-Za-z0-9._~:/?#\[\]@!$&()*+,;=%-]+',
-                        r'["\']([^"\']*(?:api|calendar|event|schedule|facility|program)[^"\']*)["\']',
-                    )
-
-                    for pattern in patterns:
-                        for match in re.finditer(pattern, js_text, re.I):
-                            value = match.group(0)
-                            if match.lastindex:
-                                value = match.group(1)
-                            value = value.replace("\\/", "/").strip()
-
-                            # Avoid huge/noisy source-map strings.
-                            if not value or len(value) > 300:
-                                continue
-
-                            low = value.lower()
-                            if not any(
-                                word in low
-                                for word in (
-                                    "api",
-                                    "calendar",
-                                    "event",
-                                    "schedule",
-                                    "facility",
-                                    "program",
-                                    "registration",
-                                    "session",
-                                )
-                            ):
-                                continue
-
-                            if value not in candidates:
-                                candidates.append(value)
-
-                            if len(candidates) >= 60:
-                                break
-
-                        if len(candidates) >= 60:
-                            break
-
-                    if candidates:
-                        print(
-                            "    Arcadia JS API candidates:",
-                            " | ".join(candidates[:60]),
-                        )
-
-                except Exception as exc:
-                    print(
-                        "    AZ Ice Arcadia JS diagnostic failed:",
-                        script_url,
-                        exc,
-                        file=sys.stderr,
-                    )
-
-        except Exception as exc:
-            print(
-                "  AZ Ice Arcadia DaySmart fetch failed:",
-                iframe_url,
-                exc,
-                file=sys.stderr,
-            )
-
-
-
-
-# ---------------------------------------------------------------------------
-# AZ Ice Arcadia — DaySmart tenant discovery
-# ---------------------------------------------------------------------------
-
-def diagnose_az_ice_arcadia_tenant():
-    """
-    Diagnostic only. The public DaySmart app works anonymously, but its JSON API
-    requires a tenant value. Inspect the public app's own JS bundle for the exact
-    tenant parameter/header naming and nearby API-call code.
-    """
-    shell_url = "https://member.daysmartrecreation.com/"
-
-    try:
-        shell_response = requests.get(
-            shell_url,
-            headers={
-                **HEADERS,
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            },
-            timeout=TIMEOUT,
-        )
-        shell_response.raise_for_status()
-    except Exception as exc:
-        print("Arcadia tenant diagnostic shell failed:", exc, file=sys.stderr)
-        return
-
-    shell_soup = BeautifulSoup(shell_response.text, "html.parser")
-    js_urls = []
-
-    for script in shell_soup.find_all("script", src=True):
-        absolute = urljoin(shell_response.url, script["src"])
-        if "member.daysmartrecreation.com" in absolute:
-            js_urls.append(absolute)
-
-    # The shell can be highly cached; include any main/runtime/scripts files.
-    js_urls = sorted(
-        set(
-            u for u in js_urls
-            if any(token in u.lower() for token in ("main.", "runtime.", "scripts.", "env.js"))
-        )
-    )
-
-    print(f"Arcadia tenant diagnostic JS bundles: {len(js_urls)}")
-
-    search_terms = (
-        "tenant",
-        "tenant_id",
-        "tenantid",
-        "tenantId",
-        "jsonapi",
-        "/events",
-        "api/v1",
-        "azice",
-    )
-
-    for js_url in js_urls:
-        try:
-            js_response = requests.get(
-                js_url,
-                headers={
-                    **HEADERS,
-                    "Accept": "*/*",
-                    "Referer": shell_url,
-                },
-                timeout=TIMEOUT,
-            )
-            print(
-                f"  Arcadia tenant JS fetch: status={js_response.status_code} "
-                f"bytes={len(js_response.content)} url={js_url}"
-            )
-
-            if js_response.status_code != 200:
-                continue
-
-            js_text = js_response.text
-
-            for term in search_terms:
-                positions = [m.start() for m in re.finditer(re.escape(term), js_text, re.I)]
-
-                if not positions:
-                    continue
-
-                print(
-                    f"    Arcadia JS term '{term}' occurrences: "
-                    f"{len(positions)}"
-                )
-
-                for pos in positions[:12]:
-                    start = max(0, pos - 350)
-                    end = min(len(js_text), pos + 650)
-                    context = js_text[start:end]
-                    context = re.sub(r"\s+", " ", context)
-                    print(
-                        f"      CONTEXT {term}:",
-                        context[:1000],
-                    )
-
-        except Exception as exc:
-            print(
-                "  Arcadia tenant JS diagnostic failed:",
-                js_url,
-                exc,
-                file=sys.stderr,
-            )
-
-
-
-# ---------------------------------------------------------------------------
-# AZ Ice Arcadia — focused tenant/bootstrap probe
-# ---------------------------------------------------------------------------
-
-def probe_az_ice_arcadia_tenant_variants(today):
-    """
-    Diagnostic only. The DaySmart public app route is /online/azice/... and the
-    minified app code maps route params.company into auth.tenant()/companyCode.
-    Probe the likely anonymous tenant forms, and print focused JS context around
-    the auth.tenant implementation. Does not publish Arcadia sessions.
-    """
-    base = "https://apps.daysmartrecreation.com/dash/jsonapi/api/v1"
-    start_date = today.isoformat()
-    end_date = (today + timedelta(days=35)).isoformat()
-
-    probes = [
-        (
-            "tenant=azice",
-            f"{base}/events?tenant=azice"
-            f"&filter[facility_id]=3"
-            f"&filter[start_date]={start_date}"
-            f"&filter[end_date]={end_date}",
-        ),
-        (
-            "company=azice",
-            f"{base}/events?company=azice"
-            f"&filter[facility_id]=3"
-            f"&filter[start_date]={start_date}"
-            f"&filter[end_date]={end_date}",
-        ),
-        (
-            "tenant_id=azice",
-            f"{base}/events?tenant_id=azice"
-            f"&filter[facility_id]=3"
-            f"&filter[start_date]={start_date}"
-            f"&filter[end_date]={end_date}",
-        ),
-        (
-            "company_code=azice",
-            f"{base}/events?company_code=azice"
-            f"&filter[facility_id]=3"
-            f"&filter[start_date]={start_date}"
-            f"&filter[end_date]={end_date}",
-        ),
-        (
-            "tenant+location",
-            f"{base}/events?tenant=azice"
-            f"&filter[location_id]=3"
-            f"&filter[start_date]={start_date}"
-            f"&filter[end_date]={end_date}",
-        ),
-    ]
-
-    headers = {
-        **HEADERS,
-        "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
-        "Referer": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3&event_type=7",
-        "Origin": "https://member.daysmartrecreation.com",
-    }
-
-    print("AZ Ice Arcadia focused tenant query probe:")
-
-    for label, url in probes:
-        try:
-            response = requests.get(
-                url,
-                headers=headers,
-                timeout=TIMEOUT,
-                allow_redirects=True,
-            )
-            compact = re.sub(r"\s+", " ", response.text).strip()
-
-            print(
-                f"  Arcadia tenant variant [{label}]: "
-                f"status={response.status_code} "
-                f"bytes={len(response.content)} "
-                f"type={response.headers.get('content-type', '')} "
-                f"final={response.url}"
-            )
-
-            if compact:
-                print("    tenant variant body:", compact[:1600])
-
-            if "json" in response.headers.get("content-type", "").lower():
-                try:
-                    payload = response.json()
-                    if isinstance(payload, dict):
-                        print(
-                            "    tenant variant JSON keys:",
-                            ", ".join(sorted(payload.keys())[:30]),
-                        )
-                        data = payload.get("data")
-                        if isinstance(data, list):
-                            print("    tenant variant data count:", len(data))
-                            if data:
-                                print(
-                                    "    tenant variant first item:",
-                                    json.dumps(data[0], separators=(",", ":"))[:2200],
-                                )
-                except Exception as exc:
-                    print(
-                        "    tenant variant JSON parse failed:",
-                        exc,
-                        file=sys.stderr,
-                    )
-
-        except Exception as exc:
-            print(
-                f"  Arcadia tenant variant failed [{label}]:",
-                exc,
-                file=sys.stderr,
-            )
-
-    # Also inspect the current member-app main bundle around the tenant/bootstrap
-    # implementation so the next step is grounded even if every direct probe fails.
-    try:
-        shell = requests.get(
-            "https://member.daysmartrecreation.com/",
-            headers=HEADERS,
-            timeout=TIMEOUT,
-        )
-        shell.raise_for_status()
-        soup = BeautifulSoup(shell.text, "html.parser")
-
-        main_urls = []
-        for script in soup.find_all("script", src=True):
-            url = urljoin(shell.url, script["src"])
-            if "member.daysmartrecreation.com" in url and "/main." in url:
-                main_urls.append(url)
-
-        for main_url in sorted(set(main_urls))[:2]:
-            js = requests.get(
-                main_url,
-                headers={**HEADERS, "Referer": shell.url, "Accept": "*/*"},
-                timeout=TIMEOUT,
-            ).text
-
-            search_patterns = (
-                "auth.tenant",
-                ".tenant=function",
-                "tenant:function",
-                "setCompanyCode",
-                "getCompanyCode",
-                "params.company",
-            )
-
-            for token in search_patterns:
-                positions = [m.start() for m in re.finditer(re.escape(token), js, re.I)]
-                print(
-                    f"  Arcadia focused JS token '{token}' occurrences: "
-                    f"{len(positions)}"
-                )
-                for pos in positions[:8]:
-                    lo = max(0, pos - 900)
-                    hi = min(len(js), pos + 1600)
-                    ctx = re.sub(r"\s+", " ", js[lo:hi])
-                    print(f"    FOCUSED CONTEXT {token}:", ctx[:2500])
-
-    except Exception as exc:
-        print("Arcadia focused JS inspection failed:", exc, file=sys.stderr)
-
-
-# ---------------------------------------------------------------------------
-# AZ Ice Arcadia — DaySmart JSON API endpoint probe
-# ---------------------------------------------------------------------------
-
-DAYSMART_JSONAPI_BASE = "https://apps.daysmartrecreation.com/dash/jsonapi/api/v1/"
-
-
-def probe_az_ice_arcadia_api(today):
-    """
-    Diagnostic only. The DaySmart member JavaScript exposed the JSON API base.
-    Probe a small set of read-only endpoints and print status/content samples.
-    No Arcadia events are published by this function.
-    """
-    start_date = today.isoformat()
-    end_date = (today + timedelta(days=35)).isoformat()
-
-    probes = [
-        ("root", DAYSMART_JSONAPI_BASE),
-        ("events", DAYSMART_JSONAPI_BASE + "events"),
-        (
-            "events-location-3",
-            DAYSMART_JSONAPI_BASE
-            + f"events?filter[location_id]=3&filter[start_date]={start_date}&filter[end_date]={end_date}",
-        ),
-        (
-            "events-facility-3",
-            DAYSMART_JSONAPI_BASE
-            + f"events?filter[facility_id]=3&filter[start_date]={start_date}&filter[end_date]={end_date}",
-        ),
-        ("locations", DAYSMART_JSONAPI_BASE + "locations"),
-        ("facilities", DAYSMART_JSONAPI_BASE + "facilities"),
-        ("event-types", DAYSMART_JSONAPI_BASE + "event_types"),
-    ]
-
-    header_sets = [
-        (
-            "plain",
-            {
-                **HEADERS,
-                "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
-                "Referer": "https://member.daysmartrecreation.com/",
-            },
-        ),
-        (
-            "azice-origin",
-            {
-                **HEADERS,
-                "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
-                "Referer": "https://member.daysmartrecreation.com/",
-                "Origin": "https://member.daysmartrecreation.com",
-                "X-Requested-With": "XMLHttpRequest",
-            },
-        ),
-    ]
-
-    print(
-        "AZ Ice Arcadia DaySmart JSON API probe: "
-        f"base={DAYSMART_JSONAPI_BASE}"
-    )
-
-    for header_name, headers in header_sets:
-        for label, url in probes:
-            try:
-                response = requests.get(
-                    url,
-                    headers=headers,
-                    timeout=TIMEOUT,
-                    allow_redirects=True,
-                )
-
-                content_type = response.headers.get("content-type", "")
-                body = response.text
-                compact = re.sub(r"\s+", " ", body).strip()
-
-                print(
-                    f"  Arcadia API [{header_name}/{label}]: "
-                    f"status={response.status_code} "
-                    f"bytes={len(response.content)} "
-                    f"type={content_type} "
-                    f"final={response.url}"
-                )
-
-                if compact:
-                    print(
-                        "    Arcadia API body:",
-                        compact[:1200],
-                    )
-
-                # If JSON comes back, summarize JSON:API top-level shape.
-                if "json" in content_type.lower():
-                    try:
-                        payload = response.json()
-                        if isinstance(payload, dict):
-                            print(
-                                "    Arcadia API JSON keys:",
-                                ", ".join(sorted(payload.keys())[:30]),
-                            )
-                            data = payload.get("data")
-                            if isinstance(data, list):
-                                print(
-                                    "    Arcadia API data count:",
-                                    len(data),
-                                )
-                                if data:
-                                    sample = data[0]
-                                    print(
-                                        "    Arcadia API first item:",
-                                        json.dumps(sample, separators=(",", ":"))[:1800],
-                                    )
-                            elif isinstance(data, dict):
-                                print(
-                                    "    Arcadia API first item:",
-                                    json.dumps(data, separators=(",", ":"))[:1800],
-                                )
-                    except Exception as exc:
-                        print(
-                            "    Arcadia API JSON parse failed:",
-                            exc,
-                            file=sys.stderr,
-                        )
-
-            except Exception as exc:
-                print(
-                    f"  AZ Ice Arcadia API probe failed [{header_name}/{label}]:",
-                    exc,
-                    file=sys.stderr,
-                )
-
-
-
-
-# ---------------------------------------------------------------------------
-# AZ Ice Arcadia — live DaySmart collector
-# ---------------------------------------------------------------------------
-
-ARCADIA_CALENDAR_URL = (
-    "https://member.daysmartrecreation.com/"
-    "#/online/azice/calendar?location=3"
-)
-
-
-def _arcadia_local_datetime(value):
-    """Parse a DaySmart timestamp as Arizona local time."""
-    dt = dtparser.isoparse(str(value))
-    if dt.tzinfo is None:
-        return dt.replace(tzinfo=AZ)
-    return dt.astimezone(AZ)
-
-
-def _arcadia_age_from_title(title):
-    low = title.lower()
-
-    if "adult" in low or "18+" in low or "old timers" in low:
-        return "Adult"
-
-    if re.search(r"\b(?:8u|10u|12u|14u|16u|18u)\b", low):
-        return "Youth"
-
-    if any(
-        token in low
-        for token in (
-            "youth",
-            "mite",
-            "squirt",
-            "peewee",
-            "bantam",
-            "homeschool",
-        )
-    ):
-        return "Youth"
-
-    return "All"
-
-
-def _arcadia_session_type(title):
-    """
-    Conservative public-hockey filter.
-
-    Only sessions whose DaySmart relationship/name data clearly identifies
-    them as public hockey ice are published. Team games, private rentals,
-    figure skating, public skate, camps without a hockey-use label, and
-    league-only events remain excluded.
-    """
-    low = re.sub(r"\s+", " ", title.lower()).strip()
-
-    if any(
-        phrase in low
-        for phrase in (
-            "pickup hockey",
-            "pick up hockey",
-            "pick-up hockey",
-            "open hockey",
-            "drop in hockey",
-            "drop-in hockey",
-        )
-    ):
-        return "Open Hockey"
-
-    if any(
-        phrase in low
-        for phrase in (
-            "sticktime",
-            "stick time",
-            "stick & puck",
-            "stick and puck",
-            "stick n puck",
-            "stick-n-puck",
-        )
-    ):
-        return "Stick Time"
-
-    if any(
-        phrase in low
-        for phrase in (
-            "hockey skills",
-            "hockey clinic",
-            "hockey camp",
-            "power skate",
-        )
-    ):
-        return "Clinic"
-
-    return None
-
-
-def _arcadia_display_title(raw_title, session_type, age):
-    low = raw_title.lower()
-
-    if session_type == "Open Hockey":
-        if age == "Adult":
-            return "Adult Pick Up Hockey"
-        if age == "Youth":
-            return "Youth Open Hockey"
-        return "Open Hockey"
-
-    if session_type == "Stick Time":
-        if age == "Adult":
-            return "Adult Stick Time"
-        if age == "Youth":
-            return "Youth Stick Time"
-        return "Stick Time"
-
-    # Clinics/skills should retain their source wording when useful.
-    cleaned = re.sub(
-        r"^(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)"
-        r"(?:uary|ruary|ch|il|e|y|ust|tember|ober|ember)?\s+20\d{2}\s+",
-        "",
-        raw_title,
-        flags=re.I,
-    ).strip(" -–—")
-    return cleaned or raw_title
-
-
-def collect_az_ice_arcadia(today):
-    """
-    Collect public hockey-use sessions from AZ Ice Arcadia's DaySmart API.
-
-    The anonymous tenant is confirmed as `company=azice`; facility 3 is
-    Arcadia. We request related JSON:API records so league/program names can
-    be used to distinguish public hockey sessions from games, rentals,
-    figure skating, and public skate.
-    """
-    base = "https://apps.daysmartrecreation.com/dash/jsonapi/api/v1/events"
-    end_date = today + timedelta(days=35)
-
-    params = {
-        "company": "azice",
-        "filter[facility_id]": "3",
-        "filter[start_date]": today.isoformat(),
-        "filter[end_date]": end_date.isoformat(),
-        "include": "eventType,resource,resourceArea,league,homeTeam,visitingTeam",
-    }
-
-    headers = {
-        **HEADERS,
-        "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
-        "Referer": ARCADIA_CALENDAR_URL,
-        "Origin": "https://member.daysmartrecreation.com",
-    }
-
-    try:
-        response = requests.get(
-            base,
-            params=params,
-            headers=headers,
-            timeout=TIMEOUT,
-            allow_redirects=True,
-        )
-        response.raise_for_status()
-        payload = response.json()
-    except Exception as exc:
-        print("AZ Ice Arcadia DaySmart failed:", exc, file=sys.stderr)
-        return []
-
-    data = payload.get("data", []) if isinstance(payload, dict) else []
-    included = payload.get("included", []) if isinstance(payload, dict) else []
-
-    # Human-readable names keyed by JSON:API type + id.
-    lookup = {}
-    for obj in included:
-        obj_type = str(obj.get("type") or "")
-        obj_id = str(obj.get("id") or "")
-        attrs = obj.get("attributes") or {}
-        name = (
-            attrs.get("name")
-            or attrs.get("title")
-            or attrs.get("desc")
-            or attrs.get("description")
-        )
-        if name:
-            clean = BeautifulSoup(str(name), "html.parser").get_text(" ", strip=True)
-            clean = re.sub(r"\s+", " ", clean).strip()
-            lookup[(obj_type, obj_id)] = clean
-
-    # Convenience maps for the direct *_id attributes returned by DaySmart.
-    league_names = {
-        obj_id: name
-        for (obj_type, obj_id), name in lookup.items()
-        if obj_type == "leagues"
-    }
-    team_names = {
-        obj_id: name
-        for (obj_type, obj_id), name in lookup.items()
-        if obj_type == "teams"
-    }
-    event_type_names = {
-        obj_id: name
-        for (obj_type, obj_id), name in lookup.items()
-        if obj_type == "event-types"
-    }
-
-    out = []
-    now_floor = datetime.combine(today, datetime.min.time(), tzinfo=AZ)
-
-    for item in data:
-        attrs = item.get("attributes") or {}
-
-        try:
-            start = _arcadia_local_datetime(attrs.get("start"))
-            end = _arcadia_local_datetime(attrs.get("end"))
-        except Exception:
-            continue
-
-        if end < now_floor - timedelta(days=1):
-            continue
-
-        # Build the classification text from the most useful public-facing
-        # relationship labels. The raw event desc is included only as backup.
-        labels = []
-
-        league_id = attrs.get("league_id")
-        if league_id is not None:
-            league_name = league_names.get(str(league_id))
-            if league_name:
-                labels.append(league_name)
-
-        team_id = attrs.get("team_id")
-        if team_id is not None:
-            team_name = team_names.get(str(team_id))
-            if team_name:
-                labels.append(team_name)
-
-        for key in ("desc", "description"):
-            value = attrs.get(key)
-            if value:
-                clean = BeautifulSoup(str(value), "html.parser").get_text(" ", strip=True)
-                clean = re.sub(r"\s+", " ", clean).strip()
-                if clean:
-                    labels.append(clean)
-
-        event_type_id = attrs.get("event_type_id")
-        if event_type_id is not None:
-            type_name = event_type_names.get(str(event_type_id))
-            if type_name:
-                labels.append(type_name)
-
-        # De-duplicate labels while preserving order.
-        labels = list(dict.fromkeys(labels))
-        classification_text = " | ".join(labels)
-
-        session_type = _arcadia_session_type(classification_text)
-        if not session_type:
-            continue
-
-        age = _arcadia_age_from_title(classification_text)
-
-        # Prefer the label that actually carries the hockey-use wording.
-        raw_title = next(
-            (
-                label
-                for label in labels
-                if _arcadia_session_type(label) is not None
-            ),
-            classification_text,
-        )
-        title = _arcadia_display_title(raw_title, session_type, age)
-
-        out.append(
-            {
-                "id": stable_id("azicearcadia", "AZ Ice Arcadia", start, title),
-                "title": title,
-                "type": session_type,
-                "rink": "AZ Ice Arcadia",
-                "start": start.isoformat(),
-                "end": end.isoformat(),
-                "age": age,
-                "url": ARCADIA_CALENDAR_URL,
-                "source": "azicearcadia",
-            }
-        )
-
-    # Remove duplicates that can occur when DaySmart repeats an event/resource.
-    dedup = {}
-    for event in out:
-        key = (event["rink"], event["start"], event["end"], event["title"])
-        dedup[key] = event
-
-    events = sorted(dedup.values(), key=lambda e: e["start"])
-
-    print(
-        f"AZ Ice Arcadia DaySmart: {len(events)} public hockey sessions "
-        f"from {len(data)} returned events"
-    )
-    for event in events:
-        print(
-            " - Arcadia:"
-            f" {event['start']} | {event['title']} | {event['age']}"
-        )
-
-    return events
-
-
-# ---------------------------------------------------------------------------
-# AZ Ice Arcadia — event taxonomy diagnostic
-# ---------------------------------------------------------------------------
-
-def diagnose_az_ice_arcadia_event_taxonomy(today):
-    """
-    Diagnostic only.
-
-    We have confirmed the anonymous DaySmart API works when `company=azice`.
-    This pass inventories Arcadia's returned event records and attempts to
-    include related event-type/resource/team/league records so we can identify
-    which of the returned events are actual hockey sessions before publishing
-    anything to the live Arizona Ice Finder.
-    """
-    base = "https://apps.daysmartrecreation.com/dash/jsonapi/api/v1/events"
-    end_date = today + timedelta(days=35)
-
-    params = {
-        "company": "azice",
-        "filter[facility_id]": "3",
-        "filter[start_date]": today.isoformat(),
-        "filter[end_date]": end_date.isoformat(),
-    }
-
-    headers = {
-        **HEADERS,
-        "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
-        "Referer": (
-            "https://member.daysmartrecreation.com/"
-            "#/online/azice/calendar?location=3&event_type=7"
-        ),
-        "Origin": "https://member.daysmartrecreation.com",
-    }
-
-    try:
-        response = requests.get(
-            base,
-            params=params,
-            headers=headers,
-            timeout=TIMEOUT,
-            allow_redirects=True,
-        )
-        print(
-            "AZ Ice Arcadia taxonomy base:"
-            f" status={response.status_code}"
-            f" bytes={len(response.content)}"
-            f" final={response.url}"
-        )
-        response.raise_for_status()
-        payload = response.json()
-    except Exception as exc:
-        print("AZ Ice Arcadia taxonomy base failed:", exc, file=sys.stderr)
-        return
-
-    data = payload.get("data", []) if isinstance(payload, dict) else []
-    print(f"AZ Ice Arcadia taxonomy event count: {len(data)}")
-
-    # Compact counts from the raw event attributes.
-    counters = {
-        "event_type_id": {},
-        "sub_type": {},
-        "resource_id": {},
-        "resource_area_id": {},
-        "league_id": {},
-        "team_id": {},
-    }
-
-    def bump(bucket, value):
-        key = str(value)
-        bucket[key] = bucket.get(key, 0) + 1
-
-    for item in data:
-        attrs = item.get("attributes") or {}
-        for key in counters:
-            bump(counters[key], attrs.get(key))
-
-    for key, bucket in counters.items():
-        ordered = sorted(bucket.items(), key=lambda kv: (-kv[1], kv[0]))
-        print(f"Arcadia taxonomy counts {key}: {ordered}")
-
-    print("Arcadia taxonomy EVENT SUMMARIES BEGIN")
-    for item in data:
-        attrs = item.get("attributes") or {}
-        desc = re.sub(r"\s+", " ", str(attrs.get("desc") or "")).strip()
-        description = re.sub(
-            r"\s+",
-            " ",
-            str(attrs.get("description") or ""),
-        ).strip()
-
-        print(
-            "  ARC_EVENT"
-            f" id={item.get('id')}"
-            f" start={attrs.get('start')}"
-            f" end={attrs.get('end')}"
-            f" event_type_id={attrs.get('event_type_id')}"
-            f" sub_type={attrs.get('sub_type')}"
-            f" resource_id={attrs.get('resource_id')}"
-            f" resource_area_id={attrs.get('resource_area_id')}"
-            f" team_id={attrs.get('team_id')}"
-            f" league_id={attrs.get('league_id')}"
-            f" capacity={attrs.get('register_capacity')}"
-            f" desc={desc[:180]!r}"
-            f" description={description[:260]!r}"
-        )
-    print("Arcadia taxonomy EVENT SUMMARIES END")
-
-    # Ask JSON:API for human-readable relationship objects. If a particular
-    # relationship is not includable, this failure is harmless and the raw
-    # summaries above are still preserved.
-    include_params = dict(params)
-    include_params["include"] = (
-        "eventType,resource,resourceArea,league,homeTeam,visitingTeam"
-    )
-
-    try:
-        included_response = requests.get(
-            base,
-            params=include_params,
-            headers=headers,
-            timeout=TIMEOUT,
-            allow_redirects=True,
-        )
-        print(
-            "AZ Ice Arcadia taxonomy include:"
-            f" status={included_response.status_code}"
-            f" bytes={len(included_response.content)}"
-            f" final={included_response.url}"
-        )
-
-        if included_response.status_code != 200:
-            compact = re.sub(r"\s+", " ", included_response.text).strip()
-            if compact:
-                print("  Arcadia include body:", compact[:1600])
-            return
-
-        included_payload = included_response.json()
-        included = included_payload.get("included", [])
-
-        print(f"Arcadia taxonomy included count: {len(included)}")
-        print("Arcadia taxonomy INCLUDED RECORDS BEGIN")
-
-        # Print each unique included object compactly. This should reveal names
-        # such as event types, resources/rinks, teams, or leagues.
-        seen = set()
-        for obj in included:
-            key = (obj.get("type"), str(obj.get("id")))
-            if key in seen:
-                continue
-            seen.add(key)
-
-            attrs = obj.get("attributes") or {}
-
-            useful = {}
-            for attr_key in (
-                "name",
-                "title",
-                "description",
-                "desc",
-                "code",
-                "short_desc",
-                "long_desc",
-                "type",
-                "sub_type",
-                "is_online_visible",
-                "active",
-            ):
-                if attr_key in attrs and attrs.get(attr_key) not in (None, ""):
-                    useful[attr_key] = attrs.get(attr_key)
-
-            # If expected labels use different names, include a bounded sample
-            # of scalar attributes so we can discover the schema.
-            if not useful:
-                for attr_key, value in attrs.items():
-                    if isinstance(value, (str, int, float, bool)) or value is None:
-                        useful[attr_key] = value
-                    if len(useful) >= 12:
-                        break
-
-            print(
-                "  ARC_INCLUDED"
-                f" type={obj.get('type')}"
-                f" id={obj.get('id')}"
-                f" attrs={json.dumps(useful, separators=(',', ':'))[:1200]}"
-            )
-
-        print("Arcadia taxonomy INCLUDED RECORDS END")
-
-    except Exception as exc:
-        print("AZ Ice Arcadia taxonomy include failed:", exc, file=sys.stderr)
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
 def main():
     today = datetime.now(AZ).date()
 
     collected = []
-    collected += collect_az_ice_arcadia(today)
     collected += collect_mullett(today)
-    collected += collect_ice_den_scottsdale(today)
-    collected += collect_ice_den_chandler(today)
     collected += collect_sportsengine(today)
     collected.sort(key=lambda e: e["start"])
 
-    # Fail-safe: if every network/layout source fails, preserve the prior file.
+    # Fail-safe: never blank the website if a source is unavailable or changes layout.
     if not collected:
         print(
             "No events collected. Preserving existing data/events.json.",
@@ -2385,28 +423,21 @@ def main():
         )
         return 0
 
-    live_sources = sorted(
-        set(
-            e["rink"]
-            for e in collected
-            if e["source"] in ("mullett", "icedenscottsdale", "icedenchandler", "azicearcadia")
-        )
+    live_names = sorted(
+        set(e["rink"] for e in collected if e["source"] == "mullett")
     )
-    auto_attempt = sorted(
-        set(
-            e["rink"]
-            for e in collected
-            if e["source"] == "sportsengine"
-        )
+    auto_names = sorted(
+        set(e["rink"] for e in collected if e["source"] == "sportsengine")
     )
 
     payload = {
         "updated": datetime.now(AZ).isoformat(),
         "mode": "live-partial",
         "source_summary": {
-            "live_auto": live_sources,
-            "auto_attempt": auto_attempt,
+            "live_auto": live_names,
+            "auto_attempt": auto_names,
             "official_link": [
+                "AZ Ice Arcadia",
                 "AZ Ice Gilbert",
                 "AZ Ice Peoria",
                 "Jay Lively Activity Center",
