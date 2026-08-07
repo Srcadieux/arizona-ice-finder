@@ -476,8 +476,352 @@ SCOTTSDALE_FEEDS = (
 
 
 CHANDLER_FEEDS = (
-    "https://www.icedenchandler.com/ical_feed?"
-    "tags=2703965%2C2703970%2C2711738",
+    "https://www.icedenchandler.com/ical_feed?tags=2703965%2C2703970%2C2711738",
+    "https://www.icedenchandler.com/ical_feed?tags=2703965",
+    "https://www.icedenchandler.com/ical_feed?tags=2703970",
+    "https://www.icedenchandler.com/ical_feed?tags=2711738",
+)
 
-    "https://www.icedenchandler.com/ical_feed?"
-    "
+def collect_scottsdale(today):
+    return collect_ical(
+        today, "Ice Den Scottsdale", "icedenscottsdale", SCOTTSDALE_FEEDS,
+        "https://www.icedenscottsdale.com/page/show/2662960-calendar"
+    )
+
+def collect_chandler(today):
+    return collect_ical(
+        today, "Ice Den Chandler", "icedenchandler", CHANDLER_FEEDS,
+        "https://www.icedenchandler.com/page/show/2803608-calendar"
+    )
+
+def ds_lookup(payload):
+    out = {}
+    for obj in payload.get("included", []) if isinstance(payload, dict) else []:
+        a = obj.get("attributes") or {}
+        name = a.get("name") or a.get("title") or a.get("desc") or a.get("description")
+        if name:
+            out[(str(obj.get("type") or ""), str(obj.get("id") or ""))] = clean(name)
+    return out
+
+def ds_dt(value):
+    dt = dtparser.isoparse(str(value))
+    return dt.replace(tzinfo=AZ) if dt.tzinfo is None else dt.astimezone(AZ)
+
+def day_smart_payload(today, facility_id, days=35):
+    params = {
+        "company": "azice",
+        "filter[facility_id]": str(facility_id),
+        "filter[start_date]": today.isoformat(),
+        "filter[end_date]": (today + timedelta(days=days)).isoformat(),
+        "include": "eventType,resource,resourceArea,league,homeTeam,visitingTeam",
+    }
+
+    headers = {
+        **HEADERS,
+        "Accept": "application/vnd.api+json, application/json;q=0.9, */*;q=0.8",
+        "Origin": "https://member.daysmartrecreation.com",
+    }
+
+    r = requests.get(
+        DAYSMART_EVENTS,
+        params=params,
+        headers=headers,
+        timeout=TIMEOUT,
+    )
+    r.raise_for_status()
+    return r.json()
+
+def collect_arcadia(today):
+    rink = "AZ Ice Arcadia"
+    url = (
+        "https://member.daysmartrecreation.com/"
+        "#/online/azice/calendar?location=3"
+    )
+
+    try:
+        payload = day_smart_payload(today, 3, 35)
+    except Exception as exc:
+        print("Arcadia DaySmart failed:", exc, file=sys.stderr)
+        return []
+
+    lookup = ds_lookup(payload)
+
+    leagues = {
+        i: n for (t, i), n in lookup.items()
+        if t == "leagues"
+    }
+
+    teams = {
+        i: n for (t, i), n in lookup.items()
+        if t == "teams"
+    }
+
+    event_types = {
+        i: n for (t, i), n in lookup.items()
+        if t == "event-types"
+    }
+
+    out = []
+    raw = payload.get("data", [])
+
+    for item in raw:
+        a = item.get("attributes") or {}
+
+        try:
+            start = ds_dt(a.get("start"))
+            end = ds_dt(a.get("end"))
+        except Exception:
+            continue
+
+        labels = []
+
+        if a.get("league_id") is not None:
+            name = leagues.get(str(a["league_id"]))
+            if name:
+                labels.append(name)
+
+        if a.get("team_id") is not None:
+            name = teams.get(str(a["team_id"]))
+            if name:
+                labels.append(name)
+
+        for key in ("desc", "description"):
+            if a.get(key):
+                labels.append(clean(a[key]))
+
+        if a.get("event_type_id") is not None:
+            name = event_types.get(str(a["event_type_id"]))
+            if name:
+                labels.append(name)
+
+        labels = list(dict.fromkeys(x for x in labels if x))
+
+        combined = " | ".join(labels)
+        typ, age = classify(combined)
+
+        if not typ:
+            continue
+
+        source_title = next(
+            (x for x in labels if classify(x)[0]),
+            combined,
+        )
+
+        if typ == "Open Hockey":
+            title = (
+                "Adult Pick Up Hockey"
+                if age == "Adult"
+                else "Youth Open Hockey"
+                if age == "Youth"
+                else "Open Hockey"
+            )
+
+        elif typ == "Stick Time":
+            title = (
+                "Adult Stick Time"
+                if age == "Adult"
+                else "Youth Stick Time"
+                if age == "Youth"
+                else "Stick Time"
+            )
+
+        else:
+            title = source_title
+
+        out.append({
+            "id": sid("azicearcadia", rink, start, title),
+            "title": title,
+            "type": typ,
+            "rink": rink,
+            "start": start.isoformat(),
+            "end": end.isoformat(),
+            "age": age,
+            "url": url,
+            "source": "azicearcadia",
+        })
+
+    result = sorted(
+        {
+            (e["rink"], e["start"], e["end"], e["title"]): e
+            for e in out
+        }.values(),
+        key=lambda e: e["start"],
+    )
+
+    print(
+        f"AZ Ice Arcadia DaySmart: "
+        f"{len(result)} public hockey sessions "
+        f"from {len(raw)} returned events"
+    )
+
+    return result
+
+def diagnose_gilbert(today):
+    print("AZ Ice Gilbert facility discovery BEGIN")
+
+    for facility_id in range(1, 13):
+        try:
+            payload = day_smart_payload(today, facility_id, 7)
+
+        except Exception as exc:
+            print(
+                f"GILBERT_PROBE facility_id={facility_id} FAILED: {exc}",
+                file=sys.stderr,
+            )
+            continue
+
+        data = payload.get("data", [])
+        lookup = ds_lookup(payload)
+
+        ids = {
+            "resources": set(),
+            "resource-areas": set(),
+            "leagues": set(),
+            "teams": set(),
+        }
+
+        for item in data:
+            a = item.get("attributes") or {}
+
+            if a.get("resource_id") is not None:
+                ids["resources"].add(str(a["resource_id"]))
+
+            if a.get("resource_area_id") is not None:
+                ids["resource-areas"].add(str(a["resource_area_id"]))
+
+            if a.get("league_id") is not None:
+                ids["leagues"].add(str(a["league_id"]))
+
+            for key in (
+                "team_id",
+                "home_team_id",
+                "visiting_team_id",
+            ):
+                if a.get(key) is not None:
+                    ids["teams"].add(str(a[key]))
+
+        names = {
+            typ: sorted({
+                lookup[(typ, i)]
+                for i in vals
+                if (typ, i) in lookup
+            })
+            for typ, vals in ids.items()
+        }
+
+        clue = " | ".join(
+            names["resources"]
+            + names["resource-areas"]
+            + names["leagues"]
+            + names["teams"]
+        ).lower()
+
+        likely = (
+            "north pole" in clue
+            or "south pole" in clue
+        )
+
+        print(
+            f"GILBERT_PROBE facility_id={facility_id} "
+            f"events={len(data)} "
+            f"{'<<< LIKELY GILBERT >>>' if likely else ''}"
+        )
+
+        print(
+            "  resources:",
+            names["resources"] or "none",
+        )
+
+        print(
+            "  areas:",
+            names["resource-areas"] or "none",
+        )
+
+        print(
+            "  leagues:",
+            names["leagues"][:20] or "none",
+        )
+
+    print("AZ Ice Gilbert facility discovery END")
+
+def main():
+    today = datetime.now(AZ).date()
+
+    diagnose_gilbert(today)
+
+    collected = (
+        collect_arcadia(today)
+        + collect_mullett(today)
+        + collect_scottsdale(today)
+        + collect_chandler(today)
+    )
+
+    collected.sort(
+        key=lambda e: e["start"]
+    )
+
+    if not collected:
+        print(
+            "No events collected. "
+            "Preserving existing data/events.json.",
+            file=sys.stderr,
+        )
+        return 0
+
+    payload = {
+        "updated": datetime.now(AZ).isoformat(),
+
+        "mode": "live-partial",
+
+        "source_summary": {
+            "live_auto": sorted({
+                e["rink"]
+                for e in collected
+            }),
+
+            "auto_attempt": [],
+
+            "official_link": [
+                "AZ Ice Gilbert",
+                "AZ Ice Peoria",
+                "Coyotes Community Ice Center",
+                "Jay Lively Activity Center",
+                "Findlay Toyota Center",
+                "Tucson Convention Center / Tucson Arena",
+            ],
+
+            "future": [
+                "Fire 'n' Ice Sports Arena",
+                "MQ Iceplex at Mosaic Quarter",
+            ],
+        },
+
+        "events": collected,
+    }
+
+    EVENTS_FILE.write_text(
+        json.dumps(payload, indent=2) + "\n"
+    )
+
+    print(
+        f"Wrote {len(collected)} collected events."
+    )
+
+    for rink in sorted({
+        e["rink"]
+        for e in collected
+    }):
+        count = sum(
+            1
+            for e in collected
+            if e["rink"] == rink
+        )
+
+        print(
+            f" - {rink}: {count}"
+        )
+
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
