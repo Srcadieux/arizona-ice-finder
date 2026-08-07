@@ -1468,6 +1468,113 @@ def diagnose_az_ice_arcadia(today):
 
 
 
+
+# ---------------------------------------------------------------------------
+# AZ Ice Arcadia — DaySmart tenant discovery
+# ---------------------------------------------------------------------------
+
+def diagnose_az_ice_arcadia_tenant():
+    """
+    Diagnostic only. The public DaySmart app works anonymously, but its JSON API
+    requires a tenant value. Inspect the public app's own JS bundle for the exact
+    tenant parameter/header naming and nearby API-call code.
+    """
+    shell_url = "https://member.daysmartrecreation.com/"
+
+    try:
+        shell_response = requests.get(
+            shell_url,
+            headers={
+                **HEADERS,
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            },
+            timeout=TIMEOUT,
+        )
+        shell_response.raise_for_status()
+    except Exception as exc:
+        print("Arcadia tenant diagnostic shell failed:", exc, file=sys.stderr)
+        return
+
+    shell_soup = BeautifulSoup(shell_response.text, "html.parser")
+    js_urls = []
+
+    for script in shell_soup.find_all("script", src=True):
+        absolute = urljoin(shell_response.url, script["src"])
+        if "member.daysmartrecreation.com" in absolute:
+            js_urls.append(absolute)
+
+    # The shell can be highly cached; include any main/runtime/scripts files.
+    js_urls = sorted(
+        set(
+            u for u in js_urls
+            if any(token in u.lower() for token in ("main.", "runtime.", "scripts.", "env.js"))
+        )
+    )
+
+    print(f"Arcadia tenant diagnostic JS bundles: {len(js_urls)}")
+
+    search_terms = (
+        "tenant",
+        "tenant_id",
+        "tenantid",
+        "tenantId",
+        "jsonapi",
+        "/events",
+        "api/v1",
+        "azice",
+    )
+
+    for js_url in js_urls:
+        try:
+            js_response = requests.get(
+                js_url,
+                headers={
+                    **HEADERS,
+                    "Accept": "*/*",
+                    "Referer": shell_url,
+                },
+                timeout=TIMEOUT,
+            )
+            print(
+                f"  Arcadia tenant JS fetch: status={js_response.status_code} "
+                f"bytes={len(js_response.content)} url={js_url}"
+            )
+
+            if js_response.status_code != 200:
+                continue
+
+            js_text = js_response.text
+
+            for term in search_terms:
+                positions = [m.start() for m in re.finditer(re.escape(term), js_text, re.I)]
+
+                if not positions:
+                    continue
+
+                print(
+                    f"    Arcadia JS term '{term}' occurrences: "
+                    f"{len(positions)}"
+                )
+
+                for pos in positions[:12]:
+                    start = max(0, pos - 350)
+                    end = min(len(js_text), pos + 650)
+                    context = js_text[start:end]
+                    context = re.sub(r"\s+", " ", context)
+                    print(
+                        f"      CONTEXT {term}:",
+                        context[:1000],
+                    )
+
+        except Exception as exc:
+            print(
+                "  Arcadia tenant JS diagnostic failed:",
+                js_url,
+                exc,
+                file=sys.stderr,
+            )
+
+
 # ---------------------------------------------------------------------------
 # AZ Ice Arcadia — DaySmart JSON API endpoint probe
 # ---------------------------------------------------------------------------
@@ -1605,6 +1712,7 @@ def main():
     today = datetime.now(AZ).date()
 
     diagnose_az_ice_arcadia(today)
+    diagnose_az_ice_arcadia_tenant()
     probe_az_ice_arcadia_api(today)
 
     collected = []
