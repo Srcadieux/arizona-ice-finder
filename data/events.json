@@ -1,18 +1,18 @@
 {
-  "updated": "2026-08-07T17:46:23.594992-07:00",
+  "updated": "2026-08-07T17:52:55.399856-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
       "AZ Ice Arcadia",
       "AZ Ice Gilbert",
       "AZ Ice Peoria",
+      "Coyotes Community Ice Center",
       "Ice Den Chandler",
       "Ice Den Scottsdale",
       "Mullett Arena / Mountain America Community Iceplex"
     ],
     "auto_attempt": [],
     "official_link": [
-      "Coyotes Community Ice Center",
       "Jay Lively Activity Center",
       "Findlay Toyota Center",
       "Tucson Convention Center / Tucson Arena"
@@ -220,6 +220,17 @@
       "age": "Adult",
       "url": "https://mullett.sportified.net/products/22543",
       "source": "mullett"
+    },
+    {
+      "id": "ccic-adda8adcb9a0",
+      "title": "Power Skating",
+      "type": "Clinic",
+      "rink": "Coyotes Community Ice Center",
+      "start": "2026-08-10T16:10:00-07:00",
+      "end": "2026-08-10T17:10:00-07:00",
+      "age": "All",
+      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
+      "source": "ccic"
     },
     {
       "id": "mullett-166fc666df24",
@@ -431,6 +442,17 @@
       "source": "mullett"
     },
     {
+      "id": "ccic-5b4e25a83089",
+      "title": "Power Skating",
+      "type": "Clinic",
+      "rink": "Coyotes Community Ice Center",
+      "start": "2026-08-17T16:10:00-07:00",
+      "end": "2026-08-17T17:10:00-07:00",
+      "age": "All",
+      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
+      "source": "ccic"
+    },
+    {
       "id": "icedenchandler-96ad8578bc01",
       "title": "Adult Stick Time 40+",
       "type": "Stick Time",
@@ -585,6 +607,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "ccic-b674fffa76c6",
+      "title": "Power Skating",
+      "type": "Clinic",
+      "rink": "Coyotes Community Ice Center",
+      "start": "2026-08-24T16:10:00-07:00",
+      "end": "2026-08-24T17:10:00-07:00",
+      "age": "All",
+      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
+      "source": "ccic"
+    },
+    {
       "id": "icedenchandler-f79d22880e21",
       "title": "Adult Stick Time 40+",
       "type": "Stick Time",
@@ -737,6 +770,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "ccic-0a6729a23f71",
+      "title": "Power Skating",
+      "type": "Clinic",
+      "rink": "Coyotes Community Ice Center",
+      "start": "2026-08-31T16:10:00-07:00",
+      "end": "2026-08-31T17:10:00-07:00",
+      "age": "All",
+      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
+      "source": "ccic"
     },
     {
       "id": "icedenchandler-828072715c19",
