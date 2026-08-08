@@ -1,16 +1,16 @@
 {
-  "updated": "2026-08-07T17:07:01.374143-07:00",
+  "updated": "2026-08-07T17:15:55.265898-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
       "AZ Ice Arcadia",
+      "AZ Ice Gilbert",
       "Ice Den Chandler",
       "Ice Den Scottsdale",
       "Mullett Arena / Mountain America Community Iceplex"
     ],
     "auto_attempt": [],
     "official_link": [
-      "AZ Ice Gilbert",
       "AZ Ice Peoria",
       "Coyotes Community Ice Center",
       "Jay Lively Activity Center",
@@ -57,26 +57,26 @@
       "source": "mullett"
     },
     {
-      "id": "azicearcadia-c026aebdb912",
+      "id": "azicegilbert-53935434fffb",
       "title": "Stick Time",
       "type": "Stick Time",
-      "rink": "AZ Ice Arcadia",
+      "rink": "AZ Ice Gilbert",
       "start": "2026-08-07T06:30:00-07:00",
       "end": "2026-08-07T07:30:00-07:00",
       "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
-      "source": "azicearcadia"
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
     },
     {
-      "id": "azicearcadia-0223dcba924c",
+      "id": "azicegilbert-cb2cfb66196b",
       "title": "Stick Time",
       "type": "Stick Time",
-      "rink": "AZ Ice Arcadia",
+      "rink": "AZ Ice Gilbert",
       "start": "2026-08-07T08:30:00-07:00",
       "end": "2026-08-07T09:30:00-07:00",
       "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
-      "source": "azicearcadia"
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
     },
     {
       "id": "azicearcadia-06b8a1969a22",
@@ -90,26 +90,15 @@
       "source": "azicearcadia"
     },
     {
-      "id": "azicearcadia-a59663e15611",
-      "title": "Adult Pick Up Hockey",
-      "type": "Open Hockey",
-      "rink": "AZ Ice Arcadia",
-      "start": "2026-08-07T11:45:00-07:00",
-      "end": "2026-08-07T13:15:00-07:00",
-      "age": "Adult",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
-      "source": "azicearcadia"
-    },
-    {
-      "id": "azicearcadia-065c07d29974",
+      "id": "azicegilbert-2eddfd71952e",
       "title": "Stick Time",
       "type": "Stick Time",
-      "rink": "AZ Ice Arcadia",
+      "rink": "AZ Ice Gilbert",
       "start": "2026-08-07T12:00:00-07:00",
       "end": "2026-08-07T13:30:00-07:00",
       "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
-      "source": "azicearcadia"
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
     },
     {
       "id": "mullett-c68b3090d55e",
