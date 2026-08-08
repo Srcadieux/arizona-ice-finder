@@ -765,10 +765,253 @@ def collect_gilbert(today):
             "#/online/azice/calendar"
         ),
     )
+def diagnose_ccic(today):
+    """
+    Diagnostic only for Coyotes Community Ice Center.
+    Finds SportsEngine iCal/feed clues without publishing any CCIC events.
+    """
 
+    base = "https://www.coyotescommunityicecenter.com"
+    calendar_url = (
+        "https://www.coyotescommunityicecenter.com/"
+        "page/show/5540662-calendar"
+    )
+
+    print("CCIC SportsEngine discovery BEGIN")
+
+    try:
+        response = requests.get(
+            calendar_url,
+            headers=HEADERS,
+            timeout=TIMEOUT,
+            allow_redirects=True,
+        )
+
+        print(
+            f"CCIC_CALENDAR status={response.status_code} "
+            f"bytes={len(response.text)}"
+        )
+
+        response.raise_for_status()
+        html = response.text
+
+    except Exception as exc:
+        print(
+            "CCIC calendar fetch failed:",
+            exc,
+            file=sys.stderr,
+        )
+        print("CCIC SportsEngine discovery END")
+        return
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    feeds = set()
+
+    # --------------------------------------------------------
+    # Find explicit iCal links
+    # --------------------------------------------------------
+
+    for anchor in soup.find_all("a", href=True):
+        href = anchor.get("href", "")
+
+        if "ical_feed" in href.lower():
+            feeds.add(
+                urljoin(base, href)
+            )
+
+    # Also inspect raw HTML because SportsEngine sometimes
+    # embeds the feed URL in scripts rather than a normal link.
+    for match in re.finditer(
+        r"""["']([^"']*ical_feed[^"']*)["']""",
+        html,
+        re.I,
+    ):
+        href = (
+            match.group(1)
+            .replace("\\/", "/")
+            .replace("&amp;", "&")
+        )
+
+        feeds.add(
+            urljoin(base, href)
+        )
+
+    print(
+        f"CCIC_ICAL_CANDIDATES count={len(feeds)}"
+    )
+
+    for feed in sorted(feeds):
+        print(
+            "CCIC_ICAL_CANDIDATE",
+            feed,
+        )
+
+    # --------------------------------------------------------
+    # Look for SportsEngine tag IDs
+    # --------------------------------------------------------
+
+    tag_values = set()
+
+    for node in soup.find_all(
+        ["input", "option", "select"]
+    ):
+        name = str(
+            node.get("name") or ""
+        ).lower()
+
+        node_id = str(
+            node.get("id") or ""
+        ).lower()
+
+        value = str(
+            node.get("value") or ""
+        ).strip()
+
+        if (
+            "tag" in name
+            or "tag" in node_id
+        ):
+            if re.fullmatch(
+                r"\d+(?:,\d+)*",
+                value,
+            ):
+                tag_values.add(value)
+
+    # Find tag lists embedded in scripts/URLs.
+    for match in re.finditer(
+        r"""tags?[^0-9]{0,30}([0-9]{5,10}(?:(?:%2C|,)[0-9]{5,10})*)""",
+        html,
+        re.I,
+    ):
+        tag_values.add(
+            match.group(1)
+        )
+
+    print(
+        "CCIC_TAG_VALUES",
+        sorted(tag_values) or "none",
+    )
+
+    # --------------------------------------------------------
+    # Inspect event/show links visible on the calendar
+    # --------------------------------------------------------
+
+    event_links = {}
+
+    for anchor in soup.find_all(
+        "a",
+        href=True,
+    ):
+        href = anchor.get("href", "")
+
+        if re.search(
+            r"/event/show/\d+",
+            href,
+        ):
+            label = clean(
+                anchor.get_text(
+                    " ",
+                    strip=True,
+                )
+            )
+
+            event_links[
+                urljoin(base, href)
+            ] = label
+
+    print(
+        f"CCIC_EVENT_LINKS count={len(event_links)}"
+    )
+
+    for url, label in list(
+        event_links.items()
+    )[:50]:
+        print(
+            f"CCIC_EVENT_LINK | "
+            f"{label or 'NO LABEL'} | {url}"
+        )
+
+    # --------------------------------------------------------
+    # Test any iCal feeds we actually discovered
+    # --------------------------------------------------------
+
+    for feed in sorted(feeds):
+        try:
+            ical_response = requests.get(
+                feed,
+                headers=HEADERS,
+                timeout=TIMEOUT,
+                allow_redirects=True,
+            )
+
+            print(
+                f"CCIC_FEED_TEST "
+                f"status={ical_response.status_code} "
+                f"bytes={len(ical_response.text)} "
+                f"url={feed}"
+            )
+
+            if (
+                ical_response.status_code != 200
+                or "BEGIN:VCALENDAR"
+                not in ical_response.text
+            ):
+                continue
+
+            parsed = parse_ical(
+                ical_response.text
+            )
+
+            hockey = []
+
+            for event in parsed:
+                if not event.get("SUMMARY"):
+                    continue
+
+                title = (
+                    event["SUMMARY"][0][1]
+                    .replace("\\,", ",")
+                    .replace("\\n", " ")
+                    .strip()
+                )
+
+                typ, age = classify(title)
+
+                if typ:
+                    hockey.append(
+                        (
+                            title,
+                            typ,
+                            age,
+                        )
+                    )
+
+            print(
+                f"CCIC_FEED_HOCKEY "
+                f"count={len(hockey)}"
+            )
+
+            for title, typ, age in hockey[:40]:
+                print(
+                    f"CCIC_HOCKEY_EVENT "
+                    f"| {title} "
+                    f"| {typ} "
+                    f"| age={age}"
+                )
+
+        except Exception as exc:
+            print(
+                "CCIC feed test failed:",
+                feed,
+                exc,
+                file=sys.stderr,
+            )
+
+    print("CCIC SportsEngine discovery END")
 def main():
     today = datetime.now(AZ).date()
-
+    diagnose_ccic(today)
     collected = (
         collect_arcadia(today)
         + collect_gilbert(today)
