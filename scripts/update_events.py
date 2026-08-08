@@ -956,7 +956,7 @@ def collect_ccic(today):
         )
 
     return out
-    def diagnose_flagstaff(today):
+def diagnose_flagstaff(today):
     """
     Diagnostic only for Jay Lively Activity Center.
 
@@ -1154,7 +1154,9 @@ def collect_ccic(today):
     print("FLAGSTAFF PDF discovery END")
 def main():
     today = datetime.now(AZ).date()
-        diagnose_flagstaff(today)
+
+    diagnose_flagstaff(today)
+
     collected = (
         collect_arcadia(today)
         + collect_gilbert(today)
