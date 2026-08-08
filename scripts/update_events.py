@@ -966,7 +966,7 @@ def diagnose_flagstaff(today):
     Publishes no Flagstaff events.
     """
 
-import pymupdf as fitz
+    import pymupdf as fitz
 
     rink = "Jay Lively Activity Center"
     pdf_url = (
