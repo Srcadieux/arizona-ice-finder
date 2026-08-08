@@ -956,9 +956,205 @@ def collect_ccic(today):
         )
 
     return out
+    def diagnose_flagstaff(today):
+    """
+    Diagnostic only for Jay Lively Activity Center.
+
+    Reads the City of Flagstaff monthly PDF using PDF coordinates so
+    hockey sessions can later be assigned to the correct calendar date.
+
+    Publishes no Flagstaff events.
+    """
+
+    import fitz
+
+    rink = "Jay Lively Activity Center"
+    pdf_url = (
+        "https://www.flagstaff.az.gov/"
+        "DocumentCenter/View/92321"
+    )
+
+    print("FLAGSTAFF PDF discovery BEGIN")
+
+    try:
+        response = requests.get(
+            pdf_url,
+            headers=HEADERS,
+            timeout=TIMEOUT,
+            allow_redirects=True,
+        )
+
+        response.raise_for_status()
+
+    except Exception as exc:
+        print(
+            "FLAGSTAFF_PDF_FETCH_FAILED:",
+            exc,
+            file=sys.stderr,
+        )
+        print("FLAGSTAFF PDF discovery END")
+        return
+
+    print(
+        f"FLAGSTAFF_PDF "
+        f"status={response.status_code} "
+        f"bytes={len(response.content)}"
+    )
+
+    try:
+        document = fitz.open(
+            stream=response.content,
+            filetype="pdf",
+        )
+
+    except Exception as exc:
+        print(
+            "FLAGSTAFF_PDF_OPEN_FAILED:",
+            exc,
+            file=sys.stderr,
+        )
+        print("FLAGSTAFF PDF discovery END")
+        return
+
+    print(
+        f"FLAGSTAFF_PAGES count={len(document)}"
+    )
+
+    current_month = today.strftime("%B").lower()
+    current_year = str(today.year)
+
+    target_terms = (
+        "adult stick & puck",
+        "adult stick and puck",
+        "adult open hockey",
+        "cof youth hockey stick",
+        "stick time/clinic",
+    )
+
+    date_only_re = re.compile(
+        r"^(?:"
+        r"january|february|march|april|may|june|"
+        r"july|august|september|october|november|december"
+        r")?\s*"
+        r"\d{1,2}$",
+        re.I,
+    )
+
+    matching_pages = 0
+    target_count = 0
+
+    for page_index in range(len(document)):
+        page = document[page_index]
+
+        blocks = page.get_text("blocks")
+
+        page_text = clean(
+            " ".join(
+                str(block[4])
+                for block in blocks
+            )
+        )
+
+        page_lower = page_text.lower()
+
+        is_current_month = (
+            current_month in page_lower
+            and current_year in page_text
+        )
+
+        print(
+            f"FLAGSTAFF_PAGE "
+            f"page={page_index + 1} "
+            f"current_month={is_current_month} "
+            f"chars={len(page_text)}"
+        )
+
+        if not is_current_month:
+            continue
+
+        matching_pages += 1
+
+        print(
+            f"FLAGSTAFF_CURRENT_PAGE "
+            f"page={page_index + 1}"
+        )
+
+        # --------------------------------------------
+        # Print date/header blocks with coordinates.
+        # --------------------------------------------
+
+        for block in blocks:
+            x0, y0, x1, y1, raw_text = block[:5]
+
+            text = clean(raw_text)
+
+            if not text:
+                continue
+
+            # Calendar date numbers are generally near
+            # the top portion of each weekday column.
+            if (
+                date_only_re.fullmatch(text)
+                and y0 < 300
+            ):
+                print(
+                    f"FLAGSTAFF_DATE_BLOCK "
+                    f"| page={page_index + 1} "
+                    f"| x0={x0:.1f} "
+                    f"| y0={y0:.1f} "
+                    f"| x1={x1:.1f} "
+                    f"| y1={y1:.1f} "
+                    f"| {text}"
+                )
+
+        # --------------------------------------------
+        # Print hockey-use blocks with coordinates.
+        # --------------------------------------------
+
+        for block in blocks:
+            x0, y0, x1, y1, raw_text = block[:5]
+
+            text = clean(raw_text)
+
+            if not text:
+                continue
+
+            low = text.lower()
+
+            if not any(
+                term in low
+                for term in target_terms
+            ):
+                continue
+
+            target_count += 1
+
+            print(
+                f"FLAGSTAFF_TARGET "
+                f"| page={page_index + 1} "
+                f"| x0={x0:.1f} "
+                f"| y0={y0:.1f} "
+                f"| x1={x1:.1f} "
+                f"| y1={y1:.1f} "
+                f"| {text}"
+            )
+
+    print(
+        f"FLAGSTAFF_CURRENT_MONTH_PAGES "
+        f"{matching_pages}"
+    )
+
+    print(
+        f"FLAGSTAFF_TARGET_BLOCKS "
+        f"{target_count}"
+    )
+
+    document.close()
+
+    print("FLAGSTAFF PDF discovery END")
 def main():
     today = datetime.now(AZ).date()
-    
+        diagnose_flagstaff(today)
     collected = (
         collect_arcadia(today)
         + collect_gilbert(today)
