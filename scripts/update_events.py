@@ -531,130 +531,227 @@ def day_smart_payload(today, facility_id, days=35):
     r.raise_for_status()
     return r.json()
 
-def collect_arcadia(today):
-    rink = "AZ Ice Arcadia"
-    url = (
-        "https://member.daysmartrecreation.com/"
-        "#/online/azice/calendar?location=3"
-    )
+def collect_azice_by_resource(
+    today,
+    rink,
+    source,
+    accepted_resources,
+    calendar_url,
+):
+    """
+    Collect public hockey sessions from the AZ Ice tenant-wide DaySmart feed
+    and assign them only when the event's actual rink resource is known.
+    """
 
     try:
         payload = day_smart_payload(today, 3, 35)
+
     except Exception as exc:
-        print("Arcadia DaySmart failed:", exc, file=sys.stderr)
+        print(
+            f"{rink} DaySmart failed:",
+            exc,
+            file=sys.stderr,
+        )
         return []
 
     lookup = ds_lookup(payload)
 
     leagues = {
-        i: n for (t, i), n in lookup.items()
-        if t == "leagues"
+        item_id: name
+        for (typ, item_id), name in lookup.items()
+        if typ == "leagues"
     }
 
     teams = {
-        i: n for (t, i), n in lookup.items()
-        if t == "teams"
+        item_id: name
+        for (typ, item_id), name in lookup.items()
+        if typ == "teams"
     }
 
     event_types = {
-        i: n for (t, i), n in lookup.items()
-        if t == "event-types"
+        item_id: name
+        for (typ, item_id), name in lookup.items()
+        if typ == "event-types"
     }
 
     out = []
-    raw = payload.get("data", [])
+    raw_events = payload.get("data", [])
 
-    for item in raw:
-        a = item.get("attributes") or {}
+    for item in raw_events:
+        attrs = item.get("attributes") or {}
+
+        resource_id = attrs.get("resource_id")
+
+        if resource_id is None:
+            continue
+
+        resource_name = lookup.get(
+            ("resources", str(resource_id))
+        )
+
+        if resource_name not in accepted_resources:
+            continue
 
         try:
-            start = ds_dt(a.get("start"))
-            end = ds_dt(a.get("end"))
+            start = ds_dt(attrs.get("start"))
+            end = ds_dt(attrs.get("end"))
+
         except Exception:
             continue
 
         labels = []
 
-        if a.get("league_id") is not None:
-            name = leagues.get(str(a["league_id"]))
+        if attrs.get("league_id") is not None:
+            name = leagues.get(
+                str(attrs.get("league_id"))
+            )
+
             if name:
                 labels.append(name)
 
-        if a.get("team_id") is not None:
-            name = teams.get(str(a["team_id"]))
+        for key in (
+            "team_id",
+            "home_team_id",
+            "visiting_team_id",
+        ):
+            if attrs.get(key) is not None:
+                name = teams.get(
+                    str(attrs.get(key))
+                )
+
+                if name:
+                    labels.append(name)
+
+        for key in (
+            "name",
+            "title",
+            "desc",
+            "description",
+        ):
+            if attrs.get(key):
+                labels.append(
+                    clean(attrs.get(key))
+                )
+
+        if attrs.get("event_type_id") is not None:
+            name = event_types.get(
+                str(attrs.get("event_type_id"))
+            )
+
             if name:
                 labels.append(name)
 
-        for key in ("desc", "description"):
-            if a.get(key):
-                labels.append(clean(a[key]))
-
-        if a.get("event_type_id") is not None:
-            name = event_types.get(str(a["event_type_id"]))
-            if name:
-                labels.append(name)
-
-        labels = list(dict.fromkeys(x for x in labels if x))
+        labels = list(
+            dict.fromkeys(
+                value
+                for value in labels
+                if value
+            )
+        )
 
         combined = " | ".join(labels)
+
         typ, age = classify(combined)
 
         if not typ:
             continue
 
         source_title = next(
-            (x for x in labels if classify(x)[0]),
+            (
+                value
+                for value in labels
+                if classify(value)[0]
+            ),
             combined,
         )
 
         if typ == "Open Hockey":
-            title = (
-                "Adult Pick Up Hockey"
-                if age == "Adult"
-                else "Youth Open Hockey"
-                if age == "Youth"
-                else "Open Hockey"
-            )
+            if age == "Adult":
+                title = "Adult Pick Up Hockey"
+            elif age == "Youth":
+                title = "Youth Open Hockey"
+            else:
+                title = "Open Hockey"
 
         elif typ == "Stick Time":
-            title = (
-                "Adult Stick Time"
-                if age == "Adult"
-                else "Youth Stick Time"
-                if age == "Youth"
-                else "Stick Time"
-            )
+            if age == "Adult":
+                title = "Adult Stick Time"
+            elif age == "Youth":
+                title = "Youth Stick Time"
+            else:
+                title = "Stick Time"
 
         else:
             title = source_title
 
-        out.append({
-            "id": sid("azicearcadia", rink, start, title),
-            "title": title,
-            "type": typ,
-            "rink": rink,
-            "start": start.isoformat(),
-            "end": end.isoformat(),
-            "age": age,
-            "url": url,
-            "source": "azicearcadia",
-        })
+        out.append(
+            {
+                "id": sid(
+                    source,
+                    rink,
+                    start,
+                    title,
+                ),
+                "title": title,
+                "type": typ,
+                "rink": rink,
+                "start": start.isoformat(),
+                "end": end.isoformat(),
+                "age": age,
+                "url": calendar_url,
+                "source": source,
+            }
+        )
 
     result = sorted(
         {
-            (e["rink"], e["start"], e["end"], e["title"]): e
-            for e in out
+            (
+                event["rink"],
+                event["start"],
+                event["end"],
+                event["title"],
+            ): event
+            for event in out
         }.values(),
-        key=lambda e: e["start"],
+        key=lambda event: event["start"],
     )
 
     print(
-        f"AZ Ice Arcadia DaySmart: "
-        f"{len(result)} public hockey sessions "
-        f"from {len(raw)} returned events"
+        f"{rink} DaySmart: "
+        f"{len(result)} confirmed hockey sessions "
+        f"on resources {sorted(accepted_resources)}"
     )
 
     return result
+
+
+def collect_arcadia(today):
+    return collect_azice_by_resource(
+        today=today,
+        rink="AZ Ice Arcadia",
+        source="azicearcadia",
+        accepted_resources={"Arcadia"},
+        calendar_url=(
+            "https://member.daysmartrecreation.com/"
+            "#/online/azice/calendar?location=3"
+        ),
+    )
+
+
+def collect_gilbert(today):
+    return collect_azice_by_resource(
+        today=today,
+        rink="AZ Ice Gilbert",
+        source="azicegilbert",
+        accepted_resources={
+            "North Pole",
+            "South Pole",
+        },
+        calendar_url=(
+            "https://member.daysmartrecreation.com/"
+            "#/online/azice/calendar"
+        ),
+    )
 
 def diagnose_gilbert(today):
     print("AZ Ice Gilbert resource discovery BEGIN")
@@ -810,12 +907,13 @@ def main():
 
     diagnose_gilbert(today)
 
-    collected = (
-        collect_arcadia(today)
-        + collect_mullett(today)
-        + collect_scottsdale(today)
-        + collect_chandler(today)
-    )
+collected = (
+    collect_arcadia(today)
+    + collect_gilbert(today)
+    + collect_mullett(today)
+    + collect_scottsdale(today)
+    + collect_chandler(today)
+)
 
     collected.sort(
         key=lambda e: e["start"]
@@ -843,7 +941,6 @@ def main():
             "auto_attempt": [],
 
             "official_link": [
-                "AZ Ice Gilbert",
                 "AZ Ice Peoria",
                 "Coyotes Community Ice Center",
                 "Jay Lively Activity Center",
