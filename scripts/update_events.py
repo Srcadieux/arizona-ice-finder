@@ -737,6 +737,19 @@ def collect_arcadia(today):
         ),
     )
 
+def collect_peoria(today):
+    return collect_azice_by_resource(
+        today=today,
+        rink="AZ Ice Peoria",
+        source="azicepeoria",
+        accepted_resources={
+            "North Rink",
+            "South Rink",
+        },
+        calendar_url=(
+            "https://azicepeoria.com/all-events/hockey-events/"
+        ),
+    )
 
 def collect_gilbert(today):
     return collect_azice_by_resource(
@@ -759,6 +772,7 @@ def main():
     collected = (
         collect_arcadia(today)
         + collect_gilbert(today)
+        + collect_peoria(today)
         + collect_mullett(today)
         + collect_scottsdale(today)
         + collect_chandler(today)
@@ -790,7 +804,6 @@ def main():
             "auto_attempt": [],
 
             "official_link": [
-                "AZ Ice Peoria",
                 "Coyotes Community Ice Center",
                 "Jay Lively Activity Center",
                 "Findlay Toyota Center",
