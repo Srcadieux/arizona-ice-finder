@@ -907,13 +907,13 @@ def main():
 
     diagnose_gilbert(today)
 
-collected = (
-    collect_arcadia(today)
-    + collect_gilbert(today)
-    + collect_mullett(today)
-    + collect_scottsdale(today)
-    + collect_chandler(today)
-)
+    collected = (
+        collect_arcadia(today)
+        + collect_gilbert(today)
+        + collect_mullett(today)
+        + collect_scottsdale(today)
+        + collect_chandler(today)
+    )
 
     collected.sort(
         key=lambda e: e["start"]
