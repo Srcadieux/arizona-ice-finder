@@ -956,25 +956,31 @@ def collect_ccic(today):
         )
 
     return out
-def diagnose_flagstaff(today):
+def collect_flagstaff(today):
     """
-    Diagnostic only for Jay Lively Activity Center.
+    Live Jay Lively Activity Center collector.
 
-    Reads the City of Flagstaff monthly PDF using PDF coordinates so
-    hockey sessions can later be assigned to the correct calendar date.
+    Reads the official City of Flagstaff monthly calendar PDF by geometry,
+    assigns each calendar column to its real date, and publishes only:
+    - Adult Stick & Puck
+    - Adult Open Hockey
+    - COF Youth Hockey Stick Time/Clinic
 
-    Publishes no Flagstaff events.
+    Fails closed if the PDF layout changes.
     """
 
+    import calendar
+    import statistics
+    from collections import defaultdict
     import pymupdf as fitz
 
     rink = "Jay Lively Activity Center"
+    source = "flagstaff"
+
     pdf_url = (
         "https://www.flagstaff.az.gov/"
         "DocumentCenter/View/92321"
     )
-
-    print("FLAGSTAFF PDF discovery BEGIN")
 
     try:
         response = requests.get(
@@ -988,18 +994,11 @@ def diagnose_flagstaff(today):
 
     except Exception as exc:
         print(
-            "FLAGSTAFF_PDF_FETCH_FAILED:",
+            "Flagstaff PDF fetch failed:",
             exc,
             file=sys.stderr,
         )
-        print("FLAGSTAFF PDF discovery END")
-        return
-
-    print(
-        f"FLAGSTAFF_PDF "
-        f"status={response.status_code} "
-        f"bytes={len(response.content)}"
-    )
+        return []
 
     try:
         document = fitz.open(
@@ -1009,159 +1008,432 @@ def diagnose_flagstaff(today):
 
     except Exception as exc:
         print(
-            "FLAGSTAFF_PDF_OPEN_FAILED:",
+            "Flagstaff PDF open failed:",
             exc,
             file=sys.stderr,
         )
-        print("FLAGSTAFF PDF discovery END")
-        return
+        return []
 
-    print(
-        f"FLAGSTAFF_PAGES count={len(document)}"
-    )
+    try:
+        # --------------------------------------------------
+        # Read the month/year printed on the calendar.
+        # --------------------------------------------------
 
-    current_month = today.strftime("%B").lower()
-    current_year = str(today.year)
+        first_page_text = document[0].get_text("text")
 
-    target_terms = (
-        "adult stick & puck",
-        "adult stick and puck",
-        "adult open hockey",
-        "cof youth hockey stick",
-        "stick time/clinic",
-    )
+        month_match = re.search(
+            r"\b("
+            r"January|February|March|April|May|June|"
+            r"July|August|September|October|November|December"
+            r")\s+(20\d{2})\b",
+            first_page_text,
+            re.I,
+        )
 
-    date_only_re = re.compile(
-        r"^(?:"
-        r"january|february|march|april|may|june|"
-        r"july|august|september|october|november|december"
-        r")?\s*"
-        r"\d{1,2}$",
-        re.I,
-    )
-
-    matching_pages = 0
-    target_count = 0
-
-    for page_index in range(len(document)):
-        page = document[page_index]
-
-        blocks = page.get_text("blocks")
-
-        page_text = clean(
-            " ".join(
-                str(block[4])
-                for block in blocks
+        if not month_match:
+            print(
+                "Flagstaff PDF: month/year header not found; skipping.",
+                file=sys.stderr,
             )
+            return []
+
+        month_name = month_match.group(1).title()
+        year = int(month_match.group(2))
+
+        month = datetime.strptime(
+            month_name,
+            "%B",
+        ).month
+
+        # Calendar weeks run Sunday through Saturday.
+        weeks = calendar.Calendar(
+            firstweekday=6
+        ).monthdatescalendar(
+            year,
+            month,
         )
 
-        page_lower = page_text.lower()
+        # --------------------------------------------------
+        # Learn the actual horizontal center of each weekday
+        # column from the PDF header.
+        # --------------------------------------------------
 
-        is_current_month = (
-            current_month in page_lower
-            and current_year in page_text
-        )
+        day_names = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+        ]
 
-        print(
-            f"FLAGSTAFF_PAGE "
-            f"page={page_index + 1} "
-            f"current_month={is_current_month} "
-            f"chars={len(page_text)}"
-        )
+        center_samples = {
+            day_name: []
+            for day_name in day_names
+        }
 
-        if not is_current_month:
-            continue
+        for page_index in range(
+            min(len(weeks), len(document))
+        ):
+            page = document[page_index]
 
-        matching_pages += 1
+            for word in page.get_text("words"):
+                x0, y0, x1, y1, text = word[:5]
 
-        print(
-            f"FLAGSTAFF_CURRENT_PAGE "
-            f"page={page_index + 1}"
-        )
+                if (
+                    text in center_samples
+                    and y0 < 125
+                ):
+                    center_samples[text].append(
+                        (x0 + x1) / 2
+                    )
 
-        # --------------------------------------------
-        # Print date/header blocks with coordinates.
-        # --------------------------------------------
+        if any(
+            not center_samples[day_name]
+            for day_name in day_names
+        ):
+            print(
+                "Flagstaff PDF: weekday column headers "
+                "incomplete; skipping.",
+                file=sys.stderr,
+            )
+            return []
 
-        for block in blocks:
-            x0, y0, x1, y1, raw_text = block[:5]
+        column_centers = [
+            statistics.median(
+                center_samples[day_name]
+            )
+            for day_name in day_names
+        ]
 
-            text = clean(raw_text)
+        # --------------------------------------------------
+        # Parse a time range such as:
+        # 9:00 – 10:30 a.m.
+        # 12:00 – 2:00 p.m.
+        # --------------------------------------------------
 
-            if not text:
-                continue
+        def parse_time_range(text, event_day):
+            text = re.sub(
+                r"\s+",
+                " ",
+                str(text or "").strip(),
+            )
 
-            # Calendar date numbers are generally near
-            # the top portion of each weekday column.
-            if (
-                date_only_re.fullmatch(text)
-                and y0 < 300
-            ):
-                print(
-                    f"FLAGSTAFF_DATE_BLOCK "
-                    f"| page={page_index + 1} "
-                    f"| x0={x0:.1f} "
-                    f"| y0={y0:.1f} "
-                    f"| x1={x1:.1f} "
-                    f"| y1={y1:.1f} "
-                    f"| {text}"
+            match = re.search(
+                r"(?P<start>\d{1,2}:\d{2})"
+                r"\s*(?P<start_mer>a\.?m\.?|p\.?m\.?)?"
+                r"\s*[–—-]\s*"
+                r"(?P<end>\d{1,2}:\d{2})"
+                r"\s*(?P<end_mer>a\.?m\.?|p\.?m\.?)",
+                text,
+                re.I,
+            )
+
+            if not match:
+                return None
+
+            def normalize_meridiem(value):
+                return re.sub(
+                    r"[^apm]",
+                    "",
+                    value.lower(),
                 )
 
-        # --------------------------------------------
-        # Print hockey-use blocks with coordinates.
-        # --------------------------------------------
-
-        for block in blocks:
-            x0, y0, x1, y1, raw_text = block[:5]
-
-            text = clean(raw_text)
-
-            if not text:
-                continue
-
-            low = text.lower()
-
-            if not any(
-                term in low
-                for term in target_terms
-            ):
-                continue
-
-            target_count += 1
-
-            print(
-                f"FLAGSTAFF_TARGET "
-                f"| page={page_index + 1} "
-                f"| x0={x0:.1f} "
-                f"| y0={y0:.1f} "
-                f"| x1={x1:.1f} "
-                f"| y1={y1:.1f} "
-                f"| {text}"
+            start_meridiem = normalize_meridiem(
+                match.group("start_mer")
+                or match.group("end_mer")
             )
 
-    print(
-        f"FLAGSTAFF_CURRENT_MONTH_PAGES "
-        f"{matching_pages}"
-    )
+            end_meridiem = normalize_meridiem(
+                match.group("end_mer")
+            )
 
-    print(
-        f"FLAGSTAFF_TARGET_BLOCKS "
-        f"{target_count}"
-    )
+            def make_datetime(clock_text, meridiem):
+                hour, minute = (
+                    int(value)
+                    for value in clock_text.split(":")
+                )
 
-    document.close()
+                if meridiem == "pm" and hour != 12:
+                    hour += 12
 
-    print("FLAGSTAFF PDF discovery END")
+                if meridiem == "am" and hour == 12:
+                    hour = 0
+
+                return datetime(
+                    event_day.year,
+                    event_day.month,
+                    event_day.day,
+                    hour,
+                    minute,
+                    tzinfo=AZ,
+                )
+
+            start = make_datetime(
+                match.group("start"),
+                start_meridiem,
+            )
+
+            end = make_datetime(
+                match.group("end"),
+                end_meridiem,
+            )
+
+            if end <= start:
+                end += timedelta(days=1)
+
+            return start, end
+
+        now = datetime.now(AZ)
+        horizon = now + timedelta(days=35)
+
+        out = []
+        seen = set()
+
+        calendar_pages = min(
+            len(weeks),
+            len(document),
+        )
+
+        # --------------------------------------------------
+        # Each calendar page is one Sunday-Saturday week.
+        # Assign every PDF word to its nearest weekday column.
+        # --------------------------------------------------
+
+        for page_index in range(calendar_pages):
+            page = document[page_index]
+
+            columns = [
+                []
+                for _ in range(7)
+            ]
+
+            for word in page.get_text("words"):
+                x0, y0, x1, y1 = word[:4]
+
+                # Ignore page title / weekday headings.
+                if y0 < 105:
+                    continue
+
+                center_x = (x0 + x1) / 2
+
+                column_index = min(
+                    range(7),
+                    key=lambda index: abs(
+                        center_x
+                        - column_centers[index]
+                    ),
+                )
+
+                columns[column_index].append(
+                    word
+                )
+
+            # --------------------------------------------------
+            # Rebuild the individual text lines inside each day.
+            # --------------------------------------------------
+
+            for column_index, words in enumerate(columns):
+                event_day = weeks[
+                    page_index
+                ][column_index]
+
+                grouped_lines = defaultdict(list)
+
+                for word in words:
+                    block_number = word[5]
+                    line_number = word[6]
+
+                    grouped_lines[
+                        (
+                            block_number,
+                            line_number,
+                        )
+                    ].append(word)
+
+                lines = []
+
+                for line_words in grouped_lines.values():
+                    line_words = sorted(
+                        line_words,
+                        key=lambda word: word[0],
+                    )
+
+                    line_text = " ".join(
+                        word[4]
+                        for word in line_words
+                    ).strip()
+
+                    line_y = min(
+                        word[1]
+                        for word in line_words
+                    )
+
+                    if line_text:
+                        lines.append(
+                            (
+                                line_y,
+                                line_text,
+                            )
+                        )
+
+                lines.sort(
+                    key=lambda item: item[0]
+                )
+
+                # --------------------------------------------------
+                # Publish only public hockey-use sessions we can
+                # identify confidently.
+                # --------------------------------------------------
+
+                for line_index, (
+                    line_y,
+                    line_text,
+                ) in enumerate(lines):
+
+                    low = line_text.lower()
+
+                    title = None
+                    event_type = None
+                    age = None
+
+                    if (
+                        "adult stick & puck" in low
+                        or "adult stick and puck" in low
+                    ):
+                        title = "Adult Stick & Puck"
+                        event_type = "Stick Time"
+                        age = "Adult"
+
+                    elif "adult open hockey" in low:
+                        title = "Adult Open Hockey"
+                        event_type = "Open Hockey"
+                        age = "Adult"
+
+                    elif "cof youth hockey" in low:
+                        nearby = " ".join(
+                            lines[index][1]
+                            for index in range(
+                                line_index,
+                                min(
+                                    line_index + 3,
+                                    len(lines),
+                                ),
+                            )
+                        ).lower()
+
+                        if (
+                            "stick time/clinic" in nearby
+                            or (
+                                "stick" in nearby
+                                and "time/clinic" in nearby
+                            )
+                        ):
+                            title = (
+                                "COF Youth Hockey "
+                                "Stick Time/Clinic"
+                            )
+                            event_type = "Stick Time"
+                            age = "Youth"
+
+                    if not title:
+                        continue
+
+                    # Time should follow immediately after the
+                    # event title. Allow a few lines because the
+                    # youth title can wrap.
+                    time_range = None
+
+                    for next_index in range(
+                        line_index + 1,
+                        min(
+                            line_index + 5,
+                            len(lines),
+                        ),
+                    ):
+                        time_range = parse_time_range(
+                            lines[next_index][1],
+                            event_day,
+                        )
+
+                        if time_range:
+                            break
+
+                    if not time_range:
+                        continue
+
+                    start, end = time_range
+
+                    # Never publish a session that has already ended.
+                    if end <= now:
+                        continue
+
+                    # Keep the same 35-day working horizon as the
+                    # other collectors.
+                    if start > horizon:
+                        continue
+
+                    key = (
+                        start.isoformat(),
+                        end.isoformat(),
+                        title,
+                    )
+
+                    if key in seen:
+                        continue
+
+                    seen.add(key)
+
+                    out.append(
+                        {
+                            "id": sid(
+                                source,
+                                rink,
+                                start,
+                                title,
+                            ),
+                            "title": title,
+                            "type": event_type,
+                            "rink": rink,
+                            "start": start.isoformat(),
+                            "end": end.isoformat(),
+                            "age": age,
+                            "url": pdf_url,
+                            "source": source,
+                        }
+                    )
+
+        out.sort(
+            key=lambda event: event["start"]
+        )
+
+        print(
+            f"Flagstaff: {len(out)} "
+            f"confirmed hockey sessions"
+        )
+
+        for event in out:
+            print(
+                f" - Flagstaff: "
+                f"{event['start']} | "
+                f"{event['title']} | "
+                f"{event['age']}"
+            )
+
+        return out
+
+    finally:
+        document.close()
 def main():
     today = datetime.now(AZ).date()
-
-    diagnose_flagstaff(today)
 
     collected = (
         collect_arcadia(today)
         + collect_gilbert(today)
         + collect_peoria(today)
         + collect_ccic(today)
+        + collect_flagstaff(today)
         + collect_mullett(today)
         + collect_scottsdale(today)
         + collect_chandler(today)
@@ -1193,7 +1465,6 @@ def main():
             "auto_attempt": [],
 
             "official_link": [
-                "Jay Lively Activity Center",
                 "Findlay Toyota Center",
                 "Tucson Convention Center / Tucson Arena",
             ],
