@@ -657,92 +657,153 @@ def collect_arcadia(today):
     return result
 
 def diagnose_gilbert(today):
-    print("AZ Ice Gilbert facility discovery BEGIN")
+    print("AZ Ice Gilbert resource discovery BEGIN")
 
-    for facility_id in range(1, 13):
-        try:
-            payload = day_smart_payload(today, facility_id, 7)
+    try:
+        payload = day_smart_payload(today, 3, 14)
 
-        except Exception as exc:
-            print(
-                f"GILBERT_PROBE facility_id={facility_id} FAILED: {exc}",
-                file=sys.stderr,
+    except Exception as exc:
+        print(
+            "GILBERT_RESOURCE_DIAGNOSTIC FAILED:",
+            exc,
+            file=sys.stderr,
+        )
+        return
+
+    data = payload.get("data", [])
+    lookup = ds_lookup(payload)
+
+    leagues = {
+        item_id: name
+        for (typ, item_id), name in lookup.items()
+        if typ == "leagues"
+    }
+
+    teams = {
+        item_id: name
+        for (typ, item_id), name in lookup.items()
+        if typ == "teams"
+    }
+
+    event_types = {
+        item_id: name
+        for (typ, item_id), name in lookup.items()
+        if typ == "event-types"
+    }
+
+    hockey_count = 0
+    gilbert_count = 0
+
+    for item in data:
+        attrs = item.get("attributes") or {}
+
+        labels = []
+
+        if attrs.get("league_id") is not None:
+            name = leagues.get(str(attrs.get("league_id")))
+            if name:
+                labels.append(name)
+
+        for key in (
+            "team_id",
+            "home_team_id",
+            "visiting_team_id",
+        ):
+            if attrs.get(key) is not None:
+                name = teams.get(str(attrs.get(key)))
+                if name:
+                    labels.append(name)
+
+        for key in (
+            "name",
+            "title",
+            "desc",
+            "description",
+        ):
+            if attrs.get(key):
+                labels.append(clean(attrs.get(key)))
+
+        if attrs.get("event_type_id") is not None:
+            name = event_types.get(
+                str(attrs.get("event_type_id"))
             )
+            if name:
+                labels.append(name)
+
+        labels = list(
+            dict.fromkeys(
+                value
+                for value in labels
+                if value
+            )
+        )
+
+        combined = " | ".join(labels)
+
+        typ, age = classify(combined)
+
+        if not typ:
             continue
 
-        data = payload.get("data", [])
-        lookup = ds_lookup(payload)
+        hockey_count += 1
 
-        ids = {
-            "resources": set(),
-            "resource-areas": set(),
-            "leagues": set(),
-            "teams": set(),
-        }
+        resource_id = attrs.get("resource_id")
+        area_id = attrs.get("resource_area_id")
 
-        for item in data:
-            a = item.get("attributes") or {}
+        resource_name = None
+        area_name = None
 
-            if a.get("resource_id") is not None:
-                ids["resources"].add(str(a["resource_id"]))
+        if resource_id is not None:
+            resource_name = lookup.get(
+                ("resources", str(resource_id))
+            )
 
-            if a.get("resource_area_id") is not None:
-                ids["resource-areas"].add(str(a["resource_area_id"]))
+        if area_id is not None:
+            area_name = lookup.get(
+                ("resource-areas", str(area_id))
+            )
 
-            if a.get("league_id") is not None:
-                ids["leagues"].add(str(a["league_id"]))
+        try:
+            start = ds_dt(attrs.get("start"))
+            start_text = start.isoformat()
 
-            for key in (
-                "team_id",
-                "home_team_id",
-                "visiting_team_id",
-            ):
-                if a.get(key) is not None:
-                    ids["teams"].add(str(a[key]))
+        except Exception:
+            start_text = str(
+                attrs.get("start") or "UNKNOWN"
+            )
 
-        names = {
-            typ: sorted({
-                lookup[(typ, i)]
-                for i in vals
-                if (typ, i) in lookup
-            })
-            for typ, vals in ids.items()
-        }
+        is_gilbert = resource_name in (
+            "North Pole",
+            "South Pole",
+        )
 
-        clue = " | ".join(
-            names["resources"]
-            + names["resource-areas"]
-            + names["leagues"]
-            + names["teams"]
-        ).lower()
+        if is_gilbert:
+            gilbert_count += 1
 
-        likely = (
-            "north pole" in clue
-            or "south pole" in clue
+        print(
+            f"GILBERT_EVENT"
+            f" | {start_text}"
+            f" | {typ}"
+            f" | age={age}"
+            f" | resource={resource_name or 'UNKNOWN'}"
+            f" | area={area_name or 'UNKNOWN'}"
+            f" | {'<<< GILBERT >>>' if is_gilbert else 'OTHER AZ ICE'}"
         )
 
         print(
-            f"GILBERT_PROBE facility_id={facility_id} "
-            f"events={len(data)} "
-            f"{'<<< LIKELY GILBERT >>>' if likely else ''}"
+            "  labels:",
+            labels,
         )
 
-        print(
-            "  resources:",
-            names["resources"] or "none",
-        )
+    print(
+        f"AZ Ice hockey events inspected: {hockey_count}"
+    )
 
-        print(
-            "  areas:",
-            names["resource-areas"] or "none",
-        )
+    print(
+        f"Gilbert North/South Pole hockey events: {gilbert_count}"
+    )
 
-        print(
-            "  leagues:",
-            names["leagues"][:20] or "none",
-        )
-
-    print("AZ Ice Gilbert facility discovery END")
+    print("AZ Ice Gilbert resource discovery END")
 
 def main():
     today = datetime.now(AZ).date()
