@@ -767,103 +767,146 @@ def collect_gilbert(today):
     )
 def diagnose_ccic(today):
     """
-    CCIC diagnostic V3.
+    CCIC diagnostic V4.
 
-    iCal feeds were valid but empty, so inspect SportsEngine's calendar
-    pages and event-index/node-list endpoints directly.
+    Test the exact SportsEngine RSS event feed published by
+    Coyotes Community Ice Center, plus daily calendar endpoints
+    as a fallback.
 
     Diagnostic only. Publishes no CCIC events.
     """
 
+    import xml.etree.ElementTree as ET
+
     base = "https://www.coyotescommunityicecenter.com"
 
-    calendar_page = (
+    rss_url = (
         base
-        + "/page/show/5540662-calendar"
+        + "/event_rss_feed?"
+        + "tags=5540660%2C5540663%2C5540653"
     )
 
-    tags = [
-        "5540660",
-        "5540663",
-        "5540653",
-    ]
+    print("CCIC official RSS probe BEGIN")
+    print("CCIC_RSS_URL", rss_url)
 
-    print("CCIC event backend probe BEGIN")
-
-    probe_urls = []
-
-    # Current month and next month.
-    probe_months = [
-        today,
-        today + timedelta(days=31),
-    ]
-
-    for day in probe_months:
-        month = day.month
-        year = day.year
-
-        probe_urls.append(
-            (
-                "CALENDAR",
-                f"{calendar_page}?mth={month}&yr={year}",
-            )
+    try:
+        response = requests.get(
+            rss_url,
+            headers=HEADERS,
+            timeout=TIMEOUT,
+            allow_redirects=True,
         )
 
-        # SportsEngine event node-list without tags.
-        probe_urls.append(
-            (
-                "NODELIST",
-                (
-                    f"{base}/node_list/node_list"
-                    f"?model=event"
-                    f"&mth={month}"
-                    f"&yr={year}"
-                ),
-            )
+        print(
+            f"CCIC_RSS "
+            f"status={response.status_code} "
+            f"bytes={len(response.text)} "
+            f"content_type={response.headers.get('content-type')}"
         )
 
-        # Individual tag attempts.
-        for tag in tags:
-            probe_urls.append(
-                (
-                    f"NODELIST_TAG_{tag}",
-                    (
-                        f"{base}/node_list/node_list"
-                        f"?model=event"
-                        f"&tags={tag}"
-                        f"&mth={month}"
-                        f"&yr={year}"
-                    ),
-                )
-            )
+        response.raise_for_status()
 
-        # Combined tags.
-        combined = "%2C".join(tags)
-
-        probe_urls.append(
-            (
-                "NODELIST_ALL_TAGS",
-                (
-                    f"{base}/node_list/node_list"
-                    f"?model=event"
-                    f"&tags={combined}"
-                    f"&mth={month}"
-                    f"&yr={year}"
-                ),
-            )
+    except Exception as exc:
+        print(
+            "CCIC_RSS_FAILED:",
+            exc,
+            file=sys.stderr,
         )
 
-    seen_probe_urls = set()
+        response = None
 
-    for label, url in probe_urls:
+    if response is not None:
+        text = response.text
 
-        if url in seen_probe_urls:
-            continue
-
-        seen_probe_urls.add(url)
+        print(
+            "CCIC_RSS_HEAD",
+            clean(text[:500]),
+        )
 
         try:
-            response = requests.get(
+            root = ET.fromstring(text)
+
+            items = root.findall(".//item")
+
+            print(
+                f"CCIC_RSS_ITEMS count={len(items)}"
+            )
+
+            hockey_count = 0
+
+            for item in items:
+                title = clean(
+                    item.findtext("title") or ""
+                )
+
+                description = clean(
+                    item.findtext("description") or ""
+                )
+
+                link = clean(
+                    item.findtext("link") or ""
+                )
+
+                pub_date = clean(
+                    item.findtext("pubDate") or ""
+                )
+
+                combined = (
+                    title
+                    + " "
+                    + description
+                )
+
+                typ, age = classify(combined)
+
+                print(
+                    f"CCIC_RSS_ITEM "
+                    f"| {title or 'NO TITLE'} "
+                    f"| date={pub_date or 'UNKNOWN'} "
+                    f"| link={link or 'NONE'}"
+                )
+
+                if typ:
+                    hockey_count += 1
+
+                    print(
+                        f"CCIC_RSS_HOCKEY "
+                        f"| {title} "
+                        f"| {typ} "
+                        f"| age={age} "
+                        f"| date={pub_date or 'UNKNOWN'} "
+                        f"| link={link or 'NONE'}"
+                    )
+
+            print(
+                f"CCIC_RSS_HOCKEY_COUNT "
+                f"{hockey_count}"
+            )
+
+        except Exception as exc:
+            print(
+                "CCIC_RSS_PARSE_FAILED:",
+                exc,
+                file=sys.stderr,
+            )
+
+    # --------------------------------------------------
+    # Also test SportsEngine's daily calendar endpoints.
+    # The prior diagnostic discovered this URL structure.
+    # --------------------------------------------------
+
+    print("CCIC daily endpoint probe BEGIN")
+
+    for offset in range(0, 15):
+        day = today + timedelta(days=offset)
+
+        url = (
+            f"{base}/event/5540662/"
+            f"{day.year}/{day.month}/{day.day}"
+        )
+
+        try:
+            day_response = requests.get(
                 url,
                 headers=HEADERS,
                 timeout=TIMEOUT,
@@ -872,97 +915,29 @@ def diagnose_ccic(today):
 
         except Exception as exc:
             print(
-                f"CCIC_BACKEND "
-                f"{label} FAILED "
-                f"{exc}",
+                f"CCIC_DAY "
+                f"{day.isoformat()} "
+                f"FAILED={exc}",
                 file=sys.stderr,
             )
             continue
 
-        html = response.text
+        html = day_response.text
 
         print(
-            f"CCIC_BACKEND "
-            f"{label} "
-            f"status={response.status_code} "
-            f"bytes={len(html)} "
-            f"url={url}"
+            f"CCIC_DAY "
+            f"{day.isoformat()} "
+            f"status={day_response.status_code} "
+            f"bytes={len(html)}"
         )
 
-        if response.status_code != 200:
+        if day_response.status_code != 200:
             continue
 
         soup = BeautifulSoup(
             html,
             "html.parser",
         )
-
-        # --------------------------------------------------
-        # Look for normal SportsEngine event links.
-        # --------------------------------------------------
-
-        event_links = {}
-
-        for anchor in soup.find_all(
-            "a",
-            href=True,
-        ):
-            href = anchor.get(
-                "href",
-                "",
-            )
-
-            if re.search(
-                r"/event/show/\d+",
-                href,
-            ):
-                text = clean(
-                    anchor.get_text(
-                        " ",
-                        strip=True,
-                    )
-                )
-
-                event_links[
-                    urljoin(base, href)
-                ] = text
-
-        # Sometimes event URLs exist only in JS/JSON.
-        for match in re.finditer(
-            r"""["']([^"']*/event/show/\d+[^"']*)["']""",
-            html,
-            re.I,
-        ):
-            href = (
-                match.group(1)
-                .replace("\\/", "/")
-                .replace("&amp;", "&")
-            )
-
-            event_links.setdefault(
-                urljoin(base, href),
-                "",
-            )
-
-        print(
-            f"CCIC_EVENT_URLS "
-            f"{label} "
-            f"count={len(event_links)}"
-        )
-
-        for event_url, text in list(
-            event_links.items()
-        )[:40]:
-            print(
-                f"CCIC_EVENT_URL "
-                f"| {label} "
-                f"| {text or 'NO LABEL'} "
-                f"| {event_url}"
-            )
-
-        # --------------------------------------------------
-        # Search returned content for hockey-use terms.
-        # --------------------------------------------------
 
         text_content = clean(
             soup.get_text(
@@ -971,87 +946,33 @@ def diagnose_ccic(today):
             )
         )
 
-        hockey_pattern = re.compile(
-            r"(.{0,160}"
-            r"(?:stick time|sticktime|stick & puck|"
-            r"stick and puck|open hockey|pickup hockey|"
-            r"pick up hockey|pick-up hockey|"
-            r"power skating|power skate|"
-            r"hockey clinic|hockey camp|"
-            r"pond hockey)"
-            r".{0,240})",
-            re.I,
+        terms = (
+            "stick time",
+            "sticktime",
+            "stick & puck",
+            "stick and puck",
+            "open hockey",
+            "pickup hockey",
+            "pick up hockey",
+            "pick-up hockey",
+            "power skating",
+            "power skate",
+            "hockey clinic",
+            "hockey camp",
         )
 
-        matches = []
-
-        for match in hockey_pattern.finditer(
-            text_content
+        if any(
+            term in text_content.lower()
+            for term in terms
         ):
-            snippet = clean(
-                match.group(1)
-            )
-
-            if snippet not in matches:
-                matches.append(snippet)
-
-        print(
-            f"CCIC_HOCKEY_TEXT "
-            f"{label} "
-            f"count={len(matches)}"
-        )
-
-        for snippet in matches[:30]:
             print(
-                f"CCIC_HOCKEY_TEXT_MATCH "
-                f"| {label} "
-                f"| {snippet}"
+                f"CCIC_DAY_HOCKEY "
+                f"| {day.isoformat()} "
+                f"| {text_content[:1200]}"
             )
 
-        # --------------------------------------------------
-        # Look in raw HTML/JS for likely event/calendar APIs.
-        # --------------------------------------------------
-
-        api_clues = set()
-
-        for match in re.finditer(
-            r"""["']([^"']*(?:calendar|event|node_list)[^"']*)["']""",
-            html,
-            re.I,
-        ):
-            value = (
-                match.group(1)
-                .replace("\\/", "/")
-                .replace("&amp;", "&")
-                .strip()
-            )
-
-            if (
-                len(value) <= 300
-                and (
-                    "event" in value.lower()
-                    or "calendar" in value.lower()
-                    or "node_list" in value.lower()
-                )
-            ):
-                api_clues.add(value)
-
-        print(
-            f"CCIC_API_CLUES "
-            f"{label} "
-            f"count={len(api_clues)}"
-        )
-
-        for clue in sorted(
-            api_clues
-        )[:50]:
-            print(
-                f"CCIC_API_CLUE "
-                f"| {label} "
-                f"| {clue}"
-            )
-
-    print("CCIC event backend probe END")
+    print("CCIC daily endpoint probe END")
+    print("CCIC official RSS probe END")
 def main():
     today = datetime.now(AZ).date()
     diagnose_ccic(today)
