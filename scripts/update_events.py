@@ -767,212 +767,253 @@ def collect_gilbert(today):
     )
 def diagnose_ccic(today):
     """
-    CCIC diagnostic V4.
+    CCIC diagnostic V5.
 
-    Test the exact SportsEngine RSS event feed published by
-    Coyotes Community Ice Center, plus daily calendar endpoints
-    as a fallback.
+    SportsEngine calendar/RSS is currently empty, so discover dated
+    hockey camps, clinics, skills and power-skating opportunities from
+    CCIC's official content pages.
 
     Diagnostic only. Publishes no CCIC events.
     """
 
-    import xml.etree.ElementTree as ET
-
     base = "https://www.coyotescommunityicecenter.com"
 
-    rss_url = (
-        base
-        + "/event_rss_feed?"
-        + "tags=5540660%2C5540663%2C5540653"
+    seed_urls = [
+        base + "/",
+        base + "/page/show/5550014-on-ice-training",
+        base + "/page/show/5550051-clinics",
+        base + "/page/show/5550050-camps",
+        base + "/page/show/8483422-power-skating",
+    ]
+
+    link_keywords = (
+        "hockey",
+        "clinic",
+        "camp",
+        "skating",
+        "training",
+        "shoot",
+        "sniper",
+        "defense",
+        "checking",
+        "goalie",
+        "stick",
+        "pond",
     )
 
-    print("CCIC official RSS probe BEGIN")
-    print("CCIC_RSS_URL", rss_url)
+    month_pattern = (
+        r"(?:January|February|March|April|May|June|July|"
+        r"August|September|October|November|December|"
+        r"Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)"
+    )
 
-    try:
-        response = requests.get(
-            rss_url,
-            headers=HEADERS,
-            timeout=TIMEOUT,
-            allow_redirects=True,
-        )
+    date_re = re.compile(
+        rf"\b{month_pattern}\s+"
+        r"\d{1,2}"
+        r"(?:st|nd|rd|th)?"
+        r"(?:\s*[-–]\s*\d{1,2}(?:st|nd|rd|th)?)?"
+        r"(?:,\s*|\s+)"
+        r"(?:20\d{2})?",
+        re.I,
+    )
 
-        print(
-            f"CCIC_RSS "
-            f"status={response.status_code} "
-            f"bytes={len(response.text)} "
-            f"content_type={response.headers.get('content-type')}"
-        )
+    print("CCIC training-page discovery BEGIN")
 
-        response.raise_for_status()
-
-    except Exception as exc:
-        print(
-            "CCIC_RSS_FAILED:",
-            exc,
-            file=sys.stderr,
-        )
-
-        response = None
-
-    if response is not None:
-        text = response.text
-
-        print(
-            "CCIC_RSS_HEAD",
-            clean(text[:500]),
-        )
-
-        try:
-            root = ET.fromstring(text)
-
-            items = root.findall(".//item")
-
-            print(
-                f"CCIC_RSS_ITEMS count={len(items)}"
-            )
-
-            hockey_count = 0
-
-            for item in items:
-                title = clean(
-                    item.findtext("title") or ""
-                )
-
-                description = clean(
-                    item.findtext("description") or ""
-                )
-
-                link = clean(
-                    item.findtext("link") or ""
-                )
-
-                pub_date = clean(
-                    item.findtext("pubDate") or ""
-                )
-
-                combined = (
-                    title
-                    + " "
-                    + description
-                )
-
-                typ, age = classify(combined)
-
-                print(
-                    f"CCIC_RSS_ITEM "
-                    f"| {title or 'NO TITLE'} "
-                    f"| date={pub_date or 'UNKNOWN'} "
-                    f"| link={link or 'NONE'}"
-                )
-
-                if typ:
-                    hockey_count += 1
-
-                    print(
-                        f"CCIC_RSS_HOCKEY "
-                        f"| {title} "
-                        f"| {typ} "
-                        f"| age={age} "
-                        f"| date={pub_date or 'UNKNOWN'} "
-                        f"| link={link or 'NONE'}"
-                    )
-
-            print(
-                f"CCIC_RSS_HOCKEY_COUNT "
-                f"{hockey_count}"
-            )
-
-        except Exception as exc:
-            print(
-                "CCIC_RSS_PARSE_FAILED:",
-                exc,
-                file=sys.stderr,
-            )
+    targets = set(seed_urls)
 
     # --------------------------------------------------
-    # Also test SportsEngine's daily calendar endpoints.
-    # The prior diagnostic discovered this URL structure.
+    # First pass: discover relevant child pages.
     # --------------------------------------------------
 
-    print("CCIC daily endpoint probe BEGIN")
-
-    for offset in range(0, 15):
-        day = today + timedelta(days=offset)
-
-        url = (
-            f"{base}/event/5540662/"
-            f"{day.year}/{day.month}/{day.day}"
-        )
-
+    for url in seed_urls:
         try:
-            day_response = requests.get(
+            response = requests.get(
                 url,
                 headers=HEADERS,
                 timeout=TIMEOUT,
                 allow_redirects=True,
             )
 
+            if response.status_code != 200:
+                continue
+
         except Exception as exc:
             print(
-                f"CCIC_DAY "
-                f"{day.isoformat()} "
-                f"FAILED={exc}",
+                f"CCIC_PAGE_SEED_FAILED "
+                f"{url} {exc}",
                 file=sys.stderr,
             )
             continue
 
-        html = day_response.text
-
-        print(
-            f"CCIC_DAY "
-            f"{day.isoformat()} "
-            f"status={day_response.status_code} "
-            f"bytes={len(html)}"
-        )
-
-        if day_response.status_code != 200:
-            continue
-
         soup = BeautifulSoup(
-            html,
+            response.text,
             "html.parser",
         )
 
-        text_content = clean(
+        for anchor in soup.find_all(
+            "a",
+            href=True,
+        ):
+            href = anchor.get("href", "")
+            label = clean(
+                anchor.get_text(
+                    " ",
+                    strip=True,
+                )
+            )
+
+            combined = (
+                label + " " + href
+            ).lower()
+
+            if not any(
+                keyword in combined
+                for keyword in link_keywords
+            ):
+                continue
+
+            full_url = urljoin(
+                base,
+                href,
+            )
+
+            if (
+                full_url.startswith(base)
+                and "/page/show/" in full_url
+            ):
+                targets.add(full_url)
+
+    print(
+        f"CCIC_TRAINING_PAGES_TO_TEST "
+        f"count={len(targets)}"
+    )
+
+    # --------------------------------------------------
+    # Second pass: inspect current dated opportunities.
+    # --------------------------------------------------
+
+    current_year = str(today.year)
+    candidate_count = 0
+
+    for url in sorted(targets):
+
+        try:
+            response = requests.get(
+                url,
+                headers=HEADERS,
+                timeout=TIMEOUT,
+                allow_redirects=True,
+            )
+
+            if response.status_code != 200:
+                continue
+
+        except Exception as exc:
+            print(
+                f"CCIC_PAGE_FAILED "
+                f"{url} {exc}",
+                file=sys.stderr,
+            )
+            continue
+
+        soup = BeautifulSoup(
+            response.text,
+            "html.parser",
+        )
+
+        title_node = (
+            soup.find("h1")
+            or soup.find("h2")
+            or soup.find("title")
+        )
+
+        page_title = (
+            clean(
+                title_node.get_text(
+                    " ",
+                    strip=True,
+                )
+            )
+            if title_node
+            else url
+        )
+
+        text = clean(
             soup.get_text(
                 " ",
                 strip=True,
             )
         )
 
-        terms = (
-            "stick time",
-            "sticktime",
-            "stick & puck",
-            "stick and puck",
-            "open hockey",
-            "pickup hockey",
-            "pick up hockey",
-            "pick-up hockey",
-            "power skating",
-            "power skate",
-            "hockey clinic",
-            "hockey camp",
+        # Ignore old pages unless the current year appears,
+        # except the homepage Labor Day announcement.
+        current_page = (
+            current_year in text
+            or (
+                url.rstrip("/") == base
+                and "labor day" in text.lower()
+            )
         )
 
-        if any(
-            term in text_content.lower()
-            for term in terms
-        ):
-            print(
-                f"CCIC_DAY_HOCKEY "
-                f"| {day.isoformat()} "
-                f"| {text_content[:1200]}"
+        if not current_page:
+            continue
+
+        matches = list(
+            date_re.finditer(text)
+        )
+
+        if not matches:
+            continue
+
+        print(
+            f"CCIC_CURRENT_PAGE "
+            f"| {page_title} "
+            f"| {url}"
+        )
+
+        page_seen = set()
+
+        for match in matches:
+            start = max(
+                0,
+                match.start() - 220,
             )
 
-    print("CCIC daily endpoint probe END")
-    print("CCIC official RSS probe END")
+            end = min(
+                len(text),
+                match.end() + 420,
+            )
+
+            snippet = clean(
+                text[start:end]
+            )
+
+            if snippet in page_seen:
+                continue
+
+            page_seen.add(snippet)
+
+            # Keep the output focused on hockey opportunities.
+            if not any(
+                keyword in snippet.lower()
+                for keyword in link_keywords
+            ):
+                continue
+
+            candidate_count += 1
+
+            print(
+                f"CCIC_TRAINING_CANDIDATE "
+                f"| {page_title} "
+                f"| {snippet}"
+            )
+
+    print(
+        f"CCIC_TRAINING_CANDIDATES "
+        f"{candidate_count}"
+    )
+
+    print("CCIC training-page discovery END")
 def main():
     today = datetime.now(AZ).date()
     diagnose_ccic(today)
