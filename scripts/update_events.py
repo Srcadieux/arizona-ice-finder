@@ -765,262 +765,205 @@ def collect_gilbert(today):
             "#/online/azice/calendar"
         ),
     )
-def diagnose_ccic(today):
+def collect_ccic(today):
     """
-    CCIC diagnostic V5.
+    Live Coyotes Community Ice Center collector.
 
-    SportsEngine calendar/RSS is currently empty, so discover dated
-    hockey camps, clinics, skills and power-skating opportunities from
-    CCIC's official content pages.
-
-    Diagnostic only. Publishes no CCIC events.
+    Collect only source-confirmed Power Skating sessions that have
+    explicit dates and times on CCIC's official current-year page.
+    Fail closed if the page or format changes.
     """
 
-    base = "https://www.coyotescommunityicecenter.com"
+    rink = "Coyotes Community Ice Center"
+    source = "ccic"
 
-    seed_urls = [
-        base + "/",
-        base + "/page/show/5550014-on-ice-training",
-        base + "/page/show/5550051-clinics",
-        base + "/page/show/5550050-camps",
-        base + "/page/show/8483422-power-skating",
-    ]
-
-    link_keywords = (
-        "hockey",
-        "clinic",
-        "camp",
-        "skating",
-        "training",
-        "shoot",
-        "sniper",
-        "defense",
-        "checking",
-        "goalie",
-        "stick",
-        "pond",
+    url = (
+        "https://www.coyotescommunityicecenter.com/"
+        "page/show/8483422-power-skating"
     )
 
-    month_pattern = (
-        r"(?:January|February|March|April|May|June|July|"
-        r"August|September|October|November|December|"
-        r"Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)"
+    try:
+        response = requests.get(
+            url,
+            headers=HEADERS,
+            timeout=TIMEOUT,
+            allow_redirects=True,
+        )
+
+        response.raise_for_status()
+
+    except Exception as exc:
+        print(
+            "CCIC Power Skating fetch failed:",
+            exc,
+            file=sys.stderr,
+        )
+        return []
+
+    soup = BeautifulSoup(
+        response.text,
+        "html.parser",
     )
 
-    date_re = re.compile(
-        rf"\b{month_pattern}\s+"
-        r"\d{1,2}"
-        r"(?:st|nd|rd|th)?"
-        r"(?:\s*[-–]\s*\d{1,2}(?:st|nd|rd|th)?)?"
-        r"(?:,\s*|\s+)"
-        r"(?:20\d{2})?",
+    text = clean(
+        soup.get_text(
+            " ",
+            strip=True,
+        )
+    )
+
+    # Fail closed if this does not appear to be the current
+    # hockey camps/clinics registration page.
+    current_year_pattern = re.compile(
+        rf"\b{today.year}\s+Hockey\s+"
+        r"Camps/Clinics/Pond\s+Hockey\b",
         re.I,
     )
 
-    print("CCIC training-page discovery BEGIN")
-
-    targets = set(seed_urls)
-
-    # --------------------------------------------------
-    # First pass: discover relevant child pages.
-    # --------------------------------------------------
-
-    for url in seed_urls:
-        try:
-            response = requests.get(
-                url,
-                headers=HEADERS,
-                timeout=TIMEOUT,
-                allow_redirects=True,
-            )
-
-            if response.status_code != 200:
-                continue
-
-        except Exception as exc:
-            print(
-                f"CCIC_PAGE_SEED_FAILED "
-                f"{url} {exc}",
-                file=sys.stderr,
-            )
-            continue
-
-        soup = BeautifulSoup(
-            response.text,
-            "html.parser",
-        )
-
-        for anchor in soup.find_all(
-            "a",
-            href=True,
-        ):
-            href = anchor.get("href", "")
-            label = clean(
-                anchor.get_text(
-                    " ",
-                    strip=True,
-                )
-            )
-
-            combined = (
-                label + " " + href
-            ).lower()
-
-            if not any(
-                keyword in combined
-                for keyword in link_keywords
-            ):
-                continue
-
-            full_url = urljoin(
-                base,
-                href,
-            )
-
-            if (
-                full_url.startswith(base)
-                and "/page/show/" in full_url
-            ):
-                targets.add(full_url)
-
-    print(
-        f"CCIC_TRAINING_PAGES_TO_TEST "
-        f"count={len(targets)}"
-    )
-
-    # --------------------------------------------------
-    # Second pass: inspect current dated opportunities.
-    # --------------------------------------------------
-
-    current_year = str(today.year)
-    candidate_count = 0
-
-    for url in sorted(targets):
-
-        try:
-            response = requests.get(
-                url,
-                headers=HEADERS,
-                timeout=TIMEOUT,
-                allow_redirects=True,
-            )
-
-            if response.status_code != 200:
-                continue
-
-        except Exception as exc:
-            print(
-                f"CCIC_PAGE_FAILED "
-                f"{url} {exc}",
-                file=sys.stderr,
-            )
-            continue
-
-        soup = BeautifulSoup(
-            response.text,
-            "html.parser",
-        )
-
-        title_node = (
-            soup.find("h1")
-            or soup.find("h2")
-            or soup.find("title")
-        )
-
-        page_title = (
-            clean(
-                title_node.get_text(
-                    " ",
-                    strip=True,
-                )
-            )
-            if title_node
-            else url
-        )
-
-        text = clean(
-            soup.get_text(
-                " ",
-                strip=True,
-            )
-        )
-
-        # Ignore old pages unless the current year appears,
-        # except the homepage Labor Day announcement.
-        current_page = (
-            current_year in text
-            or (
-                url.rstrip("/") == base
-                and "labor day" in text.lower()
-            )
-        )
-
-        if not current_page:
-            continue
-
-        matches = list(
-            date_re.finditer(text)
-        )
-
-        if not matches:
-            continue
-
+    if not current_year_pattern.search(text):
         print(
-            f"CCIC_CURRENT_PAGE "
-            f"| {page_title} "
-            f"| {url}"
+            f"CCIC Power Skating: current-year "
+            f"{today.year} marker not found; skipping.",
+            file=sys.stderr,
         )
+        return []
 
-        page_seen = set()
-
-        for match in matches:
-            start = max(
-                0,
-                match.start() - 220,
-            )
-
-            end = min(
-                len(text),
-                match.end() + 420,
-            )
-
-            snippet = clean(
-                text[start:end]
-            )
-
-            if snippet in page_seen:
-                continue
-
-            page_seen.add(snippet)
-
-            # Keep the output focused on hockey opportunities.
-            if not any(
-                keyword in snippet.lower()
-                for keyword in link_keywords
-            ):
-                continue
-
-            candidate_count += 1
-
-            print(
-                f"CCIC_TRAINING_CANDIDATE "
-                f"| {page_title} "
-                f"| {snippet}"
-            )
-
-    print(
-        f"CCIC_TRAINING_CANDIDATES "
-        f"{candidate_count}"
+    months = (
+        r"January|February|March|April|May|June|July|"
+        r"August|September|October|November|December|"
+        r"Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec"
     )
 
-    print("CCIC training-page discovery END")
+    session_re = re.compile(
+        rf"\b"
+        r"(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)"
+        r"\s*,?\s+"
+        rf"(?P<month>{months})"
+        r"\s+"
+        r"(?P<day>\d{1,2})"
+        r"(?:st|nd|rd|th)?"
+        r"\s*,?\s*"
+        r"(?P<start>\d{1,2}:?\d{2})"
+        r"\s*[-–]\s*"
+        r"(?P<end>\d{1,2}:?\d{2})"
+        r"\s*(?P<ampm>[ap]m)\b",
+        re.I,
+    )
+
+    def clock_text(raw, ampm):
+        raw = raw.strip()
+
+        if ":" in raw:
+            hour, minute = raw.split(":", 1)
+
+        else:
+            hour = raw[:-2]
+            minute = raw[-2:]
+
+        return (
+            f"{int(hour)}:"
+            f"{minute}"
+            f"{ampm.lower()}"
+        )
+
+    now = datetime.now(AZ)
+
+    out = []
+    seen = set()
+
+    for match in session_re.finditer(text):
+        month = match.group("month")
+        day = int(match.group("day"))
+        ampm = match.group("ampm")
+
+        start_clock = clock_text(
+            match.group("start"),
+            ampm,
+        )
+
+        end_clock = clock_text(
+            match.group("end"),
+            ampm,
+        )
+
+        try:
+            start = dtparser.parse(
+                f"{month} {day} {today.year} "
+                f"{start_clock}"
+            ).replace(tzinfo=AZ)
+
+            end = dtparser.parse(
+                f"{month} {day} {today.year} "
+                f"{end_clock}"
+            ).replace(tzinfo=AZ)
+
+        except Exception:
+            continue
+
+        if end <= start:
+            end += timedelta(days=1)
+
+        # Do not publish sessions that have already ended.
+        if end <= now:
+            continue
+
+        key = (
+            start.isoformat(),
+            end.isoformat(),
+        )
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+
+        title = "Power Skating"
+
+        out.append(
+            {
+                "id": sid(
+                    source,
+                    rink,
+                    start,
+                    title,
+                ),
+                "title": title,
+                "type": "Clinic",
+                "rink": rink,
+                "start": start.isoformat(),
+                "end": end.isoformat(),
+                "age": "All",
+                "url": url,
+                "source": source,
+            }
+        )
+
+    out.sort(
+        key=lambda event: event["start"]
+    )
+
+    print(
+        f"CCIC: {len(out)} "
+        f"current Power Skating sessions"
+    )
+
+    for event in out:
+        print(
+            f" - CCIC: "
+            f"{event['start']} | "
+            f"{event['title']} | "
+            f"{event['age']}"
+        )
+
+    return out
 def main():
     today = datetime.now(AZ).date()
-    diagnose_ccic(today)
+    
     collected = (
         collect_arcadia(today)
         + collect_gilbert(today)
         + collect_peoria(today)
+        + collect_ccic(today)
         + collect_mullett(today)
         + collect_scottsdale(today)
         + collect_chandler(today)
@@ -1052,7 +995,6 @@ def main():
             "auto_attempt": [],
 
             "official_link": [
-                "Coyotes Community Ice Center",
                 "Jay Lively Activity Center",
                 "Findlay Toyota Center",
                 "Tucson Convention Center / Tucson Arena",
