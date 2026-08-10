@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-09T14:56:54.000198-07:00",
+  "updated": "2026-08-09T22:12:06.634018-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -815,23 +815,23 @@
       "source": "ccic"
     },
     {
+      "id": "icedenchandler-d0c0e1a2b161",
+      "title": "Adult Stick Time 40+",
+      "type": "Stick Time",
+      "rink": "Ice Den Chandler",
+      "start": "2026-08-31T19:00:00-07:00",
+      "end": "2026-08-31T20:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
+      "source": "icedenchandler"
+    },
+    {
       "id": "icedenchandler-828072715c19",
       "title": "Adult Stick Time 40+",
       "type": "Stick Time",
       "rink": "Ice Den Chandler",
       "start": "2026-08-31T19:50:00-07:00",
       "end": "2026-08-31T21:20:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenchandler-83f71cbba011",
-      "title": "Adult Stick Time 40+",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-08-31T21:30:00-07:00",
-      "end": "2026-08-31T23:00:00-07:00",
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
