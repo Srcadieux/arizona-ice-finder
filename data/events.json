@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-10T15:20:07.585053-07:00",
+  "updated": "2026-08-10T21:52:44.671968-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -143,17 +143,6 @@
       "age": "Adult",
       "url": "https://mullett.sportified.net/products/22543",
       "source": "mullett"
-    },
-    {
-      "id": "ccic-adda8adcb9a0",
-      "title": "Power Skating",
-      "type": "Clinic",
-      "rink": "Coyotes Community Ice Center",
-      "start": "2026-08-10T16:10:00-07:00",
-      "end": "2026-08-10T17:10:00-07:00",
-      "age": "All",
-      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
-      "source": "ccic"
     },
     {
       "id": "mullett-166fc666df24",
