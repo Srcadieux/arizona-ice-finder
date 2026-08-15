@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-14T20:09:57.278034-07:00",
+  "updated": "2026-08-14T22:12:38.816216-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -189,14 +189,14 @@
       "source": "icedenchandler"
     },
     {
-      "id": "mullett-9bd7ec893259",
-      "title": "Adult Open Hockey",
+      "id": "mullett-e80e8ec16928",
+      "title": "Adult Open Hockey Register Online",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-08-17T12:30:00-07:00",
       "end": "2026-08-17T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-08-13",
+      "url": "https://mullett.sportified.net/products/22807",
       "source": "mullett"
     },
     {
@@ -277,14 +277,14 @@
       "source": "icedenscottsdale"
     },
     {
-      "id": "mullett-27be8eca80c4",
-      "title": "Adult Open Hockey",
+      "id": "mullett-52cedf7c0fd9",
+      "title": "Adult Open Hockey Register Online",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-08-19T12:30:00-07:00",
       "end": "2026-08-19T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-08-13",
+      "url": "https://mullett.sportified.net/products/22808",
       "source": "mullett"
     },
     {
@@ -332,14 +332,14 @@
       "source": "flagstaff"
     },
     {
-      "id": "mullett-a1e59633f5e2",
-      "title": "Adult Open Hockey",
+      "id": "mullett-4e5cbfd1aa47",
+      "title": "Adult Open Hockey Register Online",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-08-21T12:30:00-07:00",
       "end": "2026-08-21T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-08-20",
+      "url": "https://mullett.sportified.net/products/22809",
       "source": "mullett"
     },
     {
