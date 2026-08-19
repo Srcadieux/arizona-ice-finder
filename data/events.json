@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-19T10:42:39.243077-07:00",
+  "updated": "2026-08-19T14:43:14.073103-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -154,6 +154,28 @@
       "age": "Adult",
       "url": "https://mullett.sportified.net/products/22808",
       "source": "mullett"
+    },
+    {
+      "id": "azicegilbert-2c6cc9ff1515",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Gilbert",
+      "start": "2026-08-19T19:30:00-07:00",
+      "end": "2026-08-19T20:45:00-07:00",
+      "age": "All",
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
+    },
+    {
+      "id": "azicegilbert-67d06a3410cf",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Gilbert",
+      "start": "2026-08-19T20:20:00-07:00",
+      "end": "2026-08-19T21:35:00-07:00",
+      "age": "All",
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
     },
     {
       "id": "azicearcadia-e5abf4ce0722",
