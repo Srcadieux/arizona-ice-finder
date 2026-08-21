@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-21T07:19:15.889751-07:00",
+  "updated": "2026-08-21T10:51:00.979476-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -99,17 +99,6 @@
       "age": "All",
       "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
       "source": "azicegilbert"
-    },
-    {
-      "id": "flagstaff-64445ac91e77",
-      "title": "Adult Stick & Puck",
-      "type": "Stick Time",
-      "rink": "Jay Lively Activity Center",
-      "start": "2026-08-21T09:00:00-07:00",
-      "end": "2026-08-21T10:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
-      "source": "flagstaff"
     },
     {
       "id": "azicearcadia-fff559f974ff",
@@ -354,14 +343,14 @@
       "source": "flagstaff"
     },
     {
-      "id": "mullett-936946cd54da",
-      "title": "Adult Open Hockey",
+      "id": "mullett-45cd3e59f40d",
+      "title": "Adult Open Hockey Register Online",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-08-28T12:30:00-07:00",
       "end": "2026-08-28T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-08-27",
+      "url": "https://mullett.sportified.net/products/22909",
       "source": "mullett"
     },
     {
@@ -530,6 +519,17 @@
       "source": "mullett"
     },
     {
+      "id": "mullett-b525b939c87a",
+      "title": "XSkateFit Hockey Power Skate - All Ages Register Online",
+      "type": "Clinic",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-09-09T17:40:00-07:00",
+      "end": "2026-09-09T18:40:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/products/22873",
+      "source": "mullett"
+    },
+    {
       "id": "mullett-1b0f3e67de27",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -548,6 +548,17 @@
       "start": "2026-09-18T12:30:00-07:00",
       "end": "2026-09-18T14:00:00-07:00",
       "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-17",
+      "source": "mullett"
+    },
+    {
+      "id": "mullett-4eb882a79cfc",
+      "title": "XSkateFit Hockey Power Skate? - All Ages",
+      "type": "Clinic",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-09-19T11:30:00-07:00",
+      "end": "2026-09-19T12:30:00-07:00",
+      "age": "All",
       "url": "https://mullett.sportified.net/schedule?date=2026-09-17",
       "source": "mullett"
     }
