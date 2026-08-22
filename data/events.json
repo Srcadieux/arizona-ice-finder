@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-21T14:02:43.916436-07:00",
+  "updated": "2026-08-21T20:11:16.199966-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -134,14 +134,14 @@
       "source": "azicegilbert"
     },
     {
-      "id": "mullett-4e5cbfd1aa47",
-      "title": "Adult Open Hockey Register Online",
+      "id": "mullett-a1e59633f5e2",
+      "title": "Adult Open Hockey",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-08-21T12:30:00-07:00",
       "end": "2026-08-21T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/products/22809",
+      "url": "https://mullett.sportified.net/schedule?date=2026-08-20",
       "source": "mullett"
     },
     {
