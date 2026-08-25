@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-25T07:31:29.737025-07:00",
+  "updated": "2026-08-25T10:49:53.178551-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -8,7 +8,8 @@
       "Coyotes Community Ice Center",
       "Ice Den Chandler",
       "Ice Den Scottsdale",
-      "Jay Lively Activity Center"
+      "Jay Lively Activity Center",
+      "Mullett Arena / Mountain America Community Iceplex"
     ],
     "auto_attempt": [],
     "official_link": [
@@ -220,6 +221,17 @@
       "source": "flagstaff"
     },
     {
+      "id": "mullett-45cd3e59f40d",
+      "title": "Adult Open Hockey Register Online",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-08-28T12:30:00-07:00",
+      "end": "2026-08-28T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/products/22909",
+      "source": "mullett"
+    },
+    {
       "id": "icedenchandler-45506629dd6c",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -418,6 +430,17 @@
       "source": "flagstaff"
     },
     {
+      "id": "mullett-9b4ca9aefc9a",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-09-04T12:30:00-07:00",
+      "end": "2026-09-04T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-08-31",
+      "source": "mullett"
+    },
+    {
       "id": "icedenchandler-ff1c1cf8848e",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -438,6 +461,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "mullett-032a16305a23",
+      "title": "Flow Hockey Game (CDG)",
+      "type": "Flow Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-09-04T20:40:00-07:00",
+      "end": "2026-09-04T21:55:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-08-31",
+      "source": "mullett"
     },
     {
       "id": "icedenchandler-220cce4bd4c1",
@@ -504,6 +538,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "mullett-1b0f3e67de27",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-09-11T12:30:00-07:00",
+      "end": "2026-09-11T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-07",
+      "source": "mullett"
     },
     {
       "id": "icedenchandler-22308a1347ee",
@@ -594,6 +639,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "mullett-5f3691ddbb9c",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-09-18T12:30:00-07:00",
+      "end": "2026-09-18T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-14",
+      "source": "mullett"
+    },
+    {
       "id": "icedenchandler-67455a317920",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -680,6 +736,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "mullett-0dd9b37ce80c",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-09-25T12:30:00-07:00",
+      "end": "2026-09-25T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-21",
+      "source": "mullett"
     },
     {
       "id": "icedenchandler-67fcee5ead26",
