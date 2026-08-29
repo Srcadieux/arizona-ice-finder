@@ -1,10 +1,9 @@
 {
-  "updated": "2026-08-28T21:24:49.681809-07:00",
+  "updated": "2026-08-29T01:24:53.151700-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
       "AZ Ice Arcadia",
-      "AZ Ice Gilbert",
       "AZ Ice Peoria",
       "Coyotes Community Ice Center",
       "Ice Den Chandler",
@@ -23,94 +22,6 @@
     ]
   },
   "events": [
-    {
-      "id": "icedenscottsdale-b7ab69628d2f",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-08-27T11:45:00-07:00",
-      "end": "2026-08-27T13:15:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-6c7c5ae416d9",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-08-27T12:15:00-07:00",
-      "end": "2026-08-27T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-418f7da8a4bf",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-08-27T13:30:00-07:00",
-      "end": "2026-08-27T15:00:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "azicegilbert-1a2beae6c1f4",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Gilbert",
-      "start": "2026-08-28T06:30:00-07:00",
-      "end": "2026-08-28T07:30:00-07:00",
-      "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
-      "source": "azicegilbert"
-    },
-    {
-      "id": "azicegilbert-fd09d64b1ff2",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Gilbert",
-      "start": "2026-08-28T08:30:00-07:00",
-      "end": "2026-08-28T09:30:00-07:00",
-      "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
-      "source": "azicegilbert"
-    },
-    {
-      "id": "azicearcadia-594851f816cf",
-      "title": "Adult Pick Up Hockey",
-      "type": "Open Hockey",
-      "rink": "AZ Ice Arcadia",
-      "start": "2026-08-28T11:15:00-07:00",
-      "end": "2026-08-28T12:45:00-07:00",
-      "age": "Adult",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
-      "source": "azicearcadia"
-    },
-    {
-      "id": "azicepeoria-5fba39049100",
-      "title": "Adult Pick Up Hockey",
-      "type": "Open Hockey",
-      "rink": "AZ Ice Peoria",
-      "start": "2026-08-28T11:45:00-07:00",
-      "end": "2026-08-28T13:15:00-07:00",
-      "age": "Adult",
-      "url": "https://azicepeoria.com/all-events/hockey-events/",
-      "source": "azicepeoria"
-    },
-    {
-      "id": "azicegilbert-4eb1a18262cb",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Gilbert",
-      "start": "2026-08-28T12:00:00-07:00",
-      "end": "2026-08-28T13:30:00-07:00",
-      "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
-      "source": "azicegilbert"
-    },
     {
       "id": "mullett-45cd3e59f40d",
       "title": "Adult Open Hockey Register Online",
@@ -145,15 +56,15 @@
       "source": "icedenscottsdale"
     },
     {
-      "id": "azicegilbert-65635f158259",
+      "id": "azicepeoria-30df897fe921",
       "title": "Stick Time",
       "type": "Stick Time",
-      "rink": "AZ Ice Gilbert",
-      "start": "2026-08-28T18:20:00-07:00",
-      "end": "2026-08-28T19:20:00-07:00",
+      "rink": "AZ Ice Peoria",
+      "start": "2026-08-29T05:30:00-07:00",
+      "end": "2026-08-29T06:45:00-07:00",
       "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
-      "source": "azicegilbert"
+      "url": "https://azicepeoria.com/all-events/hockey-events/",
+      "source": "azicepeoria"
     },
     {
       "id": "icedenchandler-73bddfc08dbd",
@@ -187,6 +98,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "azicearcadia-26e64babf3f5",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Arcadia",
+      "start": "2026-08-29T18:45:00-07:00",
+      "end": "2026-08-29T20:00:00-07:00",
+      "age": "All",
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
+      "source": "azicearcadia"
     },
     {
       "id": "icedenchandler-519714dbf4d6",
@@ -460,7 +382,7 @@
       "start": "2026-09-11T12:30:00-07:00",
       "end": "2026-09-11T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-09-10",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-11",
       "source": "mullett"
     },
     {
@@ -559,7 +481,7 @@
       "start": "2026-09-17T17:40:00-07:00",
       "end": "2026-09-17T18:40:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-09-17",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-11",
       "source": "mullett"
     },
     {
@@ -570,7 +492,7 @@
       "start": "2026-09-18T12:30:00-07:00",
       "end": "2026-09-18T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-09-17",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-18",
       "source": "mullett"
     },
     {
@@ -603,7 +525,7 @@
       "start": "2026-09-19T11:30:00-07:00",
       "end": "2026-09-19T12:30:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-09-17",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-18",
       "source": "mullett"
     },
     {
@@ -680,7 +602,7 @@
       "start": "2026-09-25T12:30:00-07:00",
       "end": "2026-09-25T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-09-24",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-25",
       "source": "mullett"
     },
     {
@@ -713,7 +635,7 @@
       "start": "2026-09-26T11:30:00-07:00",
       "end": "2026-09-26T12:30:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-09-24",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-25",
       "source": "mullett"
     },
     {
