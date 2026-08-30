@@ -1,9 +1,10 @@
 {
-  "updated": "2026-08-29T13:24:49.123897-07:00",
+  "updated": "2026-08-29T17:24:48.451921-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
       "AZ Ice Arcadia",
+      "AZ Ice Gilbert",
       "AZ Ice Peoria",
       "Coyotes Community Ice Center",
       "Ice Den Chandler",
@@ -98,6 +99,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "azicegilbert-469f5cf31b08",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Gilbert",
+      "start": "2026-08-29T18:15:00-07:00",
+      "end": "2026-08-29T19:30:00-07:00",
+      "age": "All",
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
     },
     {
       "id": "azicearcadia-26e64babf3f5",
