@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-31T05:24:52.554356-07:00",
+  "updated": "2026-08-31T09:24:47.257957-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -132,6 +132,17 @@
       "age": "All",
       "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
       "source": "ccic"
+    },
+    {
+      "id": "azicegilbert-889e70a2bf27",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Gilbert",
+      "start": "2026-08-31T17:30:00-07:00",
+      "end": "2026-08-31T19:00:00-07:00",
+      "age": "All",
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
     },
     {
       "id": "icedenchandler-d0c0e1a2b161",
