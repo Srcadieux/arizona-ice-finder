@@ -1,12 +1,11 @@
 {
-  "updated": "2026-08-31T13:24:52.961062-07:00",
+  "updated": "2026-08-31T17:40:31.520860-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
       "AZ Ice Arcadia",
       "AZ Ice Gilbert",
       "AZ Ice Peoria",
-      "Coyotes Community Ice Center",
       "Ice Den Chandler",
       "Ice Den Scottsdale",
       "Jay Lively Activity Center",
@@ -121,17 +120,6 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
-    },
-    {
-      "id": "ccic-0a6729a23f71",
-      "title": "Power Skating",
-      "type": "Clinic",
-      "rink": "Coyotes Community Ice Center",
-      "start": "2026-08-31T16:10:00-07:00",
-      "end": "2026-08-31T17:10:00-07:00",
-      "age": "All",
-      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
-      "source": "ccic"
     },
     {
       "id": "azicegilbert-889e70a2bf27",
@@ -684,12 +672,12 @@
       "source": "icedenscottsdale"
     },
     {
-      "id": "mullett-55b66a6a7e1f",
+      "id": "mullett-21e0c845e729",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
-      "start": "2026-10-02T12:30:00-07:00",
-      "end": "2026-10-02T14:00:00-07:00",
+      "start": "2026-10-02T11:15:00-07:00",
+      "end": "2026-10-02T12:45:00-07:00",
       "age": "Adult",
       "url": "https://mullett.sportified.net/schedule?date=2026-09-27",
       "source": "mullett"
