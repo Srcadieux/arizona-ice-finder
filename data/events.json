@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-01T13:28:55.089258-07:00",
+  "updated": "2026-09-01T17:38:12.854016-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -97,17 +97,6 @@
       "age": "Adult",
       "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
       "source": "azicegilbert"
-    },
-    {
-      "id": "flagstaff-1073ff9c8170",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Jay Lively Activity Center",
-      "start": "2026-09-01T12:00:00-07:00",
-      "end": "2026-09-01T14:00:00-07:00",
-      "age": "Adult",
-      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
-      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-775fe7f0ac05",
