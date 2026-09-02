@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-02T09:32:06.724044-07:00",
+  "updated": "2026-09-02T13:30:14.398244-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -98,17 +98,6 @@
       "age": "All",
       "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
       "source": "azicegilbert"
-    },
-    {
-      "id": "flagstaff-f757ffdabe51",
-      "title": "Adult Stick & Puck",
-      "type": "Stick Time",
-      "rink": "Jay Lively Activity Center",
-      "start": "2026-09-02T09:00:00-07:00",
-      "end": "2026-09-02T10:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
-      "source": "flagstaff"
     },
     {
       "id": "azicepeoria-74e2f6e4a2ff",
@@ -373,6 +362,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "mullett-1b0f3e67de27",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-09-11T12:30:00-07:00",
+      "end": "2026-09-11T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-08",
+      "source": "mullett"
     },
     {
       "id": "icedenchandler-22308a1347ee",
