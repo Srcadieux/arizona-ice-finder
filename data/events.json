@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-03T09:30:49.204636-07:00",
+  "updated": "2026-09-03T13:29:00.463093-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -320,14 +320,14 @@
       "source": "icedenchandler"
     },
     {
-      "id": "mullett-1b0f3e67de27",
-      "title": "Adult Open Hockey",
+      "id": "mullett-a7e571f03fe9",
+      "title": "Adult Open Hockey Register Online",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-09-11T12:30:00-07:00",
       "end": "2026-09-11T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-09-09",
+      "url": "https://mullett.sportified.net/products/23336",
       "source": "mullett"
     },
     {
@@ -471,6 +471,17 @@
       "end": "2026-09-17T18:40:00-07:00",
       "age": "All",
       "url": "https://mullett.sportified.net/products/23204",
+      "source": "mullett"
+    },
+    {
+      "id": "mullett-6a0b2fa386b2",
+      "title": "Flow Hockey Game (CDG)",
+      "type": "Flow Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-09-17T20:00:00-07:00",
+      "end": "2026-09-17T21:15:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-16",
       "source": "mullett"
     },
     {
@@ -681,17 +692,6 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
-    },
-    {
-      "id": "mullett-d23f558921f5",
-      "title": "XSkate Fit - Power Skate Class Register Online",
-      "type": "Clinic",
-      "rink": "Mullett Arena / Mountain America Community Iceplex",
-      "start": "2026-09-26T11:30:00-07:00",
-      "end": "2026-09-26T12:30:00-07:00",
-      "age": "All",
-      "url": "https://mullett.sportified.net/products/23205",
-      "source": "mullett"
     },
     {
       "id": "icedenchandler-572e26aab8f9",
