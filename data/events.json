@@ -1,10 +1,11 @@
 {
-  "updated": "2026-09-03T17:37:17.722981-07:00",
+  "updated": "2026-09-03T21:29:52.541903-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
       "AZ Ice Arcadia",
       "AZ Ice Gilbert",
+      "Coyotes Community Ice Center",
       "Ice Den Chandler",
       "Ice Den Scottsdale",
       "Jay Lively Activity Center",
@@ -198,6 +199,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "ccic-eb066f90d044",
+      "title": "Power Skating",
+      "type": "Clinic",
+      "rink": "Coyotes Community Ice Center",
+      "start": "2026-09-07T16:10:00-07:00",
+      "end": "2026-09-07T17:10:00-07:00",
+      "age": "All",
+      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
+      "source": "ccic"
+    },
+    {
       "id": "mullett-0043b56a56ab",
       "title": "Flow Hockey Game (CDG) Register Online",
       "type": "Flow Hockey",
@@ -339,6 +351,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "ccic-7216d3d0f836",
+      "title": "Power Skating",
+      "type": "Clinic",
+      "rink": "Coyotes Community Ice Center",
+      "start": "2026-09-14T16:10:00-07:00",
+      "end": "2026-09-14T17:10:00-07:00",
+      "age": "All",
+      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
+      "source": "ccic"
     },
     {
       "id": "flagstaff-2618d878332b",
@@ -517,6 +540,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "ccic-ff1a607df11f",
+      "title": "Power Skating",
+      "type": "Clinic",
+      "rink": "Coyotes Community Ice Center",
+      "start": "2026-09-21T16:10:00-07:00",
+      "end": "2026-09-21T17:10:00-07:00",
+      "age": "All",
+      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
+      "source": "ccic"
+    },
+    {
       "id": "flagstaff-36be55811109",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -658,6 +692,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "ccic-008f65bd699c",
+      "title": "Power Skating",
+      "type": "Clinic",
+      "rink": "Coyotes Community Ice Center",
+      "start": "2026-09-28T16:10:00-07:00",
+      "end": "2026-09-28T17:10:00-07:00",
+      "age": "All",
+      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
+      "source": "ccic"
     },
     {
       "id": "flagstaff-f9531ff187f3",
