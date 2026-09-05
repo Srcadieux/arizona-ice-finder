@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-04T13:29:04.627568-07:00",
+  "updated": "2026-09-04T17:38:34.266855-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -142,6 +142,17 @@
       "age": "Adult",
       "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
       "source": "azicearcadia"
+    },
+    {
+      "id": "icedenchandler-1bccb410935f",
+      "title": "Adult Women's Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Ice Den Chandler",
+      "start": "2026-09-06T13:15:00-07:00",
+      "end": "2026-09-06T14:45:00-07:00",
+      "age": "Adult",
+      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
+      "source": "icedenchandler"
     },
     {
       "id": "mullett-8a9db5f9b1c8",
