@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T15:52:27.965622-07:00",
+  "updated": "2026-09-07T21:45:52.286462-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -132,17 +132,6 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
-    },
-    {
-      "id": "ccic-eb066f90d044",
-      "title": "Power Skating",
-      "type": "Clinic",
-      "rink": "Coyotes Community Ice Center",
-      "start": "2026-09-07T16:10:00-07:00",
-      "end": "2026-09-07T17:10:00-07:00",
-      "age": "All",
-      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
-      "source": "ccic"
     },
     {
       "id": "mullett-0043b56a56ab",
