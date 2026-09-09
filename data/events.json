@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T05:59:53.552381-07:00",
+  "updated": "2026-09-09T12:18:51.605889-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -99,17 +99,6 @@
       "age": "All",
       "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
       "source": "azicegilbert"
-    },
-    {
-      "id": "flagstaff-a8f00c708d81",
-      "title": "Adult Stick & Puck",
-      "type": "Stick Time",
-      "rink": "Jay Lively Activity Center",
-      "start": "2026-09-09T09:00:00-07:00",
-      "end": "2026-09-09T10:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
-      "source": "flagstaff"
     },
     {
       "id": "azicepeoria-2b55f344f786",
