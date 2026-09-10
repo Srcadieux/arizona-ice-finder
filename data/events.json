@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T15:36:02.832304-07:00",
+  "updated": "2026-09-09T21:50:49.990582-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -321,14 +321,14 @@
       "source": "mullett"
     },
     {
-      "id": "mullett-6a0b2fa386b2",
-      "title": "Flow Hockey Game (CDG)",
+      "id": "mullett-340f084b2925",
+      "title": "Flow Hockey Game (CDG) [Mullett] Register Online",
       "type": "Flow Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-09-17T20:00:00-07:00",
       "end": "2026-09-17T21:15:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-09-15",
+      "url": "https://mullett.sportified.net/products/23600",
       "source": "mullett"
     },
     {
@@ -343,14 +343,14 @@
       "source": "flagstaff"
     },
     {
-      "id": "mullett-5f3691ddbb9c",
-      "title": "Adult Open Hockey",
+      "id": "mullett-cb73765505f3",
+      "title": "Adult Open Hockey Register Online",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-09-18T12:30:00-07:00",
       "end": "2026-09-18T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-09-15",
+      "url": "https://mullett.sportified.net/products/23601",
       "source": "mullett"
     },
     {
