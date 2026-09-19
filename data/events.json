@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-18T15:38:03.869709-07:00",
+  "updated": "2026-09-18T21:43:07.971579-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -365,14 +365,14 @@
       "source": "icedenscottsdale"
     },
     {
-      "id": "mullett-1e1edc16451f",
-      "title": "Flow Hockey Game (CDG)",
+      "id": "mullett-6957a3731eda",
+      "title": "Flow Hockey Game (CDG) Register Online",
       "type": "Flow Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-09-25T21:50:00-07:00",
       "end": "2026-09-25T23:05:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-09-24",
+      "url": "https://mullett.sportified.net/products/23797",
       "source": "mullett"
     },
     {
@@ -472,6 +472,17 @@
       "end": "2026-10-02T12:45:00-07:00",
       "age": "Adult",
       "url": "https://mullett.sportified.net/schedule?date=2026-10-01",
+      "source": "mullett"
+    },
+    {
+      "id": "mullett-986b4b6d29e9",
+      "title": "Flow Hockey Game (CDG) [Mullett]",
+      "type": "Flow Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-10-08T21:25:00-07:00",
+      "end": "2026-10-08T22:40:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-08",
       "source": "mullett"
     },
     {
