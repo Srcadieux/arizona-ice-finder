@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-21T08:08:48.501346-07:00",
+  "updated": "2026-09-21T13:27:04.955237-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -464,6 +464,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "mullett-051b5f3d598e",
+      "title": "Glass Cleaning? All Ages Stick Time?",
+      "type": "Stick Time",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-10-06T15:30:00-07:00",
+      "end": "2026-10-06T17:00:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-04",
+      "source": "mullett"
+    },
+    {
       "id": "icedenscottsdale-d5d5da38a192",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -574,6 +585,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "mullett-c53e717395b2",
+      "title": "Glass Cleaning? All Ages Stick Time?",
+      "type": "Stick Time",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-10-13T15:30:00-07:00",
+      "end": "2026-10-13T17:00:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-11",
+      "source": "mullett"
+    },
+    {
       "id": "icedenscottsdale-48c14e0f2700",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -671,6 +693,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "mullett-03d1c2c3beb5",
+      "title": "Glass Cleaning? All Ages Stick Time?",
+      "type": "Stick Time",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-10-20T15:30:00-07:00",
+      "end": "2026-10-20T17:00:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-18",
+      "source": "mullett"
     },
     {
       "id": "icedenscottsdale-b50989c379cb",
