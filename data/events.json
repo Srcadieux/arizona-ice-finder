@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-25T06:53:46.903888-07:00",
+  "updated": "2026-09-25T13:02:47.883789-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -101,17 +101,6 @@
       "source": "azicegilbert"
     },
     {
-      "id": "flagstaff-302c334c1156",
-      "title": "Adult Stick & Puck",
-      "type": "Stick Time",
-      "rink": "Jay Lively Activity Center",
-      "start": "2026-09-25T09:00:00-07:00",
-      "end": "2026-09-25T10:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
-      "source": "flagstaff"
-    },
-    {
       "id": "azicearcadia-0b20e4f8a7b6",
       "title": "Adult Pick Up Hockey",
       "type": "Open Hockey",
@@ -165,6 +154,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "azicearcadia-8343ece120fa",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Arcadia",
+      "start": "2026-09-25T15:30:00-07:00",
+      "end": "2026-09-25T17:00:00-07:00",
+      "age": "All",
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
+      "source": "azicearcadia"
     },
     {
       "id": "mullett-6957a3731eda",
