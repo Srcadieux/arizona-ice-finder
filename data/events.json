@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-30T07:57:55.280302-07:00",
+  "updated": "2026-09-30T13:50:47.654802-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -88,17 +88,6 @@
       "age": "All",
       "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
       "source": "azicegilbert"
-    },
-    {
-      "id": "flagstaff-ca0c397f67d8",
-      "title": "Adult Stick & Puck",
-      "type": "Stick Time",
-      "rink": "Jay Lively Activity Center",
-      "start": "2026-09-30T09:00:00-07:00",
-      "end": "2026-09-30T10:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
-      "source": "flagstaff"
     },
     {
       "id": "azicearcadia-503c7343c1c6",
@@ -464,6 +453,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "mullett-eeb09433fa37",
+      "title": "Flow Hockey Game (CDG) [Mullett]",
+      "type": "Flow Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-10-15T20:00:00-07:00",
+      "end": "2026-10-15T21:15:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-13",
+      "source": "mullett"
+    },
+    {
       "id": "mullett-0d342ad05714",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -583,6 +583,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "mullett-1af4bb2c8b15",
+      "title": "Flow Hockey Game (CDG) [Mullett]",
+      "type": "Flow Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-10-22T20:00:00-07:00",
+      "end": "2026-10-22T21:15:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-20",
+      "source": "mullett"
     },
     {
       "id": "mullett-3585ff13404b",
