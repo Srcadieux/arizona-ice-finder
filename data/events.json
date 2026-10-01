@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-30T13:50:47.654802-07:00",
+  "updated": "2026-09-30T23:04:42.583257-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -211,6 +211,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "icedenchandler-25ce18b14f95",
+      "title": "Adult Women's Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Ice Den Chandler",
+      "start": "2026-10-04T12:30:00-07:00",
+      "end": "2026-10-04T13:45:00-07:00",
+      "age": "Adult",
+      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
+      "source": "icedenchandler"
+    },
+    {
       "id": "icedenchandler-caca59f68305",
       "title": "Adult Stick Time",
       "type": "Stick Time",
@@ -365,6 +376,28 @@
       "source": "icedenscottsdale"
     },
     {
+      "id": "icedenchandler-53cf881785a9",
+      "title": "Adult Women's Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Ice Den Chandler",
+      "start": "2026-10-11T12:30:00-07:00",
+      "end": "2026-10-11T13:45:00-07:00",
+      "age": "Adult",
+      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
+      "source": "icedenchandler"
+    },
+    {
+      "id": "icedenchandler-d0ad47792b28",
+      "title": "Adult Women's Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Ice Den Chandler",
+      "start": "2026-10-11T14:20:00-07:00",
+      "end": "2026-10-11T15:35:00-07:00",
+      "age": "Adult",
+      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
+      "source": "icedenchandler"
+    },
+    {
       "id": "icedenchandler-c8c3a82d98c2",
       "title": "Adult Stick Time",
       "type": "Stick Time",
@@ -497,6 +530,17 @@
       "source": "icedenscottsdale"
     },
     {
+      "id": "icedenchandler-1667c54aeecd",
+      "title": "Adult Women's Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Ice Den Chandler",
+      "start": "2026-10-18T12:30:00-07:00",
+      "end": "2026-10-18T13:45:00-07:00",
+      "age": "Adult",
+      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
+      "source": "icedenchandler"
+    },
+    {
       "id": "icedenchandler-6560b65002e9",
       "title": "Adult Stick Time",
       "type": "Stick Time",
@@ -627,6 +671,28 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "icedenchandler-43d7280a16de",
+      "title": "Adult Women's Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Ice Den Chandler",
+      "start": "2026-10-25T11:35:00-07:00",
+      "end": "2026-10-25T12:50:00-07:00",
+      "age": "Adult",
+      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
+      "source": "icedenchandler"
+    },
+    {
+      "id": "icedenchandler-1f27f762f1f2",
+      "title": "Adult Women's Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Ice Den Chandler",
+      "start": "2026-10-25T12:30:00-07:00",
+      "end": "2026-10-25T13:45:00-07:00",
+      "age": "Adult",
+      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
+      "source": "icedenchandler"
     },
     {
       "id": "icedenchandler-8d432abd45b8",
