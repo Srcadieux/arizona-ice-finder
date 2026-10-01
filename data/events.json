@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-30T23:04:42.583257-07:00",
+  "updated": "2026-10-01T08:29:45.122293-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -24,83 +24,6 @@
   },
   "events": [
     {
-      "id": "icedenscottsdale-cf162ac8602b",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-09-29T12:15:00-07:00",
-      "end": "2026-09-29T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "azicepeoria-9872a50bd910",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Peoria",
-      "start": "2026-09-30T05:30:00-07:00",
-      "end": "2026-09-30T06:30:00-07:00",
-      "age": "All",
-      "url": "https://azicepeoria.com/all-events/hockey-events/",
-      "source": "azicepeoria"
-    },
-    {
-      "id": "azicegilbert-1a2825f75d98",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Gilbert",
-      "start": "2026-09-30T06:30:00-07:00",
-      "end": "2026-09-30T07:30:00-07:00",
-      "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
-      "source": "azicegilbert"
-    },
-    {
-      "id": "azicepeoria-88f4b157ef25",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Peoria",
-      "start": "2026-09-30T06:45:00-07:00",
-      "end": "2026-09-30T07:45:00-07:00",
-      "age": "All",
-      "url": "https://azicepeoria.com/all-events/hockey-events/",
-      "source": "azicepeoria"
-    },
-    {
-      "id": "azicepeoria-1fec3ccb9957",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Peoria",
-      "start": "2026-09-30T08:00:00-07:00",
-      "end": "2026-09-30T09:15:00-07:00",
-      "age": "All",
-      "url": "https://azicepeoria.com/all-events/hockey-events/",
-      "source": "azicepeoria"
-    },
-    {
-      "id": "azicegilbert-c831b50f4f72",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Gilbert",
-      "start": "2026-09-30T08:30:00-07:00",
-      "end": "2026-09-30T09:30:00-07:00",
-      "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
-      "source": "azicegilbert"
-    },
-    {
-      "id": "azicearcadia-503c7343c1c6",
-      "title": "Adult Pick Up Hockey",
-      "type": "Open Hockey",
-      "rink": "AZ Ice Arcadia",
-      "start": "2026-09-30T11:15:00-07:00",
-      "end": "2026-09-30T12:45:00-07:00",
-      "age": "Adult",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
-      "source": "azicearcadia"
-    },
-    {
       "id": "icedenscottsdale-955ee2f9e354",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -112,15 +35,81 @@
       "source": "icedenscottsdale"
     },
     {
-      "id": "azicearcadia-9f39d59219f2",
+      "id": "azicepeoria-8927fa3fc258",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Peoria",
+      "start": "2026-10-01T05:30:00-07:00",
+      "end": "2026-10-01T06:30:00-07:00",
+      "age": "All",
+      "url": "https://azicepeoria.com/all-events/hockey-events/",
+      "source": "azicepeoria"
+    },
+    {
+      "id": "azicegilbert-df060d3d893e",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Gilbert",
+      "start": "2026-10-01T06:30:00-07:00",
+      "end": "2026-10-01T07:30:00-07:00",
+      "age": "All",
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
+    },
+    {
+      "id": "azicepeoria-c3eedce21cfd",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Peoria",
+      "start": "2026-10-01T06:45:00-07:00",
+      "end": "2026-10-01T07:45:00-07:00",
+      "age": "All",
+      "url": "https://azicepeoria.com/all-events/hockey-events/",
+      "source": "azicepeoria"
+    },
+    {
+      "id": "azicepeoria-438900cb2e1a",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Peoria",
+      "start": "2026-10-01T08:00:00-07:00",
+      "end": "2026-10-01T09:15:00-07:00",
+      "age": "All",
+      "url": "https://azicepeoria.com/all-events/hockey-events/",
+      "source": "azicepeoria"
+    },
+    {
+      "id": "azicegilbert-9703a1aeef78",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Gilbert",
+      "start": "2026-10-01T08:30:00-07:00",
+      "end": "2026-10-01T09:30:00-07:00",
+      "age": "All",
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
+    },
+    {
+      "id": "azicearcadia-8007ff42722d",
       "title": "Stick Time",
       "type": "Stick Time",
       "rink": "AZ Ice Arcadia",
-      "start": "2026-09-30T15:15:00-07:00",
-      "end": "2026-09-30T16:15:00-07:00",
+      "start": "2026-10-01T11:15:00-07:00",
+      "end": "2026-10-01T12:45:00-07:00",
       "age": "All",
       "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
       "source": "azicearcadia"
+    },
+    {
+      "id": "azicegilbert-deedbf8b3cdf",
+      "title": "Adult Pick Up Hockey",
+      "type": "Open Hockey",
+      "rink": "AZ Ice Gilbert",
+      "start": "2026-10-01T12:00:00-07:00",
+      "end": "2026-10-01T13:30:00-07:00",
+      "age": "Adult",
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
     },
     {
       "id": "flagstaff-09d8593fd761",
@@ -244,6 +233,17 @@
       "source": "ccic"
     },
     {
+      "id": "flagstaff-6e84ca5fedd0",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-06T12:00:00-07:00",
+      "end": "2026-10-06T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-0d58796bb028",
       "title": "Adult Stick Time (75 min)",
       "type": "Stick Time",
@@ -284,8 +284,19 @@
       "start": "2026-10-06T15:30:00-07:00",
       "end": "2026-10-06T17:00:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-06",
+      "url": "https://mullett.sportified.net/schedule?date=2026-09-30",
       "source": "mullett"
+    },
+    {
+      "id": "flagstaff-b7b4d31c1cb0",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-07T09:00:00-07:00",
+      "end": "2026-10-07T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-d5d5da38a192",
@@ -297,6 +308,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "flagstaff-9242a278d5ea",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-08T12:00:00-07:00",
+      "end": "2026-10-08T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-bc46bdd2f71a",
@@ -343,6 +365,17 @@
       "source": "mullett"
     },
     {
+      "id": "flagstaff-64da67c4167e",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-09T09:00:00-07:00",
+      "end": "2026-10-09T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "mullett-9a28887b4458",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -350,7 +383,7 @@
       "start": "2026-10-09T12:30:00-07:00",
       "end": "2026-10-09T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-06",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-07",
       "source": "mullett"
     },
     {
@@ -420,6 +453,17 @@
       "source": "ccic"
     },
     {
+      "id": "flagstaff-3ec09182bbc7",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-13T12:00:00-07:00",
+      "end": "2026-10-13T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-c5727f647a8e",
       "title": "Adult Stick Time",
       "type": "Stick Time",
@@ -449,8 +493,19 @@
       "start": "2026-10-13T15:30:00-07:00",
       "end": "2026-10-13T17:00:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-13",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-07",
       "source": "mullett"
+    },
+    {
+      "id": "flagstaff-a8852c3e87ac",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-14T09:00:00-07:00",
+      "end": "2026-10-14T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-48c14e0f2700",
@@ -462,6 +517,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "flagstaff-835b2a4570c3",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-15T12:00:00-07:00",
+      "end": "2026-10-15T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-a21e22dff418",
@@ -493,8 +559,19 @@
       "start": "2026-10-15T20:00:00-07:00",
       "end": "2026-10-15T21:15:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-13",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-14",
       "source": "mullett"
+    },
+    {
+      "id": "flagstaff-4d985269f713",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-16T09:00:00-07:00",
+      "end": "2026-10-16T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "mullett-0d342ad05714",
@@ -504,7 +581,7 @@
       "start": "2026-10-16T12:30:00-07:00",
       "end": "2026-10-16T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-13",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-14",
       "source": "mullett"
     },
     {
@@ -563,6 +640,17 @@
       "source": "ccic"
     },
     {
+      "id": "flagstaff-1b5717349167",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-20T12:00:00-07:00",
+      "end": "2026-10-20T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-0ac273b24ac2",
       "title": "Adult Stick Time",
       "type": "Stick Time",
@@ -592,8 +680,19 @@
       "start": "2026-10-20T15:30:00-07:00",
       "end": "2026-10-20T17:00:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-20",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-14",
       "source": "mullett"
+    },
+    {
+      "id": "flagstaff-426c9e87dd3f",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-21T09:00:00-07:00",
+      "end": "2026-10-21T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-b50989c379cb",
@@ -605,6 +704,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "flagstaff-78bb8add0f6f",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-22T12:00:00-07:00",
+      "end": "2026-10-22T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-6afdbfa26199",
@@ -636,8 +746,19 @@
       "start": "2026-10-22T20:00:00-07:00",
       "end": "2026-10-22T21:15:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-20",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-21",
       "source": "mullett"
+    },
+    {
+      "id": "flagstaff-21a1d17f4dc4",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-23T09:00:00-07:00",
+      "end": "2026-10-23T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "mullett-3585ff13404b",
@@ -647,7 +768,7 @@
       "start": "2026-10-23T12:30:00-07:00",
       "end": "2026-10-23T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-20",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-21",
       "source": "mullett"
     },
     {
@@ -717,6 +838,17 @@
       "source": "ccic"
     },
     {
+      "id": "flagstaff-3614dd66fb6c",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-27T12:00:00-07:00",
+      "end": "2026-10-27T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-84d84339b1f7",
       "title": "Adult Stick Time",
       "type": "Stick Time",
@@ -746,8 +878,19 @@
       "start": "2026-10-27T15:30:00-07:00",
       "end": "2026-10-27T17:00:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-27",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-21",
       "source": "mullett"
+    },
+    {
+      "id": "flagstaff-6cbf9f3989a1",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-28T09:00:00-07:00",
+      "end": "2026-10-28T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-2aa36342741c",
@@ -759,6 +902,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "flagstaff-24259d605cbe",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-29T12:00:00-07:00",
+      "end": "2026-10-29T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-80afc41b4d77",
@@ -783,6 +937,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "flagstaff-343087394587",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-10-30T09:00:00-07:00",
+      "end": "2026-10-30T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "mullett-6089c49b2336",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -790,7 +955,7 @@
       "start": "2026-10-30T12:30:00-07:00",
       "end": "2026-10-30T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-27",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-28",
       "source": "mullett"
     },
     {
@@ -814,6 +979,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "mullett-f6f1ffdaa779",
+      "title": "Glass Cleaning? All Ages Stick Time?",
+      "type": "Stick Time",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-11-03T15:30:00-07:00",
+      "end": "2026-11-03T17:00:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-28",
+      "source": "mullett"
     }
   ]
 }
