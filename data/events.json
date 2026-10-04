@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-03T23:00:23.214029-07:00",
+  "updated": "2026-10-04T07:07:26.530044-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -22,67 +22,12 @@
   },
   "events": [
     {
-      "id": "mullett-32a63fc837b3",
-      "title": "Adult Open Hockey Register Online",
-      "type": "Open Hockey",
-      "rink": "Mullett Arena / Mountain America Community Iceplex",
-      "start": "2026-10-02T11:15:00-07:00",
-      "end": "2026-10-02T12:45:00-07:00",
-      "age": "Adult",
-      "url": "https://mullett.sportified.net/products/23897",
-      "source": "mullett"
-    },
-    {
-      "id": "icedenchandler-3b07585efed3",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-02T14:15:00-07:00",
-      "end": "2026-10-02T15:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-2be184bbffa1",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-02T15:00:00-07:00",
-      "end": "2026-10-02T16:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-a6e462b86a79",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-02T16:15:00-07:00",
-      "end": "2026-10-02T17:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "azicepeoria-0248bfd22015",
+      "id": "azicepeoria-c9bd013a34d2",
       "title": "Stick Time",
       "type": "Stick Time",
       "rink": "AZ Ice Peoria",
-      "start": "2026-10-03T05:30:00-07:00",
-      "end": "2026-10-03T06:45:00-07:00",
-      "age": "All",
-      "url": "https://azicepeoria.com/all-events/hockey-events/",
-      "source": "azicepeoria"
-    },
-    {
-      "id": "azicepeoria-ca80f60ec9b6",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Peoria",
-      "start": "2026-10-03T08:20:00-07:00",
-      "end": "2026-10-03T09:20:00-07:00",
+      "start": "2026-10-04T06:30:00-07:00",
+      "end": "2026-10-04T07:45:00-07:00",
       "age": "All",
       "url": "https://azicepeoria.com/all-events/hockey-events/",
       "source": "azicepeoria"
@@ -447,7 +392,7 @@
       "start": "2026-10-15T20:00:00-07:00",
       "end": "2026-10-15T21:15:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-09",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-10",
       "source": "mullett"
     },
     {
@@ -469,7 +414,7 @@
       "start": "2026-10-16T12:30:00-07:00",
       "end": "2026-10-16T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-16",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-10",
       "source": "mullett"
     },
     {
@@ -634,7 +579,7 @@
       "start": "2026-10-22T20:00:00-07:00",
       "end": "2026-10-22T21:15:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-16",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-17",
       "source": "mullett"
     },
     {
@@ -656,7 +601,7 @@
       "start": "2026-10-23T12:30:00-07:00",
       "end": "2026-10-23T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-23",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-17",
       "source": "mullett"
     },
     {
@@ -843,7 +788,7 @@
       "start": "2026-10-30T12:30:00-07:00",
       "end": "2026-10-30T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-30",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-24",
       "source": "mullett"
     },
     {
@@ -876,7 +821,7 @@
       "start": "2026-11-03T15:30:00-07:00",
       "end": "2026-11-03T17:00:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-30",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-31",
       "source": "mullett"
     },
     {
@@ -887,7 +832,18 @@
       "start": "2026-11-05T17:15:00-07:00",
       "end": "2026-11-05T18:15:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-30",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-31",
+      "source": "mullett"
+    },
+    {
+      "id": "mullett-7c9f9c68b5f0",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-11-06T12:30:00-07:00",
+      "end": "2026-11-06T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-31",
       "source": "mullett"
     }
   ]
