@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-05T10:11:50.228205-07:00",
+  "updated": "2026-10-05T18:19:35.112191-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -121,17 +121,6 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
-    },
-    {
-      "id": "ccic-bb3fecc51376",
-      "title": "Power Skating",
-      "type": "Clinic",
-      "rink": "Coyotes Community Ice Center",
-      "start": "2026-10-05T16:10:00-07:00",
-      "end": "2026-10-05T17:10:00-07:00",
-      "age": "All",
-      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
-      "source": "ccic"
     },
     {
       "id": "azicegilbert-bb4601192104",
@@ -814,6 +803,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "mullett-19074444c310",
+      "title": "Flow Hockey Game (CDG) [Mullett]",
+      "type": "Flow Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-10-28T21:40:00-07:00",
+      "end": "2026-10-28T22:55:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-25",
+      "source": "mullett"
     },
     {
       "id": "flagstaff-24259d605cbe",
