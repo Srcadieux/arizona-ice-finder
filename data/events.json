@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-14T13:13:52.056075-07:00",
+  "updated": "2026-10-14T16:17:46.403072-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -277,6 +277,17 @@
       "source": "ccic"
     },
     {
+      "id": "mullett-5d30020cce07",
+      "title": "All Ages Hockey Stick Time Register Online",
+      "type": "Stick Time",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-10-19T17:10:00-07:00",
+      "end": "2026-10-19T18:25:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/products/24459",
+      "source": "mullett"
+    },
+    {
       "id": "flagstaff-1b5717349167",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -376,14 +387,14 @@
       "source": "icedenchandler"
     },
     {
-      "id": "mullett-1af4bb2c8b15",
-      "title": "Flow Hockey Game (CDG) [Mullett]",
+      "id": "mullett-9fb17a458b61",
+      "title": "Flow Hockey Game (CDG) [Mullett] Register Online",
       "type": "Flow Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-10-22T20:00:00-07:00",
       "end": "2026-10-22T21:15:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-20",
+      "url": "https://mullett.sportified.net/products/24460",
       "source": "mullett"
     },
     {
@@ -398,14 +409,14 @@
       "source": "flagstaff"
     },
     {
-      "id": "mullett-3585ff13404b",
-      "title": "Adult Open Hockey",
+      "id": "mullett-e6dffcf44451",
+      "title": "Adult Open Hockey Register Online",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-10-23T12:30:00-07:00",
       "end": "2026-10-23T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-20",
+      "url": "https://mullett.sportified.net/products/24457",
       "source": "mullett"
     },
     {
@@ -662,8 +673,8 @@
       "source": "icedenchandler"
     },
     {
-      "id": "mullett-f6f1ffdaa779",
-      "title": "Glass Cleaning? All Ages Stick Time?",
+      "id": "mullett-b69b16e123c8",
+      "title": "All Ages Hockey Stick Time",
       "type": "Stick Time",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-11-03T15:30:00-07:00",
