@@ -1,13 +1,11 @@
 {
-  "updated": "2026-10-17T08:42:58.653440-07:00",
+  "updated": "2026-10-17T11:32:52.153635-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
       "AZ Ice Arcadia",
       "AZ Ice Peoria",
       "Coyotes Community Ice Center",
-      "Ice Den Chandler",
-      "Ice Den Scottsdale",
       "Jay Lively Activity Center",
       "Mullett Arena / Mountain America Community Iceplex"
     ],
@@ -32,28 +30,6 @@
       "age": "Adult",
       "url": "https://mullett.sportified.net/products/24227",
       "source": "mullett"
-    },
-    {
-      "id": "icedenchandler-89d7686fdc8b",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-16T14:15:00-07:00",
-      "end": "2026-10-16T15:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-daf611cb3594",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-16T15:00:00-07:00",
-      "end": "2026-10-16T16:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
     },
     {
       "id": "azicearcadia-a04cddb64530",
@@ -100,28 +76,6 @@
       "source": "mullett"
     },
     {
-      "id": "icedenchandler-1667c54aeecd",
-      "title": "Adult Women's Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-18T12:30:00-07:00",
-      "end": "2026-10-18T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenchandler-6560b65002e9",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-19T12:15:00-07:00",
-      "end": "2026-10-19T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
       "id": "ccic-602b1d4feb56",
       "title": "Power Skating",
       "type": "Clinic",
@@ -155,28 +109,6 @@
       "source": "flagstaff"
     },
     {
-      "id": "icedenscottsdale-0ac273b24ac2",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-20T12:15:00-07:00",
-      "end": "2026-10-20T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-731dbc2e0dc0",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-20T12:15:00-07:00",
-      "end": "2026-10-20T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
       "id": "mullett-720d672d30af",
       "title": "All Ages Hockey Stick Time Register Online",
       "type": "Stick Time",
@@ -199,17 +131,6 @@
       "source": "flagstaff"
     },
     {
-      "id": "icedenscottsdale-b50989c379cb",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-21T11:45:00-07:00",
-      "end": "2026-10-21T13:15:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
       "id": "flagstaff-78bb8add0f6f",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -219,28 +140,6 @@
       "age": "Adult",
       "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
       "source": "flagstaff"
-    },
-    {
-      "id": "icedenscottsdale-6afdbfa26199",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-22T12:15:00-07:00",
-      "end": "2026-10-22T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-12bfd872542d",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-22T12:15:00-07:00",
-      "end": "2026-10-22T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
     },
     {
       "id": "mullett-9fb17a458b61",
@@ -276,61 +175,6 @@
       "source": "mullett"
     },
     {
-      "id": "icedenchandler-6a8bbe4326a4",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-23T14:15:00-07:00",
-      "end": "2026-10-23T15:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-85cf716a5cfb",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-23T15:00:00-07:00",
-      "end": "2026-10-23T16:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-43d7280a16de",
-      "title": "Adult Women's Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-25T11:35:00-07:00",
-      "end": "2026-10-25T12:50:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenchandler-1f27f762f1f2",
-      "title": "Adult Women's Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-25T12:30:00-07:00",
-      "end": "2026-10-25T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenchandler-8d432abd45b8",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-26T12:15:00-07:00",
-      "end": "2026-10-26T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
       "id": "ccic-3727c4735175",
       "title": "Power Skating",
       "type": "Clinic",
@@ -351,28 +195,6 @@
       "age": "Adult",
       "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
       "source": "flagstaff"
-    },
-    {
-      "id": "icedenscottsdale-84d84339b1f7",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-27T12:15:00-07:00",
-      "end": "2026-10-27T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-a87be9cc397f",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-27T12:15:00-07:00",
-      "end": "2026-10-27T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
     },
     {
       "id": "mullett-90cec421e347",
@@ -397,17 +219,6 @@
       "source": "flagstaff"
     },
     {
-      "id": "icedenscottsdale-2aa36342741c",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-28T11:45:00-07:00",
-      "end": "2026-10-28T13:15:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
       "id": "mullett-19074444c310",
       "title": "Flow Hockey Game (CDG) [Mullett]",
       "type": "Flow Hockey",
@@ -428,28 +239,6 @@
       "age": "Adult",
       "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
       "source": "flagstaff"
-    },
-    {
-      "id": "icedenscottsdale-80afc41b4d77",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-29T12:15:00-07:00",
-      "end": "2026-10-29T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-943c9712fbd6",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-29T12:15:00-07:00",
-      "end": "2026-10-29T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
     },
     {
       "id": "flagstaff-343087394587",
@@ -474,61 +263,6 @@
       "source": "mullett"
     },
     {
-      "id": "icedenchandler-25423cc485f9",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-30T14:15:00-07:00",
-      "end": "2026-10-30T15:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-44f1d2eb30af",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-30T15:00:00-07:00",
-      "end": "2026-10-30T16:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-67d7117efc09",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-02T12:15:00-07:00",
-      "end": "2026-11-02T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-529db930577e",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-03T12:15:00-07:00",
-      "end": "2026-11-03T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-3144aba72583",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-03T12:15:00-07:00",
-      "end": "2026-11-03T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
       "id": "mullett-b69b16e123c8",
       "title": "All Ages Hockey Stick Time",
       "type": "Stick Time",
@@ -538,39 +272,6 @@
       "age": "All",
       "url": "https://mullett.sportified.net/schedule?date=2026-10-30",
       "source": "mullett"
-    },
-    {
-      "id": "icedenscottsdale-5259f7183491",
-      "title": "Adult Open Hockey 50+",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-04T11:45:00-07:00",
-      "end": "2026-11-04T13:15:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenscottsdale-2cac151b71e4",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-05T12:15:00-07:00",
-      "end": "2026-11-05T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-85f5a5f642a7",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-05T12:15:00-07:00",
-      "end": "2026-11-05T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
     },
     {
       "id": "mullett-82b8910e417e",
@@ -595,50 +296,6 @@
       "source": "mullett"
     },
     {
-      "id": "icedenchandler-1cab83f10642",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-06T14:15:00-07:00",
-      "end": "2026-11-06T15:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-a2bb0ffaed5d",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-06T15:00:00-07:00",
-      "end": "2026-11-06T16:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-66e4782132a8",
-      "title": "Adult Women's Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-08T11:30:00-07:00",
-      "end": "2026-11-08T12:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenchandler-f5e7e499d9cd",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-09T12:15:00-07:00",
-      "end": "2026-11-09T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
       "id": "mullett-363362c3bece",
       "title": "Power Skate Class?",
       "type": "Clinic",
@@ -650,61 +307,6 @@
       "source": "mullett"
     },
     {
-      "id": "icedenscottsdale-a66aa4dd3d30",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-10T12:15:00-07:00",
-      "end": "2026-11-10T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-84d98fd50c38",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-10T12:15:00-07:00",
-      "end": "2026-11-10T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-a4da4952a42f",
-      "title": "Adult Open Hockey 50+",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-11T11:45:00-07:00",
-      "end": "2026-11-11T13:15:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenscottsdale-167019cc3d22",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-12T12:15:00-07:00",
-      "end": "2026-11-12T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-1b20f1385fe8",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-12T12:15:00-07:00",
-      "end": "2026-11-12T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
       "id": "mullett-1ef1f358dea6",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -714,149 +316,6 @@
       "age": "Adult",
       "url": "https://mullett.sportified.net/schedule?date=2026-11-13",
       "source": "mullett"
-    },
-    {
-      "id": "icedenchandler-bc67d47a3651",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-13T14:15:00-07:00",
-      "end": "2026-11-13T15:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-a4ca3532a7bd",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-13T15:00:00-07:00",
-      "end": "2026-11-13T16:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-9e3fb481736e",
-      "title": "Adult Women's Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-15T07:20:00-07:00",
-      "end": "2026-11-15T08:35:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenchandler-1ab1abe6f404",
-      "title": "Adult Women's Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-15T11:30:00-07:00",
-      "end": "2026-11-15T12:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenchandler-c95ebdbcaf49",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-16T12:15:00-07:00",
-      "end": "2026-11-16T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-3e84a0279288",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-17T12:15:00-07:00",
-      "end": "2026-11-17T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-a0ff052ff9e0",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-17T12:15:00-07:00",
-      "end": "2026-11-17T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-52bf0fd23846",
-      "title": "Adult Open Hockey 50+",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-18T11:45:00-07:00",
-      "end": "2026-11-18T13:15:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenscottsdale-5479490f2c1d",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-19T12:15:00-07:00",
-      "end": "2026-11-19T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "icedenchandler-c7723472e13e",
-      "title": "Adult Stick Time",
-      "type": "Stick Time",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-19T12:15:00-07:00",
-      "end": "2026-11-19T13:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenchandler-26e366a6f565",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-20T14:00:00-07:00",
-      "end": "2026-11-20T15:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenchandler-12bb04bbe3e6",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-11-20T14:15:00-07:00",
-      "end": "2026-11-20T15:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-3524c2725e0d",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-11-20T15:00:00-07:00",
-      "end": "2026-11-20T16:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
     }
   ]
 }
