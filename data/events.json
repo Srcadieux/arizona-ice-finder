@@ -1,9 +1,8 @@
 {
-  "updated": "2026-10-17T21:41:29.002628-07:00",
+  "updated": "2026-10-18T05:38:30.861302-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
-      "AZ Ice Arcadia",
       "AZ Ice Peoria",
       "Coyotes Community Ice Center",
       "Ice Den Chandler",
@@ -23,70 +22,15 @@
   },
   "events": [
     {
-      "id": "mullett-7b249d7f661b",
-      "title": "Adult Open Hockey Register Online",
-      "type": "Open Hockey",
-      "rink": "Mullett Arena / Mountain America Community Iceplex",
-      "start": "2026-10-16T12:30:00-07:00",
-      "end": "2026-10-16T14:00:00-07:00",
-      "age": "Adult",
-      "url": "https://mullett.sportified.net/products/24227",
-      "source": "mullett"
-    },
-    {
-      "id": "icedenchandler-89d7686fdc8b",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-16T14:15:00-07:00",
-      "end": "2026-10-16T15:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-daf611cb3594",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-16T15:00:00-07:00",
-      "end": "2026-10-16T16:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "azicearcadia-a04cddb64530",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Arcadia",
-      "start": "2026-10-17T08:00:00-07:00",
-      "end": "2026-10-17T09:30:00-07:00",
-      "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
-      "source": "azicearcadia"
-    },
-    {
-      "id": "azicepeoria-74a15497e6a0",
+      "id": "azicepeoria-83ddbd984892",
       "title": "Stick Time",
       "type": "Stick Time",
       "rink": "AZ Ice Peoria",
-      "start": "2026-10-17T08:20:00-07:00",
-      "end": "2026-10-17T09:20:00-07:00",
+      "start": "2026-10-18T06:30:00-07:00",
+      "end": "2026-10-18T07:45:00-07:00",
       "age": "All",
       "url": "https://azicepeoria.com/all-events/hockey-events/",
       "source": "azicepeoria"
-    },
-    {
-      "id": "azicearcadia-34dca9b6e3b0",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Arcadia",
-      "start": "2026-10-17T13:15:00-07:00",
-      "end": "2026-10-17T14:30:00-07:00",
-      "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar?location=3",
-      "source": "azicearcadia"
     },
     {
       "id": "mullett-309606fb6f23",
@@ -415,7 +359,7 @@
       "start": "2026-10-28T21:40:00-07:00",
       "end": "2026-10-28T22:55:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-23",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-24",
       "source": "mullett"
     },
     {
@@ -470,7 +414,7 @@
       "start": "2026-10-30T12:30:00-07:00",
       "end": "2026-10-30T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-30",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-24",
       "source": "mullett"
     },
     {
@@ -536,7 +480,7 @@
       "start": "2026-11-03T15:30:00-07:00",
       "end": "2026-11-03T17:00:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-30",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-31",
       "source": "mullett"
     },
     {
@@ -580,7 +524,7 @@
       "start": "2026-11-05T17:15:00-07:00",
       "end": "2026-11-05T18:15:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-30",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-31",
       "source": "mullett"
     },
     {
@@ -591,7 +535,7 @@
       "start": "2026-11-06T12:30:00-07:00",
       "end": "2026-11-06T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-06",
+      "url": "https://mullett.sportified.net/schedule?date=2026-10-31",
       "source": "mullett"
     },
     {
@@ -646,7 +590,7 @@
       "start": "2026-11-09T17:45:00-07:00",
       "end": "2026-11-09T18:45:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-06",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-07",
       "source": "mullett"
     },
     {
@@ -712,7 +656,7 @@
       "start": "2026-11-13T12:30:00-07:00",
       "end": "2026-11-13T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-13",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-07",
       "source": "mullett"
     },
     {
@@ -826,6 +770,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "mullett-9f2f291f7e39",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-11-20T12:30:00-07:00",
+      "end": "2026-11-20T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-14",
+      "source": "mullett"
+    },
+    {
       "id": "icedenchandler-26e366a6f565",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -857,6 +812,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "icedenchandler-68330f896d2f",
+      "title": "Adult Women's Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Ice Den Chandler",
+      "start": "2026-11-22T11:30:00-07:00",
+      "end": "2026-11-22T12:45:00-07:00",
+      "age": "Adult",
+      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
+      "source": "icedenchandler"
     }
   ]
 }
