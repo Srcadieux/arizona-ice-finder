@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-26T08:15:16.910571-07:00",
+  "updated": "2026-10-26T14:03:19.580492-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -211,14 +211,14 @@
       "source": "icedenscottsdale"
     },
     {
-      "id": "mullett-19074444c310",
-      "title": "Flow Hockey Game (CDG) [Mullett]",
+      "id": "mullett-f0bb7953d7b8",
+      "title": "Flow Hockey Game (CDG) [Mullett] Register Online",
       "type": "Flow Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-10-28T21:40:00-07:00",
       "end": "2026-10-28T22:55:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-10-25",
+      "url": "https://mullett.sportified.net/products/24820",
       "source": "mullett"
     },
     {
@@ -453,9 +453,9 @@
       "source": "icedenchandler"
     },
     {
-      "id": "mullett-ece6bc221bcd",
-      "title": "Power Skate Class?",
-      "type": "Clinic",
+      "id": "mullett-37094c4d12ca",
+      "title": "All Ages Hockey Stick Time",
+      "type": "Stick Time",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-11-09T18:30:00-07:00",
       "end": "2026-11-09T19:30:00-07:00",
