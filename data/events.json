@@ -1,12 +1,11 @@
 {
-  "updated": "2026-10-26T14:03:19.580492-07:00",
+  "updated": "2026-10-26T22:13:11.527918-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
       "AZ Ice Arcadia",
       "AZ Ice Gilbert",
       "AZ Ice Peoria",
-      "Coyotes Community Ice Center",
       "Ice Den Chandler",
       "Ice Den Scottsdale",
       "Jay Lively Activity Center",
@@ -145,15 +144,15 @@
       "source": "icedenchandler"
     },
     {
-      "id": "ccic-3727c4735175",
-      "title": "Power Skating",
-      "type": "Clinic",
-      "rink": "Coyotes Community Ice Center",
-      "start": "2026-10-26T16:10:00-07:00",
-      "end": "2026-10-26T17:10:00-07:00",
+      "id": "azicegilbert-72a7e08fafbd",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Gilbert",
+      "start": "2026-10-26T18:20:00-07:00",
+      "end": "2026-10-26T19:20:00-07:00",
       "age": "All",
-      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
-      "source": "ccic"
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
     },
     {
       "id": "flagstaff-3614dd66fb6c",
