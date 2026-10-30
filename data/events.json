@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-30T08:05:15.027153-07:00",
+  "updated": "2026-10-30T13:52:12.607499-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -100,17 +100,6 @@
       "source": "azicegilbert"
     },
     {
-      "id": "flagstaff-343087394587",
-      "title": "Adult Stick & Puck",
-      "type": "Stick Time",
-      "rink": "Jay Lively Activity Center",
-      "start": "2026-10-30T09:00:00-07:00",
-      "end": "2026-10-30T10:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
-      "source": "flagstaff"
-    },
-    {
       "id": "azicearcadia-a72c28531bda",
       "title": "Adult Pick Up Hockey",
       "type": "Open Hockey",
@@ -177,6 +166,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "flagstaff-20c30408761e",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-03T12:00:00-07:00",
+      "end": "2026-11-03T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-529db930577e",
       "title": "Adult Stick Time",
       "type": "Stick Time",
@@ -210,6 +210,17 @@
       "source": "mullett"
     },
     {
+      "id": "flagstaff-f483c6517824",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-04T09:00:00-07:00",
+      "end": "2026-11-04T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-5259f7183491",
       "title": "Adult Open Hockey 50+",
       "type": "Open Hockey",
@@ -230,6 +241,17 @@
       "age": "All",
       "url": "https://mullett.sportified.net/products/24655",
       "source": "mullett"
+    },
+    {
+      "id": "flagstaff-939c2b65df15",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-05T12:00:00-07:00",
+      "end": "2026-11-05T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-2cac151b71e4",
@@ -263,6 +285,17 @@
       "age": "All",
       "url": "https://mullett.sportified.net/products/24787",
       "source": "mullett"
+    },
+    {
+      "id": "flagstaff-79797fe3de5c",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-06T09:00:00-07:00",
+      "end": "2026-11-06T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "mullett-4a951ef0f0fd",
@@ -331,6 +364,17 @@
       "source": "mullett"
     },
     {
+      "id": "flagstaff-3b6ecc65b762",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-10T12:00:00-07:00",
+      "end": "2026-11-10T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-a66aa4dd3d30",
       "title": "Adult Stick Time",
       "type": "Stick Time",
@@ -353,6 +397,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "flagstaff-8ec15176351c",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-11T09:00:00-07:00",
+      "end": "2026-11-11T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-a4da4952a42f",
       "title": "Adult Open Hockey 50+",
       "type": "Open Hockey",
@@ -362,6 +417,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "flagstaff-6cdb82350af2",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-12T12:00:00-07:00",
+      "end": "2026-11-12T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-167019cc3d22",
@@ -384,6 +450,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "flagstaff-a0ca32b3aa1a",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-13T09:00:00-07:00",
+      "end": "2026-11-13T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "mullett-1ef1f358dea6",
@@ -452,6 +529,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "flagstaff-7d18d26feadc",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-17T12:00:00-07:00",
+      "end": "2026-11-17T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-3e84a0279288",
       "title": "Adult Stick Time",
       "type": "Stick Time",
@@ -474,6 +562,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "flagstaff-3d2fd8812d94",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-18T09:00:00-07:00",
+      "end": "2026-11-18T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-52bf0fd23846",
       "title": "Adult Open Hockey 50+",
       "type": "Open Hockey",
@@ -483,6 +582,17 @@
       "age": "Adult",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "flagstaff-c926b7b2dbcb",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-19T12:00:00-07:00",
+      "end": "2026-11-19T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-5479490f2c1d",
@@ -505,6 +615,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "flagstaff-17b537baf1a5",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-20T09:00:00-07:00",
+      "end": "2026-11-20T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "mullett-9f2f291f7e39",
@@ -573,6 +694,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "flagstaff-5e9582fb4eae",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-24T12:00:00-07:00",
+      "end": "2026-11-24T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "icedenscottsdale-ae3ebb244bff",
       "title": "Adult Stick Time",
       "type": "Stick Time",
@@ -617,6 +749,17 @@
       "source": "icedenscottsdale"
     },
     {
+      "id": "flagstaff-4837f2ee61b8",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-25T09:00:00-07:00",
+      "end": "2026-11-25T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "mullett-a209fa668c38",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -648,6 +791,17 @@
       "age": "Adult",
       "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
       "source": "icedenchandler"
+    },
+    {
+      "id": "flagstaff-50530f4ae1e7",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-11-27T09:00:00-07:00",
+      "end": "2026-11-27T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     },
     {
       "id": "mullett-a248b8c736d4",
@@ -727,6 +881,17 @@
       "source": "icedenchandler"
     },
     {
+      "id": "flagstaff-246c63804f7a",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-12-01T12:00:00-07:00",
+      "end": "2026-12-01T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
       "id": "mullett-7e62f2a2bbb6",
       "title": "All Ages Hockey Stick Time",
       "type": "Stick Time",
@@ -736,6 +901,39 @@
       "age": "All",
       "url": "https://mullett.sportified.net/schedule?date=2026-11-26",
       "source": "mullett"
+    },
+    {
+      "id": "flagstaff-751b50c5dd83",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-12-02T09:00:00-07:00",
+      "end": "2026-12-02T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
+      "id": "flagstaff-29f36024977b",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-12-03T12:00:00-07:00",
+      "end": "2026-12-03T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
+    },
+    {
+      "id": "flagstaff-33e3af334243",
+      "title": "Adult Stick & Puck",
+      "type": "Stick Time",
+      "rink": "Jay Lively Activity Center",
+      "start": "2026-12-04T09:00:00-07:00",
+      "end": "2026-12-04T10:30:00-07:00",
+      "age": "Adult",
+      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
+      "source": "flagstaff"
     }
   ]
 }
