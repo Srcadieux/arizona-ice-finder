@@ -1,10 +1,9 @@
 {
-  "updated": "2026-10-31T23:17:52.526504-07:00",
+  "updated": "2026-11-01T08:15:26.195420-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
       "AZ Ice Gilbert",
-      "AZ Ice Peoria",
       "Ice Den Chandler",
       "Ice Den Scottsdale",
       "Jay Lively Activity Center",
@@ -22,89 +21,12 @@
   },
   "events": [
     {
-      "id": "mullett-0e1a4b31ebbe",
-      "title": "Adult Open Hockey Register Online",
-      "type": "Open Hockey",
-      "rink": "Mullett Arena / Mountain America Community Iceplex",
-      "start": "2026-10-30T12:30:00-07:00",
-      "end": "2026-10-30T14:00:00-07:00",
-      "age": "Adult",
-      "url": "https://mullett.sportified.net/products/24590",
-      "source": "mullett"
-    },
-    {
-      "id": "icedenchandler-25423cc485f9",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Chandler",
-      "start": "2026-10-30T14:15:00-07:00",
-      "end": "2026-10-30T15:45:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenchandler.com/page/show/2803608-calendar",
-      "source": "icedenchandler"
-    },
-    {
-      "id": "icedenscottsdale-44f1d2eb30af",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Ice Den Scottsdale",
-      "start": "2026-10-30T15:00:00-07:00",
-      "end": "2026-10-30T16:30:00-07:00",
-      "age": "Adult",
-      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
-      "source": "icedenscottsdale"
-    },
-    {
-      "id": "azicepeoria-296180c4acd0",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Peoria",
-      "start": "2026-10-31T05:30:00-07:00",
-      "end": "2026-10-31T06:45:00-07:00",
-      "age": "All",
-      "url": "https://azicepeoria.com/all-events/hockey-events/",
-      "source": "azicepeoria"
-    },
-    {
-      "id": "azicepeoria-32ebf79d78e1",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Peoria",
-      "start": "2026-10-31T08:20:00-07:00",
-      "end": "2026-10-31T09:20:00-07:00",
-      "age": "All",
-      "url": "https://azicepeoria.com/all-events/hockey-events/",
-      "source": "azicepeoria"
-    },
-    {
-      "id": "azicegilbert-390988da5c1c",
+      "id": "azicegilbert-a68eec88b4f6",
       "title": "Stick Time",
       "type": "Stick Time",
       "rink": "AZ Ice Gilbert",
-      "start": "2026-10-31T16:00:00-07:00",
-      "end": "2026-10-31T17:30:00-07:00",
-      "age": "All",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
-      "source": "azicegilbert"
-    },
-    {
-      "id": "azicegilbert-c915fbc6de24",
-      "title": "Adult Pick Up Hockey",
-      "type": "Open Hockey",
-      "rink": "AZ Ice Gilbert",
-      "start": "2026-10-31T16:25:00-07:00",
-      "end": "2026-10-31T17:55:00-07:00",
-      "age": "Adult",
-      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
-      "source": "azicegilbert"
-    },
-    {
-      "id": "azicegilbert-15fa47d62275",
-      "title": "Stick Time",
-      "type": "Stick Time",
-      "rink": "AZ Ice Gilbert",
-      "start": "2026-10-31T18:10:00-07:00",
-      "end": "2026-10-31T19:40:00-07:00",
+      "start": "2026-11-01T11:00:00-07:00",
+      "end": "2026-11-01T12:15:00-07:00",
       "age": "All",
       "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
       "source": "azicegilbert"
@@ -315,7 +237,7 @@
       "start": "2026-11-09T18:30:00-07:00",
       "end": "2026-11-09T19:30:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-06",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-07",
       "source": "mullett"
     },
     {
@@ -425,7 +347,7 @@
       "start": "2026-11-13T12:30:00-07:00",
       "end": "2026-11-13T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-13",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-07",
       "source": "mullett"
     },
     {
@@ -590,7 +512,7 @@
       "start": "2026-11-20T12:30:00-07:00",
       "end": "2026-11-20T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-20",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-14",
       "source": "mullett"
     },
     {
@@ -689,7 +611,7 @@
       "start": "2026-11-24T15:30:00-07:00",
       "end": "2026-11-24T17:00:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-20",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-21",
       "source": "mullett"
     },
     {
@@ -722,7 +644,7 @@
       "start": "2026-11-25T11:15:00-07:00",
       "end": "2026-11-25T12:45:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-20",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-21",
       "source": "mullett"
     },
     {
@@ -766,7 +688,7 @@
       "start": "2026-11-27T12:30:00-07:00",
       "end": "2026-11-27T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-27",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-21",
       "source": "mullett"
     },
     {
@@ -854,7 +776,7 @@
       "start": "2026-12-01T15:30:00-07:00",
       "end": "2026-12-01T17:00:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-27",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-28",
       "source": "mullett"
     },
     {
@@ -889,6 +811,17 @@
       "age": "Adult",
       "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
       "source": "flagstaff"
+    },
+    {
+      "id": "mullett-0b9498f6694d",
+      "title": "Adult Open Hockey",
+      "type": "Open Hockey",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-12-04T12:30:00-07:00",
+      "end": "2026-12-04T14:00:00-07:00",
+      "age": "Adult",
+      "url": "https://mullett.sportified.net/schedule?date=2026-11-28",
+      "source": "mullett"
     }
   ]
 }
