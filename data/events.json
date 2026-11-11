@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-10T14:50:07.309214-07:00",
+  "updated": "2026-11-10T23:37:58.294603-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -519,14 +519,14 @@
       "source": "icedenchandler"
     },
     {
-      "id": "mullett-be11c8314fe5",
-      "title": "All Ages Hockey Stick Time",
+      "id": "mullett-e3314c21fd26",
+      "title": "All Ages Hockey Stick Time Register Online",
       "type": "Stick Time",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-11-24T15:30:00-07:00",
       "end": "2026-11-24T17:00:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-23",
+      "url": "https://mullett.sportified.net/products/25233",
       "source": "mullett"
     },
     {
