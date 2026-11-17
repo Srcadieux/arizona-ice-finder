@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-17T06:33:40.787277-07:00",
+  "updated": "2026-11-17T16:32:41.179947-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -110,17 +110,6 @@
       "age": "Adult",
       "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
       "source": "azicegilbert"
-    },
-    {
-      "id": "flagstaff-7d18d26feadc",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Jay Lively Activity Center",
-      "start": "2026-11-17T12:00:00-07:00",
-      "end": "2026-11-17T14:00:00-07:00",
-      "age": "Adult",
-      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
-      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-3e84a0279288",
@@ -376,14 +365,14 @@
       "source": "flagstaff"
     },
     {
-      "id": "mullett-a209fa668c38",
-      "title": "Adult Open Hockey",
+      "id": "mullett-f1db76be61a7",
+      "title": "Adult Open Hockey Register Online",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-11-25T11:15:00-07:00",
       "end": "2026-11-25T12:45:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-23",
+      "url": "https://mullett.sportified.net/products/25381",
       "source": "mullett"
     },
     {
@@ -431,25 +420,25 @@
       "source": "flagstaff"
     },
     {
-      "id": "mullett-aef43d085eea",
-      "title": "All Ages Hockey Stick Time",
+      "id": "mullett-e681bf740fae",
+      "title": "All Ages Hockey Stick Time Register Online",
       "type": "Stick Time",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-11-27T11:00:00-07:00",
       "end": "2026-11-27T12:15:00-07:00",
       "age": "All",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-23",
+      "url": "https://mullett.sportified.net/products/25382",
       "source": "mullett"
     },
     {
-      "id": "mullett-a248b8c736d4",
-      "title": "Adult Open Hockey",
+      "id": "mullett-7cba76b7a5e7",
+      "title": "Adult Open Hockey Register Online",
       "type": "Open Hockey",
       "rink": "Mullett Arena / Mountain America Community Iceplex",
       "start": "2026-11-27T12:30:00-07:00",
       "end": "2026-11-27T14:00:00-07:00",
       "age": "Adult",
-      "url": "https://mullett.sportified.net/schedule?date=2026-11-23",
+      "url": "https://mullett.sportified.net/products/25383",
       "source": "mullett"
     },
     {
