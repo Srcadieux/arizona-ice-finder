@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-22T09:20:37.918641-07:00",
+  "updated": "2026-11-22T17:56:06.998303-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -462,6 +462,72 @@
       "age": "Adult",
       "url": "https://mullett.sportified.net/schedule?date=2026-12-19",
       "source": "mullett"
+    },
+    {
+      "id": "icedenscottsdale-e228ed9fd679",
+      "title": "Mite/Squirt Youth Stick Time",
+      "type": "Stick Time",
+      "rink": "Ice Den Scottsdale",
+      "start": "2026-12-26T14:15:00-07:00",
+      "end": "2026-12-26T15:00:00-07:00",
+      "age": "Youth",
+      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
+      "source": "icedenscottsdale"
+    },
+    {
+      "id": "icedenscottsdale-e7507fa3b433",
+      "title": "Peewee/Bantam Youth Stick Time",
+      "type": "Stick Time",
+      "rink": "Ice Den Scottsdale",
+      "start": "2026-12-26T15:15:00-07:00",
+      "end": "2026-12-26T16:00:00-07:00",
+      "age": "Youth",
+      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
+      "source": "icedenscottsdale"
+    },
+    {
+      "id": "icedenscottsdale-198af9378149",
+      "title": "Mite/Squirt Youth Stick Time",
+      "type": "Stick Time",
+      "rink": "Ice Den Scottsdale",
+      "start": "2026-12-27T14:15:00-07:00",
+      "end": "2026-12-27T15:00:00-07:00",
+      "age": "Youth",
+      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
+      "source": "icedenscottsdale"
+    },
+    {
+      "id": "icedenscottsdale-5a4f96204127",
+      "title": "Peewee/Bantam Youth Stick Time",
+      "type": "Stick Time",
+      "rink": "Ice Den Scottsdale",
+      "start": "2026-12-27T15:15:00-07:00",
+      "end": "2026-12-27T16:00:00-07:00",
+      "age": "Youth",
+      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
+      "source": "icedenscottsdale"
+    },
+    {
+      "id": "icedenscottsdale-d82658b54209",
+      "title": "Mite/Squirt Youth Stick Time",
+      "type": "Stick Time",
+      "rink": "Ice Den Scottsdale",
+      "start": "2026-12-27T16:45:00-07:00",
+      "end": "2026-12-27T17:30:00-07:00",
+      "age": "Youth",
+      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
+      "source": "icedenscottsdale"
+    },
+    {
+      "id": "icedenscottsdale-0d0caba66acd",
+      "title": "Peewee/Bantam Youth Stick Time",
+      "type": "Stick Time",
+      "rink": "Ice Den Scottsdale",
+      "start": "2026-12-27T17:45:00-07:00",
+      "end": "2026-12-27T18:30:00-07:00",
+      "age": "Youth",
+      "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
+      "source": "icedenscottsdale"
     }
   ]
 }
