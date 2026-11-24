@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-23T07:49:25.325429-07:00",
+  "updated": "2026-11-23T19:56:27.873246-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -134,15 +134,15 @@
       "source": "icedenchandler"
     },
     {
-      "id": "ccic-8052259d6f53",
-      "title": "Power Skating",
-      "type": "Clinic",
-      "rink": "Coyotes Community Ice Center",
-      "start": "2026-11-23T16:10:00-07:00",
-      "end": "2026-11-23T17:10:00-07:00",
+      "id": "azicegilbert-d9197980d217",
+      "title": "Stick Time",
+      "type": "Stick Time",
+      "rink": "AZ Ice Gilbert",
+      "start": "2026-11-23T17:30:00-07:00",
+      "end": "2026-11-23T19:00:00-07:00",
       "age": "All",
-      "url": "https://www.coyotescommunityicecenter.com/page/show/8483422-power-skating",
-      "source": "ccic"
+      "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
+      "source": "azicegilbert"
     },
     {
       "id": "flagstaff-5e9582fb4eae",
