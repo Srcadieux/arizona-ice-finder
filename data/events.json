@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-24T07:57:42.434231-07:00",
+  "updated": "2026-11-24T17:49:43.712328-07:00",
   "mode": "live-partial",
   "source_summary": {
     "live_auto": [
@@ -132,17 +132,6 @@
       "age": "Adult",
       "url": "https://member.daysmartrecreation.com/#/online/azice/calendar",
       "source": "azicegilbert"
-    },
-    {
-      "id": "flagstaff-5e9582fb4eae",
-      "title": "Adult Open Hockey",
-      "type": "Open Hockey",
-      "rink": "Jay Lively Activity Center",
-      "start": "2026-11-24T12:00:00-07:00",
-      "end": "2026-11-24T14:00:00-07:00",
-      "age": "Adult",
-      "url": "https://www.flagstaff.az.gov/DocumentCenter/View/92321",
-      "source": "flagstaff"
     },
     {
       "id": "icedenscottsdale-ae3ebb244bff",
@@ -464,6 +453,17 @@
       "source": "mullett"
     },
     {
+      "id": "mullett-f2d5d4f91eb9",
+      "title": "All Ages Hockey Stick Time",
+      "type": "Stick Time",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-12-16T14:15:00-07:00",
+      "end": "2026-12-16T15:45:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/schedule?date=2026-12-14",
+      "source": "mullett"
+    },
+    {
       "id": "mullett-faa84f622c26",
       "title": "Adult Open Hockey",
       "type": "Open Hockey",
@@ -472,6 +472,17 @@
       "end": "2026-12-18T14:00:00-07:00",
       "age": "Adult",
       "url": "https://mullett.sportified.net/schedule?date=2026-12-14",
+      "source": "mullett"
+    },
+    {
+      "id": "mullett-ed3a59e8b66d",
+      "title": "All Ages Hockey Stick Time",
+      "type": "Stick Time",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-12-21T10:45:00-07:00",
+      "end": "2026-12-21T12:15:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/schedule?date=2026-12-21",
       "source": "mullett"
     },
     {
@@ -516,6 +527,17 @@
       "end": "2026-12-22T18:45:00-07:00",
       "age": "All",
       "url": "https://mullett.sportified.net/products/25235",
+      "source": "mullett"
+    },
+    {
+      "id": "mullett-1a473495b5a7",
+      "title": "All Ages Hockey Stick Time",
+      "type": "Stick Time",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-12-23T10:45:00-07:00",
+      "end": "2026-12-23T12:15:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/schedule?date=2026-12-21",
       "source": "mullett"
     },
     {
@@ -594,6 +616,17 @@
       "age": "Youth",
       "url": "https://www.icedenscottsdale.com/page/show/2662960-calendar",
       "source": "icedenscottsdale"
+    },
+    {
+      "id": "mullett-90dffc8fb31c",
+      "title": "All Ages Hockey Stick Time",
+      "type": "Stick Time",
+      "rink": "Mullett Arena / Mountain America Community Iceplex",
+      "start": "2026-12-27T15:30:00-07:00",
+      "end": "2026-12-27T17:00:00-07:00",
+      "age": "All",
+      "url": "https://mullett.sportified.net/schedule?date=2026-12-21",
+      "source": "mullett"
     },
     {
       "id": "icedenscottsdale-d82658b54209",
